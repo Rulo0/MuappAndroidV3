@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Menu options-->
+    <string-array name="photo_options">
+        <item>Take photo</item>
+        <item>Select from gallery</item>
+        <item>Select from Facebook</item>
+        <item>Cancel</item>
+        <item>Delete</item>
+    </string-array>
+</resources>

@@ -1,0 +1,102 @@
+{
+  "project_info": {
+    "project_number": "429819707579",
+    "firebase_url": "https://muapp-e3835.firebaseio.com",
+    "project_id": "muapp-e3835",
+    "storage_bucket": "muapp-e3835.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:429819707579:android:d1c3b66d2352c1fb",
+        "android_client_info": {
+          "package_name": "com.borealos.muapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "429819707579-9tu92ideb8029mgteud6hmqvvtrpjbai.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.borealos.muapp",
+            "certificate_hash": "ea295611ccf748e479395d4cd35bb03d24966095"
+          }
+        },
+        {
+          "client_id": "429819707579-sf7tk0p62u1fk1l0j6pcs9g4s5c9i7bs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1GH1diRNVlDSszDiVFoy7Yj7UEHjvM7Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:429819707579:android:e4492dbbb5c227a8",
+        "android_client_info": {
+          "package_name": "me.muapp.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "429819707579-qn5jl7hsh5669gq44ho3kf8a5q006hur.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.muapp.android",
+            "certificate_hash": "aa9ad2051f5b1d9c6f2d391243615e31080330ef"
+          }
+        },
+        {
+          "client_id": "429819707579-sf7tk0p62u1fk1l0j6pcs9g4s5c9i7bs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1GH1diRNVlDSszDiVFoy7Yj7UEHjvM7Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "429819707579-7be8u2qs29rcs7bgn3k4n20a98q7cuq6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "me.muapp.iphone",
+                "app_store_id": "1044988624"
+              }
+            },
+            {
+              "client_id": "429819707579-sf7tk0p62u1fk1l0j6pcs9g4s5c9i7bs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

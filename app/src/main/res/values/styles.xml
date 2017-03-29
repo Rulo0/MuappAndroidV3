@@ -1,0 +1,47 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppLoginTheme" parent="Theme.AccountKit">
+        
+        <item name="com_accountkit_primary_color">@color/colorPrimary</item>
+        <item name="com_accountkit_primary_text_color">@color/colorPrimary</item>
+        <item name="com_accountkit_header_background_color">@color/colorPrimary</item>
+        <item name="com_accountkit_secondary_text_color">@color/color_muapp_dark</item>
+        <item name="com_accountkit_button_text_color">@android:color/white</item>
+        <item name="com_accountkit_status_bar_color">@color/colorPrimaryDark</item>
+        <item name="com_accountkit_input_accent_color">?attr/com_accountkit_primary_color</item>
+        <item name="com_accountkit_input_border_color">?attr/com_accountkit_primary_color</item>
+
+    </style>
+
+    <style name="main_button_layout_style">
+        <item name="android:theme">@style/color_button_main</item>
+    </style>
+
+    <style name="color_button_main" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+    </style>
+
+    <style name="green_button_layout_style">
+        <item name="android:theme">@style/color_button_green</item>
+    </style>
+
+    <style name="color_button_green" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorButtonNormal">@color/color_muap_green</item>
+    </style>
+
+    <style name="dark_button_layout_style">
+        <item name="android:theme">@style/color_button_dark</item>
+    </style>
+
+    <style name="color_button_dark" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorButtonNormal">@color/color_muapp_button_light</item>
+    </style>
+</resources>

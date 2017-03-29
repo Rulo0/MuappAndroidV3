@@ -1,0 +1,94 @@
+<resources>
+    <string name="app_name">Muapp</string>
+    <string name="facebook_app_id">185195208478071</string>
+    <string name="facebook_account_key_token">3818036a6661eaab9ffcac9f7417928e</string>
+    <string name="fb_login_protocol_scheme">fb185195208478071</string>
+    <string name="lbl_please_wait">Please wait</string>
+    <string name="lbl_loading_information">Loading information</string>
+    <!--Menu sections-->
+    <string name="lbl_menu_discover">Discover</string>
+    <string name="lbl_menu_waiting">Waiting</string>
+    <string name="lbl_menu_chats">Chats</string>
+    <string name="lbl_menu_profile">My Profile</string>
+    <string name="lbl_menu_rewards">Muappis</string>
+    <!--Login-->
+    <string name="lbl_login_with_facebook">Login with Facebook</string>
+    <string name="lbl_privacy_policy">Privacy Policy</string>
+    <string name="lbl_and">and</string>
+    <string name="terms_of_use">Terms of Use</string>
+    <string name="title_activity_scrolling">ScrollingActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="lbl_agree">By continuing, you agree to our</string>
+    <string name="lbl_facebook_terms">We don’t post anything on your Facebook</string>
+    <string name="lbl_info_title">Your privacy is our priority</string>
+    <string name="lbl_info_message">We don’t post anything on your social networks.\n\nWe request Facebook authorization in order to verify that you are a real person.\n\nYour location will never be shown to other users</string>
+    <!--Confirm-->
+    <string name="lbl_correct_information">Is your information correct?</string>
+    <string name="lbl_gender">Gender</string>
+    <string name="lbl_age">Age</string>
+    <string name="lbl_cant_change_info">You WON’T be able to change it. If it’s not correct, please update it on Facebook and click on Synchronize</string>
+    <string name="lbl_gender_male">Male</string>
+    <string name="lbl_gender_female">Female</string>
+    <string name="lbl_gender_unknown">Unknown</string>
+    <string name="lbl_correct">It’s correct</string>
+    <string name="lbl_synchronize">Synchronize</string>
+
+    <!--Error-->
+    <string name="email_contact">info@muapp.me</string>
+    <string name="lbl_error_requeriments">We’re sorry but you don’t meet the requirements to register. You can contact us at</string>
+    <string name="lbl_error_minor">We’re sorry but you can’t register in muapp yet, you need to be 18. We’ll be waiting for you!</string>
+    <string name="lbl_error_real_person">We’re sorry but you don’t meet the requirements to verify that you’re a real person. If we’ve made a mistake, please contact us:\ninfo@muapp.me</string>
+    <string name="lbl_error_profile_picture">Without a profile picture in Facebook, you can’t register in muapp. Please, add a profile picture in Facebook and try again. We’ll be waiting for you!</string>
+
+    <!--Confirm gender-->
+    <string name="lbl_confirm_gender">Choose your gender</string>
+    <string name="lbl_confirm_gender_description">You WON’T be able to change this information. You will only see people of the opposite gender, please make sure it is correct.</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_man_gate">ManGateActivity</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="txt_man_gate_title">NOW GIRLS WILL VOTE IF YOU CAN GET IN… GOOD LUCK!</string>
+    <string name="txt_man_gate_youre_in">CONGRATULATIONS!! YOU\'RE IN.</string>
+    <string name="lbl_man_gate_speed_up">Speed up your entrance.</string>
+    <string name="lbl_man_have_code"><u>¿Do you have a code?</u></string>
+    <string name="lbl_invite_your_friends">Enter muapp getting 100%.\nGet more percentage inviting friends.</string>
+    <string name="lbl_insert_code">Insert an invitation code</string>
+    <string name="lbl_invalid_code">Invalid code</string>
+    <string name="lbl_invalid_code_description">The code %s is invalid. Try again with a different code or verify that you have written it correctly.</string>
+    <string name="lbl_use_my_code">Use my code</string>
+    <string name="lbl_use_code_register">and get %d%% progress in your entrance.</string>
+    <string name="lbl_share">Share</string>
+    <string name="lbl_share_dialog_title">Share your personal code</string>
+    <string name="lbl_share_dialog_content" formatted="false">Invite %d more people and get %d%% more with each code.</string>
+
+    <string name="lbl_click_on_start">Click on Start and enjoy your Muapp experience.</string>
+    <string name="lbl_start">Start</string>
+    <string name="lbl_save">Save</string>
+    <string name="hint_bio">Biography</string>
+
+    <string name="action_take_photo">Take photo</string>
+    <string name="action_select_photo">Select from gallery</string>
+    <string name="action_select_from_facebook">Select from Facebook</string>
+    <string name="action_cancel_photo">Cancel</string>
+    <string name="action_delete_photo">Delete</string>
+
+    <!--Man gate info-->
+    <string name="lbl_info_man_gate_title">Thank you for registering in Muapp.</string>
+    <string name="lbl_info_man_gate_content">Now girls will vote if you can get in. You need to receive a minimum number of "MUAPPS" to be accepted, this way you\'ll know how much you are being liked before you enter. you enter. Plenty of girls are waiting for you.\n\nIn order to be accepted faster you can change your photo. Some recommendations to be more successful:\n\n
+        • Select a recent photo that clearly shows your face.\n
+        • Avoid photos with other people.\n
+        • Choose photos that show your hobbies or interests.\n
+        • Avoid photos with other people.\n\nYou can also invite your Friends and get 20% of the votes needed to enter.\n\nGood luck.
+    </string>
+    <string name="lbl_info_man_gate_remove_description">If you do not want to continue with the admission process you can delete your account and we will eliminate your data.</string>
+    <string name="lbl_delete_account">Delete account</string>
+    <string name="lbl_deleting_your_account">Deleting your account</string>
+    <string name="lbl_delete_account_content">Are you sure you want to delete your Muapp account?</string>
+    <string name="lbl_invite_friends">Invite friends</string>
+
+</resources>

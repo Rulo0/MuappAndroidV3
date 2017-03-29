@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="me.muapp.android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <application
+        android:name=".Application.MuappApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.accountkit.ApplicationName"
+            android:value="@string/app_name" />
+        <meta-data
+            android:name="com.facebook.accountkit.ClientToken"
+            android:value="@string/facebook_account_key_token" />
+
+        <activity
+            android:name=".UI.Activity.SplashActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.facebook.accountkit.ui.AccountKitActivity"
+            android:theme="@style/AppLoginTheme"
+            tools:replace="android:theme" />
+        <activity
+            android:name=".UI.Activity.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.ConfirmUserActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.ErrorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.ConfirmUserGenderActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.ManGateActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.UserPhotosActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.FacebookAlbumsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.ManGateInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.FacebookPhotosActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".UI.Activity.FacebookPhothoDetailActivity"></activity>
+    </application>
+
+</manifest>

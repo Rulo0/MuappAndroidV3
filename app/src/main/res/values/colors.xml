@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ff666e</color>
+    <color name="colorPrimaryDark">#c95258</color>
+    <color name="colorAccent">#ff949a</color>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="color_muapp_dark">#3e4c5c</color>
+    <color name="color_muapp_button_light">#9fa6ae</color>
+    <color name="color_muap_green">#50e3c2</color>
+</resources>
