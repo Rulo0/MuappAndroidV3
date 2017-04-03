@@ -37,7 +37,7 @@ public class FacebookPhothoDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.photo, menu);
+        getMenuInflater().inflate(R.menu.photo_menu, menu);
         return true;
     }
 

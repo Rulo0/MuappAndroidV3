@@ -14,8 +14,8 @@ import com.zplesac.connectionbuddy.models.ConnectivityEvent;
 import com.zplesac.connectionbuddy.models.ConnectivityState;
 
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
-import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 
 /**
@@ -28,7 +28,7 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
     boolean isInternetAvaliable;
     ProgressDialog dialog;
     User loggedUser;
-    Utils utils;
+    PreferenceHelper preferenceHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,7 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
             ConnectionBuddyCache.clearLastNetworkState(this);
         }
         loggedUser = new UserHelper(this).getLoggedUser();
+        preferenceHelper = new PreferenceHelper(this);
     }
 
     @Override
@@ -48,6 +49,7 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
     }
 
     public void saveUser(User u) {
+        Log.d("saveUser", u.toString());
         if (u != null)
             new UserHelper(this).saveUser(u);
         else

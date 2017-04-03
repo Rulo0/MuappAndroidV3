@@ -106,7 +106,7 @@ public class User implements Parcelable {
     @SerializedName("first_name")
     @Expose
     private String firstName;
-    @SerializedName("photo")
+    @SerializedName("photo_menu")
     @Expose
     private String photo;
     @SerializedName("id")
@@ -613,7 +613,7 @@ public class User implements Parcelable {
                 ", location=" + location +
                 ", audioId=" + audioId +
                 ", firstName='" + firstName + '\'' +
-                ", photo='" + photo + '\'' +
+                ", photo_menu='" + photo + '\'' +
                 ", id=" + id +
                 ", lastName='" + lastName + '\'' +
                 ", description='" + description + '\'' +

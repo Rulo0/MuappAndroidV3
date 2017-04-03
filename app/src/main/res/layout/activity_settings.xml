@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="me.muapp.android.UI.Activity.SettingsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/phone_verification_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_item_height"
+                android:background="@color/color_muapp_divider"
+                android:gravity="center_vertical"
+                android:lines="1"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/lbl_verify_my_profile"
+                android:textColor="@color/color_muapp_dark" />
+
+            <TextView
+                android:id="@+id/txt_phone_validation"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_item_height"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:gravity="center_vertical"
+                android:lines="1"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/lbl_insert_your_phone"
+                android:textColor="@color/color_muapp_dark" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:background="@color/color_muapp_divider"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="@string/lbl_my_profile"
+            android:textColor="@color/color_muapp_dark" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/lbl_show_studies"
+                android:textColor="@color/color_muapp_dark"
+                tools:text="@string/lbl_show_studies" />
+
+            <CheckBox
+                android:id="@+id/chk_studies"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/lbl_show_job"
+                android:textColor="@color/color_muapp_dark" />
+
+            <CheckBox
+                android:id="@+id/chk_job"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/lbl_show_lastname"
+                android:textColor="@color/color_muapp_dark" />
+
+            <CheckBox
+                android:id="@+id/chk_last_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:background="@color/color_muapp_divider"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="@string/lbl_notifications"
+            android:textColor="@color/color_muapp_dark" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/lbl_matches"
+                android:textColor="@color/color_muapp_dark" />
+
+            <CheckBox
+                android:id="@+id/chk_matches"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/lbl_messages"
+                android:textColor="@color/color_muapp_dark" />
+
+            <CheckBox
+                android:id="@+id/chk_messages"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:background="@color/color_muapp_divider"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:textColor="@color/color_muapp_dark" />
+
+        <TextView
+            android:id="@+id/txt_help"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="@string/lbl_help"
+            android:textColor="@color/color_muapp_dark" />
+
+        <TextView
+            android:id="@+id/txt_terms"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="@string/lbl_terms"
+            android:textColor="@color/color_muapp_dark" />
+
+        <TextView
+            android:id="@+id/txt_privacy"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="@string/txt_privacy"
+            android:textColor="@color/color_muapp_dark" />
+
+        <TextView
+            android:id="@+id/txt_rate_muapp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="@string/lbl_rate_muapp"
+            android:textColor="@color/color_muapp_dark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_muapp_divider"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <Button
+                android:id="@+id/btn_logout_settings"
+                style="@style/main_button_layout_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_logout" />
+
+            <Button
+                android:id="@+id/btn_delete_account_settings"
+                style="@style/main_button_layout_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_delete_account" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -65,6 +66,7 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
                 configurationBuilder.build());
         startActivityForResult(intent, PHONE_REQUEST_CODE);
+        preferenceHelper.putFirstLoginDisabled();
     }
 
     @Override
@@ -103,7 +105,8 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 }
             }
         }
-        phoneValidation();
+        if (preferenceHelper.getFirstLogin() && loggedUser.getFakeAccount())
+            phoneValidation();
     }
 
     @Override
@@ -112,25 +115,12 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     }
 
     private void confirmMyUser() {
-        loggedUser.setConfirmed(true);
+        loggedUser.setFakeAccount(false);
         saveUser(loggedUser);
+        JSONObject confirmedUser = new JSONObject();
         try {
-            new APIService(this).patchUser(null, new UserInfoHandler() {
-                @Override
-                public void onSuccess(int responseCode, String userResponse) {
-
-                }
-
-                @Override
-                public void onSuccess(int responseCode, User user) {
-
-                }
-
-                @Override
-                public void onFailure(boolean isSuccessful, String responseString) {
-
-                }
-            });
+            confirmedUser.put("fake_account", true);
+            new APIService(this).patchUser(confirmedUser, null);
         } catch (Exception x) {
 
         }
@@ -151,6 +141,12 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.profile_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.wtf(TAG, requestCode + " " + resultCode);
@@ -164,5 +160,15 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 confirmMyUser();
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
