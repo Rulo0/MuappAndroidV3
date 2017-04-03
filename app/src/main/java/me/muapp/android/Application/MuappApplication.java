@@ -8,6 +8,9 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.zplesac.connectionbuddy.ConnectionBuddy;
 import com.zplesac.connectionbuddy.ConnectionBuddyConfiguration;
 
+import io.realm.Realm;
+import me.muapp.android.Classes.Quickblox.QuickbloxHelper;
+
 /**
  * Created by rulo on 21/03/17.
  */
@@ -20,6 +23,8 @@ public class MuappApplication extends Application {
     public void onCreate() {
         super.onCreate();
         //MIXPANEL TOKEN
+        Realm.init(this);
+        QuickbloxHelper.init(getApplicationContext());
 
         String projectToken = "c344cb123c0c544f0c617dc0185c7a5b";
         mixpanelAPI = MixpanelAPI.getInstance(this, projectToken);

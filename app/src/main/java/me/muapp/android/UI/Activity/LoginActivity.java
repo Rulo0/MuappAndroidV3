@@ -31,6 +31,7 @@ import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
+import me.muapp.android.Classes.Util.LoginHelper;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
 
@@ -128,7 +129,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                                 Log.wtf(TAG, u.toString());
                                 saveUser(u);
                                 redirectLoggedUser();
-                                // new LoginHelper(LoginActivity.this).performFullLogin();
+                                new LoginHelper(LoginActivity.this).performFullLogin();
                             } else {
                                 Log.wtf(TAG, "user is null");
                             }

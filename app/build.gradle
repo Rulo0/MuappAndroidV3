@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'realm-android'
+def quickBloxSdkVersion = '3.3.0'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -48,6 +49,10 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.0'
     compile 'com.github.shinelw:library:1.0.1'
     compile 'com.google.firebase:firebase-messaging:10.0.1'
+    compile("com.quickblox:quickblox-android-sdk-chat:$quickBloxSdkVersion")
+    compile("com.quickblox:quickblox-android-sdk-content:$quickBloxSdkVersion")
+    compile("com.quickblox:quickblox-android-sdk-messages:$quickBloxSdkVersion")
+    compile("com.quickblox:quickblox-android-sdk-customobjects:$quickBloxSdkVersion")
     testCompile 'junit:junit:4.12'
 }
 

@@ -14,6 +14,8 @@ public class PreferenceHelper {
     private final String FB_USER_ID = "facebookId";
     private final String GCM_TOKEN = "gcm_token";
     private final String FIRST_LOGIN = "first_login";
+    private final String FIRST_TIME_CHAT = "fist_time_chat";
+    private final String LAST_SENT_MESSAGE_TIMESTAMP = "last_sent";
     Context context;
 
     public PreferenceHelper(Context context) {
@@ -30,6 +32,26 @@ public class PreferenceHelper {
     public void putFirstLoginDisabled() {
         SharedPreferences.Editor edit = preferences.edit();
         edit.putBoolean(FIRST_LOGIN, false);
+        edit.apply();
+    }
+
+    public String getdialogsLastSentMessageTimestamp() {
+        return preferences.getString(LAST_SENT_MESSAGE_TIMESTAMP, "{}");
+    }
+
+    public void putFirstTimeChatDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(FIRST_TIME_CHAT, false);
+        edit.apply();
+    }
+
+    public Boolean getFirstTimeChat() {
+        return preferences.getBoolean(FIRST_TIME_CHAT, true);
+    }
+
+    public void putdialogsLastSentMessageTimestamp(String s) {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putString(LAST_SENT_MESSAGE_TIMESTAMP, s);
         edit.apply();
     }
 

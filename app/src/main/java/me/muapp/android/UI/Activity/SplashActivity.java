@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.LoginHelper;
 import me.muapp.android.R;
 
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
@@ -123,6 +124,7 @@ public class SplashActivity extends BaseActivity {
                             Gson gson = new Gson();
                             User u = gson.fromJson(serializeUser(response.getJSONObject("user")), User.class);
                             if (u != null) {
+                                new LoginHelper(SplashActivity.this).performFullLogin();
                                 Log.wtf(TAG, u.toString());
                                 saveUser(u);
                                 redirectLoggedUser();

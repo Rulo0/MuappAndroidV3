@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -25,36 +27,18 @@ import org.json.JSONObject;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.Internal.CurrentNavigationElement;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+import me.muapp.android.UI.Fragment.ChatsFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
-public class MainActivity extends BaseActivity implements OnFragmentInteractionListener {
+public class MainActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
     private static final int PHONE_REQUEST_CODE = 79;
     public static final String TAG = "MainActivity";
-    private TextView mTextMessage;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.title_dashboard);
-                    return true;
-                case R.id.navigation_notifications:
-                    mTextMessage.setText(R.string.title_notifications);
-                    return true;
-            }
-            return false;
-        }
-
-    };
+    private CurrentNavigationElement navigationElement;
+    private int mSelectedItem;
 
     public void phoneValidation() {
         final Intent intent = new Intent(this, AccountKitActivity.class);
@@ -72,10 +56,9 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mTextMessage = (TextView) findViewById(R.id.message);
+        setContentView(R.layout.activity_main_male);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.setOnNavigationItemSelectedListener(this);
         if (checkPlayServices()) {
             final String token = FirebaseInstanceId.getInstance().getToken();
             if (!TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token)) {
@@ -107,6 +90,14 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
         }
         if (preferenceHelper.getFirstLogin() && loggedUser.getFakeAccount())
             phoneValidation();
+
+        Fragment frag = ChatsFragment.newInstance(loggedUser);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+        ft.replace(R.id.content_main_male, frag);
+        ft.commit();
+        navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), frag);
+
     }
 
     @Override
@@ -170,5 +161,43 @@ public class MainActivity extends BaseActivity implements OnFragmentInteractionL
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void selectFragment(MenuItem item) {
+        try {
+            Log.wtf("selectFragment", item.getTitle().toString());
+            Fragment frag = null;
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    frag = ChatsFragment.newInstance(loggedUser);
+                    break;
+                case R.id.navigation_dashboard:
+                    frag = ChatsFragment.newInstance(loggedUser);
+                    break;
+                case R.id.navigation_notifications:
+                    frag = ChatsFragment.newInstance(loggedUser);
+                    break;
+            }
+            mSelectedItem = item.getItemId();
+            if (frag != null) {
+                FragmentManager manager = getSupportFragmentManager();
+                FragmentTransaction ft = manager.beginTransaction();
+                ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+                ft.replace(R.id.content_main_male, frag);
+                ft.commit();
+            }
+            navigationElement = new CurrentNavigationElement(item, frag);
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        getSupportActionBar().setTitle(item.getTitle());
+        if (!navigationElement.getItm().equals(item)) {
+            selectFragment(item);
+        }
+        return true;
     }
 }
