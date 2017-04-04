@@ -1,5 +1,8 @@
 package me.muapp.android.Classes.Quickblox.cache;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
 import io.realm.RealmObject;
@@ -9,7 +12,8 @@ import io.realm.annotations.PrimaryKey;
  * Created by Seba on 19/01/2017.
  * Dialog database cache object
  */
-public class DialogCacheObject extends RealmObject {
+public class DialogCacheObject extends RealmObject implements Parcelable {
+
 
     @PrimaryKey
     private String dialogId;
@@ -32,6 +36,9 @@ public class DialogCacheObject extends RealmObject {
     protected boolean like2;
     protected boolean myLike;
     protected boolean opponnentLike;
+
+    public DialogCacheObject() {
+    }
 
     @Override
     public String toString() {
@@ -218,4 +225,97 @@ public class DialogCacheObject extends RealmObject {
     public void setOpponnentLike(boolean opponnentLike) {
         this.opponnentLike = opponnentLike;
     }
+
+    protected DialogCacheObject(Parcel in) {
+        dialogId = in.readString();
+        lastMessage = in.readString();
+        lastMessageDateSent = in.readLong();
+        lastMessageUserId = in.readByte() == 0x00 ? null : in.readInt();
+        unreadMessageCount = in.readByte() == 0x00 ? null : in.readInt();
+        occupantId1 = in.readByte() == 0x00 ? null : in.readInt();
+        occupantId2 = in.readByte() == 0x00 ? null : in.readInt();
+        name = in.readString();
+        long tmpCreatedAt = in.readLong();
+        createdAt = tmpCreatedAt != -1 ? new Date(tmpCreatedAt) : null;
+        long tmpUpdatedAt = in.readLong();
+        updatedAt = tmpUpdatedAt != -1 ? new Date(tmpUpdatedAt) : null;
+        opponentName = in.readString();
+        opponentPhoto = in.readString();
+        opponentExternalId = in.readLong();
+        seen = in.readByte() != 0x00;
+        long tmpDeletedAt = in.readLong();
+        deletedAt = tmpDeletedAt != -1 ? new Date(tmpDeletedAt) : null;
+        byte isCrushVal = in.readByte();
+        isCrush = isCrushVal == 0x02 ? null : isCrushVal != 0x00;
+        like1 = in.readByte() != 0x00;
+        like2 = in.readByte() != 0x00;
+        myLike = in.readByte() != 0x00;
+        opponnentLike = in.readByte() != 0x00;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(dialogId);
+        dest.writeString(lastMessage);
+        dest.writeLong(lastMessageDateSent);
+        if (lastMessageUserId == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(lastMessageUserId);
+        }
+        if (unreadMessageCount == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(unreadMessageCount);
+        }
+        if (occupantId1 == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(occupantId1);
+        }
+        if (occupantId2 == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(occupantId2);
+        }
+        dest.writeString(name);
+        dest.writeLong(createdAt != null ? createdAt.getTime() : -1L);
+        dest.writeLong(updatedAt != null ? updatedAt.getTime() : -1L);
+        dest.writeString(opponentName);
+        dest.writeString(opponentPhoto);
+        dest.writeLong(opponentExternalId);
+        dest.writeByte((byte) (seen ? 0x01 : 0x00));
+        dest.writeLong(deletedAt != null ? deletedAt.getTime() : -1L);
+        if (isCrush == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (isCrush ? 0x01 : 0x00));
+        }
+        dest.writeByte((byte) (like1 ? 0x01 : 0x00));
+        dest.writeByte((byte) (like2 ? 0x01 : 0x00));
+        dest.writeByte((byte) (myLike ? 0x01 : 0x00));
+        dest.writeByte((byte) (opponnentLike ? 0x01 : 0x00));
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<DialogCacheObject> CREATOR = new Parcelable.Creator<DialogCacheObject>() {
+        @Override
+        public DialogCacheObject createFromParcel(Parcel in) {
+            return new DialogCacheObject(in);
+        }
+
+        @Override
+        public DialogCacheObject[] newArray(int size) {
+            return new DialogCacheObject[size];
+        }
+    };
 }

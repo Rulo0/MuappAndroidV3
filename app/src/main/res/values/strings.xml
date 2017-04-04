@@ -95,84 +95,13 @@
     <string name="lbl_settings">Settings</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Settings -->
-
-    <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
-    <string-array name="multi_select_list_preference_default_value" />
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
     <string name="lbl_verify_my_profile">Verify my profile</string>
     <string name="lbl_insert_your_phone">Insert your phone number</string>
     <string name="lbl_my_profile">My profile</string>
     <string name="lbl_show_studies">Show my studies</string>
     <string name="lbl_show_job">Show my job</string>
     <string name="lbl_show_lastname">Show my lastname</string>
-    <string name="lbl_notifications" >Notifications</string>
+    <string name="lbl_notifications">Notifications</string>
     <string name="lbl_matches">Matches</string>
     <string name="lbl_messages">Messages</string>
     <string name="lbl_help"><![CDATA[Help & feedback]]></string>
@@ -180,4 +109,29 @@
     <string name="txt_privacy">Privacy</string>
     <string name="lbl_rate_muapp">Rate Muapp</string>
     <string name="btn_logout">Log out</string>
+
+    <string name="lbl_search">Search</string>
+    <!-- Chat Activity Strings -->
+    <string name="matched_at">Match at </string>
+    <string name="crush_at">Crush at </string>
+    <string name="minutes_ago">%d minutes ago</string>
+    <string name="hours_ago">%d hours ago</string>
+    <string name="days_ago">%d days ago</string>
+    <string name="just_now">just now</string>
+    <string name="a_minute_ago">a minute ago</string>
+    <string name="a_hour_ago">a hour ago</string>
+    <string name="a_day_ago">yesterday</string>
+    <string name="week_ago">more than a week ago</string>
+    <string name="chat_activity_conversations_last_two_hours" formatted="false">Conversations last %dh: </string>
+    <string name="chat_activity_conversations_only_you">He\'s only talking to you!</string>
+    <string name="chat_activity_last_seen">Last seen </string>
+    <string name="chat_match_at">Match </string>
+    <string name="chat_crush_at">Crush </string>
+    <string name="chat_activity_message_hint">Write a message…</string>
+    <string name="chat_activity_button_send">Send</string>
+    <string name="matches_last_message_sticker">Sticker</string>
+    <string name="matches_last_message_photo">Photo</string>
+    <string name="matches_last_message_voice_message">Voice message</string>
+    <string name="title_activity_chat">ChatActivity</string>
+
 </resources>

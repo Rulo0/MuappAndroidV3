@@ -1,8 +1,40 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="me.muapp.android.UI.Fragment.ChatsFragment">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:fontFamily="Roboto medium"
+        android:gravity="center_vertical"
+        android:paddingLeft="8dp"
+        android:text="@string/chat_crush_at"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorAccent"
+        android:visibility="visible" />
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_crushes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+
+        android:fontFamily="Roboto medium"
+        android:gravity="center_vertical"
+        android:paddingLeft="8dp"
+        android:text="@string/chat_match_at"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorAccent"
+        android:visibility="visible" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_matches"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

@@ -49,11 +49,14 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
     }
 
     public void saveUser(User u) {
-        Log.d("saveUser", u.toString());
-        if (u != null)
+
+        if (u != null) {
+            Log.d("saveUser", u.toString());
             new UserHelper(this).saveUser(u);
-        else
+        } else {
+            Log.d("saveUser", "log out");
             new UserHelper(this).logOut();
+        }
         loggedUser = u;
     }
 

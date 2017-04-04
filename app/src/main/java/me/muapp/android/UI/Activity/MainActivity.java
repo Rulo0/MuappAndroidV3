@@ -1,5 +1,7 @@
 package me.muapp.android.UI.Activity;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,6 +9,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -22,23 +25,42 @@ import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.quickblox.chat.model.QBChatDialog;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.List;
+
+import io.realm.Realm;
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.CurrentNavigationElement;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatDialogsListener;
+import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatHelper;
+import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatLoginListener;
+import me.muapp.android.Classes.Quickblox.cache.CacheUtils;
+import me.muapp.android.Classes.Quickblox.cache.DialogCacheHelper;
+import me.muapp.android.Classes.Quickblox.messages.QuickBloxMessagesHelper;
+import me.muapp.android.Classes.Quickblox.messages.QuickBloxMessagesListener;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+import me.muapp.android.UI.Fragment.BasicFragment;
 import me.muapp.android.UI.Fragment.ChatsFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
-public class MainActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
+public class MainActivity extends BaseActivity implements
+        BottomNavigationView.OnNavigationItemSelectedListener,
+        OnFragmentInteractionListener, SearchView.OnQueryTextListener, QuickBloxChatLoginListener, QuickBloxMessagesListener, QuickBloxChatDialogsListener {
     private static final int PHONE_REQUEST_CODE = 79;
     public static final String TAG = "MainActivity";
     private CurrentNavigationElement navigationElement;
     private int mSelectedItem;
+    ChatsFragment cf;
+    HashMap<Integer, Fragment> fragmentHashMap = new HashMap<>();
+    private Realm realm;
+    BottomNavigationView navigation;
 
     public void phoneValidation() {
         final Intent intent = new Intent(this, AccountKitActivity.class);
@@ -57,8 +79,8 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_male);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(this);
+        realm = CacheUtils.getInstance(loggedUser);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         if (checkPlayServices()) {
             final String token = FirebaseInstanceId.getInstance().getToken();
             if (!TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token)) {
@@ -90,14 +112,19 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         }
         if (preferenceHelper.getFirstLogin() && loggedUser.getFakeAccount())
             phoneValidation();
+    }
 
-        Fragment frag = ChatsFragment.newInstance(loggedUser);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-        ft.replace(R.id.content_main_male, frag);
-        ft.commit();
-        navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), frag);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        QuickBloxChatHelper.getInstance().addLoginListener(this);
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        QuickBloxChatHelper.getInstance().removeLoginListener(this);
+        QuickBloxMessagesHelper.getInstance().unregisterQbChatListeners(this);
     }
 
     @Override
@@ -134,6 +161,10 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile_menu, menu);
+        SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        search.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
+        search.setOnQueryTextListener(this);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -166,18 +197,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     private void selectFragment(MenuItem item) {
         try {
             Log.wtf("selectFragment", item.getTitle().toString());
-            Fragment frag = null;
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    frag = ChatsFragment.newInstance(loggedUser);
-                    break;
-                case R.id.navigation_dashboard:
-                    frag = ChatsFragment.newInstance(loggedUser);
-                    break;
-                case R.id.navigation_notifications:
-                    frag = ChatsFragment.newInstance(loggedUser);
-                    break;
-            }
+            Fragment frag = fragmentHashMap.get(item.getItemId());
             mSelectedItem = item.getItemId();
             if (frag != null) {
                 FragmentManager manager = getSupportFragmentManager();
@@ -199,5 +219,47 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             selectFragment(item);
         }
         return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
+    @Override
+    public void onChatSessionCreated(boolean success) {
+        if (success) {
+            QuickBloxMessagesHelper.getInstance().registerQbChatListeners(realm, this);
+            QuickBloxChatHelper.getInstance().getDialogs(this);
+        }
+    }
+
+    @Override
+    public void onDialogsLoaded(List<QBChatDialog> dialogs, boolean success) {
+        navigation.setOnNavigationItemSelectedListener(this);
+        DialogCacheHelper.setDialogs(realm, dialogs, loggedUser.getId(), true);
+        fragmentHashMap.put(R.id.navigation_home, cf = ChatsFragment.newInstance(loggedUser));
+        fragmentHashMap.put(R.id.navigation_dashboard, BasicFragment.newInstance(loggedUser));
+        fragmentHashMap.put(R.id.navigation_notifications, BasicFragment.newInstance(loggedUser));
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+        ft.replace(R.id.content_main_male, fragmentHashMap.get(R.id.navigation_home));
+        ft.commit();
+        navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
+    }
+
+    @Override
+    public void onDialogUpdated(String chatDialog) {
+
+    }
+
+    @Override
+    public void onNewDialog() {
+
     }
 }

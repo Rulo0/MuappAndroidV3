@@ -82,6 +82,8 @@ public class APIService {
                             }
                         }
                     } catch (Exception x) {
+                        if (handler != null)
+                            handler.onSuccess(response.code(), responseString);
                         Log.wtf("getUserProfile", x.getMessage());
                         x.printStackTrace();
                     }

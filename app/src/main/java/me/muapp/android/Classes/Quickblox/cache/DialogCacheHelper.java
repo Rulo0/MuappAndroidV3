@@ -226,7 +226,6 @@ public class DialogCacheHelper {
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-
                 if (deleteInNoPresent) {
                     deleteDialogsNotInList(realm, dialogs);
                 }
@@ -234,10 +233,12 @@ public class DialogCacheHelper {
                 for (QBChatDialog d : dialogs) {
                     DialogCacheObject dialog = dialogToCache(d, currentUserExternalId);
                     realm.copyToRealmOrUpdate(dialog);
-                    Log.v("DialogAddedToCache", dialog.getDialogId());
+                    Log.wtf("SetDialogs", d.getDialogId());
                 }
+                Log.wtf("SetDialogs", "Total " + dialogs.size());
             }
         });
+
     }//setDialogs
 
     public static void setDialogsDirectChat(Realm realm, final QBChatDialog dlg, final long currentUserExternalId, final boolean deleteInNoPresent, final Context context) {

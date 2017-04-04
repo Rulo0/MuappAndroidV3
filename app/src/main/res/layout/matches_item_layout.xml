@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/match_item_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/match_user_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="8dp"
+        android:adjustViewBounds="true"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop" />
+
+
+    <ImageView
+        android:id="@+id/match_notification"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_alignBottom="@id/match_user_image"
+        android:layout_alignEnd="@id/match_user_image"
+        android:src="@drawable/ic_badge"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/match_item_line_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@id/match_user_image"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/app_name"
+        android:textColor="@color/color_muapp_dark"
+        android:textSize="20sp" />
+
+
+    <TextView
+        android:id="@+id/match_item_line_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/match_user_image"
+        android:layout_alignStart="@id/match_item_line_1"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:ellipsize="end"
+        android:lines="1"
+        android:maxLines="1"
+        android:text="@string/app_name"
+        android:textColor="@color/color_muapp_dark"
+        android:textSize="16sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignStart="@id/match_item_line_2"
+        android:layout_below="@id/match_item_line_2"
+        android:layout_marginTop="8dp"
+        android:background="@color/color_muapp_divider" />
+</RelativeLayout>

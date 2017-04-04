@@ -1,10 +1,12 @@
 package me.muapp.android.UI.Fragment;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.util.SortedList;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,38 +15,32 @@ import android.view.ViewGroup;
 import com.quickblox.chat.model.QBChatDialog;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import me.muapp.android.Classes.Internal.User;
-import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatDialogUpdateListener;
 import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatDialogsListener;
 import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatHelper;
-import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatLoginListener;
 import me.muapp.android.Classes.Quickblox.cache.CacheUtils;
 import me.muapp.android.Classes.Quickblox.cache.DialogCacheHelper;
 import me.muapp.android.Classes.Quickblox.cache.DialogCacheObject;
-import me.muapp.android.Classes.Quickblox.cache.MessageCacheHelper;
-import me.muapp.android.Classes.Quickblox.messages.QuickBloxMessagesHelper;
 import me.muapp.android.Classes.Quickblox.messages.QuickBloxMessagesListener;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+import me.muapp.android.UI.Adapter.CrushesAdapter;
+import me.muapp.android.UI.Adapter.MatchesAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
-
-public class ChatsFragment extends Fragment implements OnFragmentInteractionListener, QuickBloxMessagesListener,
-        QuickBloxChatLoginListener {
+public class ChatsFragment extends Fragment implements OnFragmentInteractionListener, QuickBloxChatDialogsListener, QuickBloxMessagesListener {
+    private static final String TAG = "ChatsFragment";
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
     User user;
     OnFragmentInteractionListener mListener;
-    Realm realm;
-    RealmResults<DialogCacheObject> dialogsQuery;
-    boolean isLoadingMatches;
     PreferenceHelper preferenceHelper;
-    DeleteMessagesTask deleteMessagesTask;
+    RecyclerView recycler_matches, recycler_crushes;
+    MatchesAdapter matchesAdapter;
+    CrushesAdapter crushesAdapter;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -70,15 +66,93 @@ public class ChatsFragment extends Fragment implements OnFragmentInteractionList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false);
+        View v = inflater.inflate(R.layout.fragment_chat, container, false);
+        recycler_matches = (RecyclerView) v.findViewById(R.id.recycler_matches);
+        recycler_crushes = (RecyclerView) v.findViewById(R.id.recycler_crushes);
+        return v;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         preferenceHelper = new PreferenceHelper(getContext());
-        realm = CacheUtils.getInstance(user);
+        matchesAdapter = new MatchesAdapter(getContext());
+        crushesAdapter = new CrushesAdapter(getContext());
+        recycler_matches.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager llmh = new LinearLayoutManager(getContext());
+        llmh.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recycler_crushes.setLayoutManager(llmh);
+        recycler_matches.setAdapter(matchesAdapter);
+        recycler_crushes.setAdapter(crushesAdapter);
+        updateData();
+    }
+
+    private SortedList<DialogCacheObject> initializeSortedDialogs() {
+        return new SortedList<>(DialogCacheObject.class, new SortedList.Callback<DialogCacheObject>() {
+            @Override
+            public void onInserted(int position, int count) {
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+            }
+
+            @Override
+            public int compare(DialogCacheObject lhs, DialogCacheObject rhs) {
+                long valueA = lhs.getLastMessageDateSent();
+                if (valueA == 0) {
+                    valueA = (lhs.getUpdatedAt() != null) ? lhs.getUpdatedAt().getTime() / 1000 : lhs.getCreatedAt().getTime() / 1000;
+                }
+                long valueB = rhs.getLastMessageDateSent();
+                if (valueB == 0) {
+                    valueB = (rhs.getUpdatedAt() != null) ? rhs.getUpdatedAt().getTime() / 1000 : rhs.getCreatedAt().getTime() / 1000;
+                }
+
+                if (valueB < valueA) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+
+            @Override
+            public void onChanged(int position, int count) {
+            }
+
+            @Override
+            public boolean areContentsTheSame(DialogCacheObject oldItem, DialogCacheObject newItem) {
+                return oldItem.getDialogId().equals(newItem.getDialogId());
+            }
+
+            @Override
+            public boolean areItemsTheSame(DialogCacheObject item1, DialogCacheObject item2) {
+                return item1.equals(item2);
+            }
+        });
+    }
+
+    public void updateData() {
+        Log.wtf(TAG, "Updating");
+        DialogCacheHelper.getDialogs(CacheUtils.getInstance(user), "", new RealmChangeListener<RealmResults<DialogCacheObject>>() {
+            @Override
+            public void onChange(RealmResults<DialogCacheObject> element) {
+                Log.wtf(TAG, "Updating " + element.size());
+                SortedList<DialogCacheObject> matches = initializeSortedDialogs();
+                SortedList<DialogCacheObject> crushes = initializeSortedDialogs();
+                for (DialogCacheObject d : element) {
+                    if (d.getCrush() != null && d.getCrush())
+                        crushes.add(d);
+                    else
+                        matches.add(d);
+                }
+                matchesAdapter.setDialogs(matches);
+                crushesAdapter.setDialogs(crushes);
+            }
+        });
     }
 
     @Override
@@ -100,184 +174,28 @@ public class ChatsFragment extends Fragment implements OnFragmentInteractionList
 
     @Override
     public void onFragmentInteraction(String name, Object data) {
-
     }
 
-    protected void addToContactlist(List<QBChatDialog> dialogs) {
-        QuickBloxChatHelper.getInstance().addToContactList(dialogs);
+    @Override
+    public void onDialogsLoaded(List<QBChatDialog> dialogs, boolean success) {
+        DialogCacheHelper.setDialogs(CacheUtils.getInstance(user), dialogs, user.getId(), true);
+        ArrayList<DialogCacheObject> cache = new ArrayList<>();
+        for (QBChatDialog qb : dialogs) {
+            cache.add(DialogCacheHelper.dialogToCache(qb, user.getId()));
+        }
+        updateData();
     }
 
     @Override
     public void onDialogUpdated(String chatDialog) {
-        loadCachedMatches();
+        QuickBloxChatHelper.getInstance().getDialogs(this);
     }
 
     @Override
     public void onNewDialog() {
-        reload();
+        QuickBloxChatHelper.getInstance().getDialogs(this);
     }
-
-    @Override
-    public void onChatSessionCreated(boolean success) {
-        if (success) {
-            QuickBloxMessagesHelper.getInstance().registerQbChatListeners(realm, ChatsFragment.this);
-            reload();
-        }
-    }
-
-    public void reload() {
-        if (isAdded()) {
-            if (QuickBloxChatHelper.getInstance().isSessionActive()) {
-                isLoadingMatches = true;
-                loadDialogsFromQb();
-            }
-        }
-    }
-
-    protected void loadDialogsFromQb() {
-        if (isAdded()) {
-            QuickBloxChatHelper.getInstance().getDialogs(new QuickBloxChatDialogsListener() {
-                @Override
-                public void onDialogsLoaded(List<QBChatDialog> dialogs, boolean success) {
-                    isLoadingMatches = false;
-                    if (preferenceHelper.getFirstTimeChat())
-                        for (QBChatDialog d : dialogs) {
-                            Log.wtf("Chat", d.getDialogId());
-                        }
-
-                    if (isAdded()) {
-                        if (success) {
-                            DialogCacheHelper.setDialogs(realm, dialogs, user.getId(), true);
-                        } else {
-                            DialogCacheHelper.setDialogs(realm, dialogs, user.getId(), false);
-                        }
-                        updateQbList(dialogs);
-                        addToContactlist(dialogs);
-                    }
-                }
-            });
-        }
-    }//loadDialogsFromQb
-
-    protected void updateQbList(List<QBChatDialog> dialogs) {
-        if (isAdded()) {
-            ArrayList<DialogCacheObject> cache = new ArrayList<>();
-            for (QBChatDialog qb : dialogs) {
-                cache.add(DialogCacheHelper.dialogToCache(qb, user.getId()));
-            }
-            Collections.sort(cache, new DialogCacheHelper.LastMessageDateSentComparator());
-            List<DialogCacheObject> matches = new ArrayList<>();
-            List<DialogCacheObject> crushes = new ArrayList<>();
-            for (DialogCacheObject d : cache) {
-                if (d.getCrush() != null && d.getCrush())
-                    crushes.add(d);
-                else
-                    matches.add(d);
-            }
-            Log.wtf("Entering", "UpdateQBList");
-            //  matchesAdapter.setMatches(matches);
-            // crushesAdapter.setCrushes(crushes);
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadCachedMatches();
-        isLoadingMatches = true;
-        QuickBloxChatHelper.getInstance().addLoginListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (dialogsQuery != null) {
-            dialogsQuery.removeAllChangeListeners();
-            dialogsQuery = null;
-        }
-        QuickBloxChatHelper.getInstance().removeLoginListener(this);
-        QuickBloxMessagesHelper.getInstance().unregisterQbChatListeners(this);
-    }
-
-    @Override
-    public void onDestroyView() {
-        if (deleteMessagesTask != null) {
-            deleteMessagesTask.cancel(true);
-            deleteMessagesTask = null;
-        }
-        realm.close();
-        super.onDestroyView();
-    }
-
-    private void loadCachedMatches() {
-        if (dialogsQuery != null) {
-            dialogsQuery.removeAllChangeListeners();
-            dialogsQuery = null;
-        }
-        String query = "";//searchViewText.getText().toString();
-        dialogsQuery = DialogCacheHelper.getDialogs(realm, query, new RealmChangeListener<RealmResults<DialogCacheObject>>() {
-            @Override
-            public void onChange(RealmResults<DialogCacheObject> element) {
-                if (isAdded()) {
-                    updateList(new ArrayList<>(element));
-                }
-            }
-        });
-    }
-
-    protected void updateList(List<DialogCacheObject> dialogs) {
-        if (isAdded()) {
-            Collections.sort(dialogs, new DialogCacheHelper.LastMessageDateSentComparator());
-            List<DialogCacheObject> matches = new ArrayList<>();
-            List<DialogCacheObject> crushes = new ArrayList<>();
-            for (DialogCacheObject d : dialogs) {
-                if (d.getCrush() != null && d.getCrush())
-                    crushes.add(d);
-                else
-                    matches.add(d);
-            }
-            Log.wtf("Entering", "updateList");
-            Log.wtf("Entering", "updateList " + dialogs.size());
-        }
-    }
-
-    private class DeleteMessagesTask extends AsyncTask<String, Void, Boolean> {
-
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(String... ids) {
-
-            boolean result = false;
-            Realm realm = CacheUtils.getInstance(user);
-            try {
-                result = QuickBloxChatHelper.getInstance().deleteMessagesFromDialog(ids[0], user.getId(),
-                        new QuickBloxChatDialogUpdateListener() {
-                            @Override
-                            public void onDialogUpdated(QBChatDialog dialog) {
-                                if (dialog != null) {
-                                    //   setDeletedDialogCache(dialog.getDialogId());
-                                }
-                            }
-                        });
-                if (result) { //delete cache
-                    realm.beginTransaction();
-                    MessageCacheHelper.deleteDialogMessages(realm, ids[0]);
-                    realm.commitTransaction();
-                }
-            } finally {
-                realm.close();
-            }
-            return result;
-        }
-
-        protected void onPostExecute(Boolean result) {
-            if (!result) { //error
-
-            }
-            deleteMessagesTask = null;
-        }
-    }//DeleteMessagesTask
 }
+
+
+

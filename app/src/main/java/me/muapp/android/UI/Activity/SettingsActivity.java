@@ -167,36 +167,36 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onStop() {
         super.onStop();
-        Log.wtf(TAG, "Stoped");
-        if (!mainUserSetting.equals(userSettings)) {
-            Log.d(TAG, "Changed");
-            loggedUser.setVisibleEducation(userSettings.getVisibleEducation());
-            loggedUser.setVisibleWork(userSettings.getVisibleWork());
-            loggedUser.setVisibleLastName(userSettings.getVisibleLastName());
-            loggedUser.setNotifyMatches(userSettings.getNotifyMatches());
-            loggedUser.setNotifyPokes(userSettings.getNotifyPokes());
-            saveUser(loggedUser);
-            try {
-                new APIService(this).patchUser(new JSONObject(new Gson().toJson(userSettings)), new UserInfoHandler() {
-                    @Override
-                    public void onSuccess(int responseCode, String userResponse) {
-                        Log.d(TAG, userResponse);
-                    }
+        if (loggedUser != null)
+            if (!mainUserSetting.equals(userSettings)) {
+                Log.d(TAG, "Changed");
+                loggedUser.setVisibleEducation(userSettings.getVisibleEducation());
+                loggedUser.setVisibleWork(userSettings.getVisibleWork());
+                loggedUser.setVisibleLastName(userSettings.getVisibleLastName());
+                loggedUser.setNotifyMatches(userSettings.getNotifyMatches());
+                loggedUser.setNotifyPokes(userSettings.getNotifyPokes());
+                saveUser(loggedUser);
+                try {
+                    new APIService(this).patchUser(new JSONObject(new Gson().toJson(userSettings)), new UserInfoHandler() {
+                        @Override
+                        public void onSuccess(int responseCode, String userResponse) {
+                            Log.d(TAG, userResponse);
+                        }
 
-                    @Override
-                    public void onSuccess(int responseCode, User user) {
-                        Log.d(TAG, user.toString());
-                    }
+                        @Override
+                        public void onSuccess(int responseCode, User user) {
+                            Log.d(TAG, user.toString());
+                        }
 
-                    @Override
-                    public void onFailure(boolean isSuccessful, String responseString) {
-                        Log.d(TAG, responseString.toString());
-                    }
-                });
-            } catch (Exception x) {
-                x.printStackTrace();
+                        @Override
+                        public void onFailure(boolean isSuccessful, String responseString) {
+                            Log.d(TAG, responseString.toString());
+                        }
+                    });
+                } catch (Exception x) {
+                    x.printStackTrace();
+                }
             }
-        }
 
     }
 

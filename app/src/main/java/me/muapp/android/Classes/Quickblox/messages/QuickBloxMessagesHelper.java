@@ -25,16 +25,18 @@ public class QuickBloxMessagesHelper {
 
     /**
      * Gets singleton instance
+     *
      * @return
      */
-    public static QuickBloxMessagesHelper getInstance(){
-        if( instance == null){
+    public static QuickBloxMessagesHelper getInstance() {
+        if (instance == null) {
             instance = new QuickBloxMessagesHelper();
         }
         return instance;
     }
 
-    private QuickBloxMessagesHelper(){}
+    private QuickBloxMessagesHelper() {
+    }
 
     private QBIncomingMessagesManager incomingMessagesManager;
     private QBSystemMessagesManager systemMessagesManager;
@@ -44,13 +46,13 @@ public class QuickBloxMessagesHelper {
 
     /**
      * Adds a listener to received messages events
+     *
      * @param realm
      * @param listener Listener to receive messages events.
      */
     public void registerQbChatListeners(Realm realm, QuickBloxMessagesListener listener) {
         incomingMessagesManager = QBChatService.getInstance().getIncomingMessagesManager();
         systemMessagesManager = QBChatService.getInstance().getSystemMessagesManager();
-
         QBChatDialogMessageListener incomingMessageListener = getIncomingMessageListener(realm, listener);
         QBSystemMessageListener systemMessageListener = getSystemMessageListener(listener);
         incomingMessagesManager.addDialogMessageListener(incomingMessageListener);
@@ -63,20 +65,20 @@ public class QuickBloxMessagesHelper {
     public void unregisterQbChatListeners(QuickBloxMessagesListener listener) {
         if (incomingMessagesManager != null) {
             QBChatDialogMessageListener l = incomingMessageListenerList.remove(listener);
-            if( l != null) {
+            if (l != null) {
                 incomingMessagesManager.removeDialogMessageListrener(l);
             }
         }
         if (systemMessagesManager != null) {
             QBSystemMessageListener l = systemMessageListenerList.remove(listener);
-            if( l != null) {
+            if (l != null) {
                 systemMessagesManager.removeSystemMessageListener(l);
             }
         }
 
     }
 
-    private QBChatDialogMessageListener getIncomingMessageListener(final Realm realm, final QuickBloxMessagesListener listener){
+    private QBChatDialogMessageListener getIncomingMessageListener(final Realm realm, final QuickBloxMessagesListener listener) {
         QBChatDialogMessageListener incomingMessageListener = new QBChatDialogMessageListener() {
             @Override
             public void processMessage(String dialogId, QBChatMessage chatMessage, Integer integer) {
@@ -90,8 +92,8 @@ public class QuickBloxMessagesHelper {
         return incomingMessageListener;
     }
 
-    private QBSystemMessageListener getSystemMessageListener(final QuickBloxMessagesListener listener){
-        QBSystemMessageListener systemMessagesListener = new QBSystemMessageListener(){
+    private QBSystemMessageListener getSystemMessageListener(final QuickBloxMessagesListener listener) {
+        QBSystemMessageListener systemMessagesListener = new QBSystemMessageListener() {
             @Override
             public void processMessage(final QBChatMessage qbChatMessage) {
                 DialogCacheHelper.onSystemMessageReceived(qbChatMessage, listener);
