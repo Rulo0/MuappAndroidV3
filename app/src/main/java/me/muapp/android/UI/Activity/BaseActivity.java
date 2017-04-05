@@ -29,7 +29,6 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
     ProgressDialog dialog;
     User loggedUser;
     PreferenceHelper preferenceHelper;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

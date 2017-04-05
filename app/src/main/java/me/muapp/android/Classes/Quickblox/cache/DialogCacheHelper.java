@@ -214,6 +214,12 @@ public class DialogCacheHelper {
         }
     }
 
+    public interface CacheDialogsHandler {
+        void onItemAdded(DialogCacheObject dialogCacheObject);
+
+        void onAllDialogsAdded(int dialogsSize, List<DialogCacheObject> cachedDialogs);
+    }
+
     /**
      * Set dialog cache with this dialogs. Dialogs not in this list can be deleted.
      *
@@ -222,20 +228,24 @@ public class DialogCacheHelper {
      * @param currentUserExternalId Current user muapp id
      * @param deleteInNoPresent     Delete dialogs in cache but no in this list
      */
-    public static void setDialogs(Realm realm, final List<QBChatDialog> dialogs, final long currentUserExternalId, final boolean deleteInNoPresent) {
+    public static void setDialogs(Realm realm, final List<QBChatDialog> dialogs, final long currentUserExternalId, final boolean deleteInNoPresent, final CacheDialogsHandler cacheDialogsHandler) {
+        final List<DialogCacheObject> dialogList = new ArrayList<>();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 if (deleteInNoPresent) {
                     deleteDialogsNotInList(realm, dialogs);
                 }
-
                 for (QBChatDialog d : dialogs) {
                     DialogCacheObject dialog = dialogToCache(d, currentUserExternalId);
-                    realm.copyToRealmOrUpdate(dialog);
-                    Log.wtf("SetDialogs", d.getDialogId());
+                    DialogCacheObject co = realm.copyFromRealm(realm.copyToRealmOrUpdate(dialog));
+                    if (cacheDialogsHandler != null)
+                        cacheDialogsHandler.onItemAdded(co);
+                    dialogList.add(co);
                 }
-                Log.wtf("SetDialogs", "Total " + dialogs.size());
+                if (cacheDialogsHandler != null)
+                    cacheDialogsHandler.onAllDialogsAdded(dialogList.size(), dialogList);
+
             }
         });
 

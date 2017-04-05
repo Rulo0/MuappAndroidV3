@@ -14,9 +14,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
+import me.muapp.android.Classes.API.Handlers.MuappUserInfoHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
+import me.muapp.android.Classes.Internal.MuappUser;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import okhttp3.Call;
@@ -353,6 +355,57 @@ public class APIService {
             }.start();
         } catch (Exception e) {
             Log.e("API", e.getMessage());
+        }
+    }
+
+    public void getFullUser(Long userId, final MuappUserInfoHandler handler) {
+        String url = BASE_URL + String.format("users/%s/profile_view", userId);
+        PreferenceHelper helper = new PreferenceHelper(mContext);
+        if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .get()
+                    .build();
+            Log.i("getFullUser", url);
+            client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    if (handler != null)
+                        handler.onFailure(false, e.getMessage());
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String responseString = response.body().string();
+                    Log.wtf("getFullUser", responseString.toString());
+                    if (handler != null)
+                        handler.onSuccess(response.code(), responseString);
+                    try {
+                        JSONObject serverResponse = new JSONObject(responseString);
+                        if (serverResponse.has("user")) {
+                            Gson gson = new Gson();
+                            MuappUser u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), MuappUser.class);
+                            if (u != null) {
+                                Log.wtf("getFullUser", u.toString());
+                                if (handler != null)
+                                    handler.onSuccess(response.code(), u);
+                            } else {
+                                Log.wtf("getFullUser", "user is null");
+                            }
+                        }
+                    } catch (Exception x) {
+                        if (handler != null)
+                            handler.onSuccess(response.code(), responseString);
+                        Log.wtf("getFullUser", x.getMessage());
+                        x.printStackTrace();
+                    }
+
+                }
+            });
+        } else {
+            if (handler != null)
+                handler.onFailure(false, "User not logged");
         }
     }
 

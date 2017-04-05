@@ -14,11 +14,17 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.Date;
+
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Quickblox.QuickbloxHelper;
 import me.muapp.android.Classes.Quickblox.cache.DialogCacheObject;
+import me.muapp.android.Classes.Util.DateUtils;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.ChatActivity;
+
+import static me.muapp.android.UI.Activity.ChatActivity.DIALOG_EXTRA;
+
 
 /**
  * Created by rulo on 4/04/17.
@@ -29,15 +35,50 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
     private SortedList<DialogCacheObject> dialogs;
     private Context mContext;
 
+
     public MatchesAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
-        this.dialogs = null;
+        this.dialogs = new SortedList<>(DialogCacheObject.class, new SortedList.Callback<DialogCacheObject>() {
+            @Override
+            public void onInserted(int position, int count) {
+                notifyItemRangeInserted(position, count);
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+                notifyItemRangeRemoved(position, count);
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+                notifyItemMoved(fromPosition, toPosition);
+            }
+
+            @Override
+            public int compare(DialogCacheObject o1, DialogCacheObject o2) {
+                return new Date(o2.getLastMessageDateSent()).compareTo(new Date(o1.getLastMessageDateSent()));
+            }
+
+            @Override
+            public void onChanged(int position, int count) {
+                notifyItemRangeChanged(position, count);
+            }
+
+            @Override
+            public boolean areContentsTheSame(DialogCacheObject oldItem, DialogCacheObject newItem) {
+                return oldItem.toString().equals(newItem.toString());
+            }
+
+            @Override
+            public boolean areItemsTheSame(DialogCacheObject item1, DialogCacheObject item2) {
+                return item1.equals(item2);
+            }
+        });
         this.mContext = context;
     }
 
-    public void setDialogs(SortedList<DialogCacheObject> dialogs) {
-        this.dialogs = dialogs;
-        notifyDataSetChanged();
+    public void addDialog(DialogCacheObject dco) {
+        dialogs.add(dco);
     }
 
     @Override
@@ -53,7 +94,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
 
     @Override
     public int getItemCount() {
-        return dialogs.size();
+        return dialogs != null ? dialogs.size() : 0;
     }
 
     public class MatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -80,7 +121,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             matchLine1.setText(dialog.getOpponentName());
             if (dialog.getLastMessageUserId() == null ||
                     dialog.getDeletedAt() != null && dialog.getLastMessageDateSent() < dialog.getDeletedAt().getTime() / 1000) {
-                //   matchLine2.setText(DateUtils.getMatchCrushTimeAgo(dialog.getCreatedAt().getTime(), mContext, false));
+                matchLine2.setText(DateUtils.getMatchCrushTimeAgo(dialog.getCreatedAt().getTime(), mContext, false));
                 matchLine2.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
             } else { //with messages
                 if (dialog.getLastMessage() != null && dialog.getLastMessage().length() > 0) {
@@ -103,7 +144,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
         @Override
         public void onClick(View v) {
             Intent chatIntent = new Intent(mContext, ChatActivity.class);
-            chatIntent.putExtra("DIALOG", thisDialog);
+            chatIntent.putExtra(DIALOG_EXTRA, thisDialog);
             mContext.startActivity(chatIntent);
         }
     }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Quickblox.cache.DialogCacheObject;
@@ -28,9 +29,49 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.MatchesV
 
     public CrushesAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
-        this.dialogs = null;
+        this.dialogs = new SortedList<>(DialogCacheObject.class, new SortedList.Callback<DialogCacheObject>() {
+            @Override
+            public void onInserted(int position, int count) {
+                notifyItemRangeInserted(position, count);
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+                notifyItemRangeRemoved(position, count);
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+                notifyItemMoved(fromPosition, toPosition);
+            }
+
+            @Override
+            public int compare(DialogCacheObject o1, DialogCacheObject o2) {
+                return new Date(o2.getLastMessageDateSent()).compareTo(new Date(o1.getLastMessageDateSent()));
+            }
+
+            @Override
+            public void onChanged(int position, int count) {
+                notifyItemRangeChanged(position, count);
+            }
+
+            @Override
+            public boolean areContentsTheSame(DialogCacheObject oldItem, DialogCacheObject newItem) {
+                return oldItem.toString().equals(newItem.toString());
+            }
+
+            @Override
+            public boolean areItemsTheSame(DialogCacheObject item1, DialogCacheObject item2) {
+                return item1.equals(item2);
+            }
+        });
         this.mContext = context;
     }
+
+    public void addDialog(DialogCacheObject dco) {
+        dialogs.add(dco);
+    }
+
 
     public void setDialogs(SortedList<DialogCacheObject> dialogs) {
         this.dialogs = dialogs;
@@ -50,7 +91,8 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.MatchesV
 
     @Override
     public int getItemCount() {
-        return dialogs.size();
+
+        return dialogs != null ? dialogs.size() : 0;
     }
 
     public class MatchesViewHolder extends RecyclerView.ViewHolder {

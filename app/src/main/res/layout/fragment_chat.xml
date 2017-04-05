@@ -1,40 +1,72 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="me.muapp.android.UI.Fragment.ChatsFragment">
+    tools:context="me.muapp.android.UI.Fragment.ChatFragment">
 
-    <TextView
+    <ProgressBar
+        android:id="@+id/progress_chats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/content_chats"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:fontFamily="Roboto medium"
-        android:gravity="center_vertical"
-        android:paddingLeft="8dp"
-        android:text="@string/chat_crush_at"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-        android:textColor="@color/colorAccent"
-        android:visibility="visible" />
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:background="@color/color_muapp_light_grey"
+        android:orientation="vertical"
+        android:visibility="visible">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_crushes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:fontFamily="Roboto medium"
+            android:gravity="center_vertical"
+            android:paddingLeft="8dp"
+            android:text="@string/chat_crush_at"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@color/colorPrimary"
+            android:visibility="visible" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp">
 
-        android:fontFamily="Roboto medium"
-        android:gravity="center_vertical"
-        android:paddingLeft="8dp"
-        android:text="@string/chat_match_at"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-        android:textColor="@color/colorAccent"
-        android:visibility="visible" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_crushes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_matches"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:fontFamily="Roboto medium"
+            android:gravity="center_vertical"
+            android:paddingLeft="8dp"
+            android:text="@string/chat_match_at"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@color/colorPrimary"
+            android:visibility="visible" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_matches"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</RelativeLayout>

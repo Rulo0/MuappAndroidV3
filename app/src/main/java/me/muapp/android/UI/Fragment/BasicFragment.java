@@ -42,7 +42,7 @@ public class BasicFragment extends Fragment implements OnFragmentInteractionList
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_man_gate, container, false);
+        return inflater.inflate(R.layout.fragment_basic, container, false);
     }
 
     public void onButtonPressed(String name, Object object) {

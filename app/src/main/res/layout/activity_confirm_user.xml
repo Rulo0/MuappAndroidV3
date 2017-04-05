@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/color_muapp_dark"
     tools:context="me.muapp.android.UI.Activity.ConfirmUserActivity">
+
     <TextView
         android:id="@+id/lbl_not_change"
         android:layout_width="0dp"

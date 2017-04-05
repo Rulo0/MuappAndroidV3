@@ -1,6 +1,10 @@
 package me.muapp.android.Classes.Util;
 
+import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import org.json.JSONObject;
 
@@ -14,6 +18,20 @@ import java.util.Locale;
 
 public class Utils {
     private static final String jsonUseInvitation = "has_use_invitation";
+
+    public static int getScreenWidth(Context ctx) {
+        return getDisplayMetrics(ctx).widthPixels;
+    }
+
+    public static DisplayMetrics getDisplayMetrics(Context ctx) {
+        DisplayMetrics dm = new DisplayMetrics();
+
+        WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        display.getMetrics(dm);
+
+        return dm;
+    }
 
     public static String serializeUser(JSONObject user) {
         try {
@@ -44,4 +62,5 @@ public class Utils {
         cal.setTime(date);
         return cal;
     }
+
 }

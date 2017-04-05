@@ -11,7 +11,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatHelper;
-import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatLoginListener;
 
 import static com.facebook.GraphRequest.TAG;
 
@@ -36,15 +35,6 @@ public class LoginHelper {
     }
 
     private void loginToQuickBlox() {
-        QuickBloxChatHelper.getInstance().addLoginListener(new QuickBloxChatLoginListener() {
-            @Override
-            public void onChatSessionCreated(boolean success) {
-                if (success) {
-                } else {
-                }
-                QuickBloxChatHelper.getInstance().removeLoginListener(this);
-            }
-        });
         QuickBloxChatHelper.getInstance().loginToChat(context);
     }
 

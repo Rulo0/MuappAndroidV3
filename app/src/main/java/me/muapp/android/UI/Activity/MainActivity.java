@@ -25,39 +25,30 @@ import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.quickblox.chat.model.QBChatDialog;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 
 import io.realm.Realm;
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.CurrentNavigationElement;
 import me.muapp.android.Classes.Internal.User;
-import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatDialogsListener;
-import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatHelper;
-import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatLoginListener;
 import me.muapp.android.Classes.Quickblox.cache.CacheUtils;
-import me.muapp.android.Classes.Quickblox.cache.DialogCacheHelper;
-import me.muapp.android.Classes.Quickblox.messages.QuickBloxMessagesHelper;
-import me.muapp.android.Classes.Quickblox.messages.QuickBloxMessagesListener;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Fragment.BasicFragment;
-import me.muapp.android.UI.Fragment.ChatsFragment;
+import me.muapp.android.UI.Fragment.ChatFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
 public class MainActivity extends BaseActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
-        OnFragmentInteractionListener, SearchView.OnQueryTextListener, QuickBloxChatLoginListener, QuickBloxMessagesListener, QuickBloxChatDialogsListener {
+        OnFragmentInteractionListener, SearchView.OnQueryTextListener {
     private static final int PHONE_REQUEST_CODE = 79;
     public static final String TAG = "MainActivity";
     private CurrentNavigationElement navigationElement;
     private int mSelectedItem;
-    ChatsFragment cf;
     HashMap<Integer, Fragment> fragmentHashMap = new HashMap<>();
     private Realm realm;
     BottomNavigationView navigation;
@@ -112,19 +103,17 @@ public class MainActivity extends BaseActivity implements
         }
         if (preferenceHelper.getFirstLogin() && loggedUser.getFakeAccount())
             phoneValidation();
-    }
+        navigation.setOnNavigationItemSelectedListener(this);
+        fragmentHashMap.put(R.id.navigation_home, ChatFragment.newInstance(loggedUser));
+        fragmentHashMap.put(R.id.navigation_dashboard, BasicFragment.newInstance(loggedUser));
+        fragmentHashMap.put(R.id.navigation_notifications, BasicFragment.newInstance(loggedUser));
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+        ft.replace(R.id.content_main_male, fragmentHashMap.get(R.id.navigation_home));
+        ft.commit();
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        QuickBloxChatHelper.getInstance().addLoginListener(this);
-    }
+        navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        QuickBloxChatHelper.getInstance().removeLoginListener(this);
-        QuickBloxMessagesHelper.getInstance().unregisterQbChatListeners(this);
     }
 
     @Override
@@ -203,7 +192,8 @@ public class MainActivity extends BaseActivity implements
                 FragmentManager manager = getSupportFragmentManager();
                 FragmentTransaction ft = manager.beginTransaction();
                 ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-                ft.replace(R.id.content_main_male, frag);
+                ft.hide(navigationElement.getFrag());
+                ft.show(frag);
                 ft.commit();
             }
             navigationElement = new CurrentNavigationElement(item, frag);
@@ -229,37 +219,5 @@ public class MainActivity extends BaseActivity implements
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
-    }
-
-    @Override
-    public void onChatSessionCreated(boolean success) {
-        if (success) {
-            QuickBloxMessagesHelper.getInstance().registerQbChatListeners(realm, this);
-            QuickBloxChatHelper.getInstance().getDialogs(this);
-        }
-    }
-
-    @Override
-    public void onDialogsLoaded(List<QBChatDialog> dialogs, boolean success) {
-        navigation.setOnNavigationItemSelectedListener(this);
-        DialogCacheHelper.setDialogs(realm, dialogs, loggedUser.getId(), true);
-        fragmentHashMap.put(R.id.navigation_home, cf = ChatsFragment.newInstance(loggedUser));
-        fragmentHashMap.put(R.id.navigation_dashboard, BasicFragment.newInstance(loggedUser));
-        fragmentHashMap.put(R.id.navigation_notifications, BasicFragment.newInstance(loggedUser));
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-        ft.replace(R.id.content_main_male, fragmentHashMap.get(R.id.navigation_home));
-        ft.commit();
-        navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
-    }
-
-    @Override
-    public void onDialogUpdated(String chatDialog) {
-
-    }
-
-    @Override
-    public void onNewDialog() {
-
     }
 }

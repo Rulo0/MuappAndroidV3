@@ -75,21 +75,21 @@ public class DateUtils {
         // TODO: localize
         final long diff = now - time;
         if (diff < MINUTE_MILLIS) {
-            return context.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + context.getString(R.string.just_now);
+            return ctx.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + context.getString(R.string.just_now);
         } else if (diff < 2 * MINUTE_MILLIS) {
-            return context.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + context.getString(R.string.a_minute_ago);
+            return ctx.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + context.getString(R.string.a_minute_ago);
         } else if (diff < 50 * MINUTE_MILLIS) {
-            return context.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + String.format(context.getString(R.string.minutes_ago), diff / MINUTE_MILLIS);
+            return ctx.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + String.format(context.getString(R.string.minutes_ago), diff / MINUTE_MILLIS);
         } else if (diff < 90 * MINUTE_MILLIS) {
-            return context.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + context.getString(R.string.a_hour_ago);
+            return ctx.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + context.getString(R.string.a_hour_ago);
         } else if (diff < 24 * HOUR_MILLIS) {
-            return context.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + String.format(context.getString(R.string.hours_ago), diff / HOUR_MILLIS);
+            return ctx.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + String.format(context.getString(R.string.hours_ago), diff / HOUR_MILLIS);
         } else if (diff < 48 * HOUR_MILLIS) {
-            return context.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + context.getString(R.string.a_day_ago);
+            return ctx.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + context.getString(R.string.a_day_ago);
         } else if (diff < 30 * DAY_MILLIS) {
-            return context.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + String.format(context.getString(R.string.days_ago), diff / DAY_MILLIS);
+            return ctx.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + String.format(context.getString(R.string.days_ago), diff / DAY_MILLIS);
         } else {
-            return context.getString(isCrush ? R.string.crush_at : R.string.matched_at) + " " + dateFormat.format(new Date(time));
+            return ctx.getString(isCrush ? R.string.chat_crush_at : R.string.chat_match_at) + " " + String.valueOf(dateFormat.format(new Date(time)));
         }
     }
 }
