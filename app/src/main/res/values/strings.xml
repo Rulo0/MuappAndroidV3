@@ -69,6 +69,7 @@
     <string name="lbl_click_on_start">Click on Start and enjoy your Muapp experience.</string>
     <string name="lbl_start">Start</string>
     <string name="lbl_save">Save</string>
+    <string name="lbl_edit_description">Edit description</string>
     <string name="hint_bio">Biography</string>
 
     <string name="action_take_photo">Take photo</string>
@@ -147,5 +148,8 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <string name="matches_fragment_list_empty">You have no matches yet</string>
+    <string name="crushes_fragment_list_empty">You have no crushes yet</string>
 
 </resources>

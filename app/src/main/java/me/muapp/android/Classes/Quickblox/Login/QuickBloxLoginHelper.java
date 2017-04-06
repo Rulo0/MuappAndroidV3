@@ -9,7 +9,6 @@ import android.util.Log;
 import com.quickblox.auth.QBAuth;
 import com.quickblox.auth.session.QBSession;
 import com.quickblox.core.QBEntityCallback;
-import com.quickblox.core.exception.BaseServiceException;
 import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.messages.services.SubscribeService;
 import com.quickblox.users.model.QBUser;
@@ -24,11 +23,9 @@ import me.muapp.android.Classes.Util.UserHelper;
 
 public class QuickBloxLoginHelper {
     public static void login(Context ctx, Bundle savedInstanceState, final QuickBloxLoginListener listener) {
-        Log.wtf("loginToQuickBlox", "login :D");
         boolean wasAppRestored = savedInstanceState != null;
         boolean isQbSessionActive = isSessionActive();
         final boolean needToRestoreSession = wasAppRestored || !isQbSessionActive;
-
         if (needToRestoreSession) {
             performLogin(ctx, listener);
         } else {
@@ -62,6 +59,7 @@ public class QuickBloxLoginHelper {
         try {
             String token = QBAuth.getBaseService().getToken();
             Date expirationDate = QBAuth.getBaseService().getTokenExpirationDate();
+            Log.wtf("isSessionActive", token + " " + expirationDate.toString());
             if (TextUtils.isEmpty(token)) {
                 return false;
             }
@@ -69,7 +67,8 @@ public class QuickBloxLoginHelper {
                 return false;
             }
             return true;
-        } catch (BaseServiceException ignored) {
+        } catch (Exception x) {
+            Log.wtf("isSessionActive", x.getMessage());
         }
         return false;
     }

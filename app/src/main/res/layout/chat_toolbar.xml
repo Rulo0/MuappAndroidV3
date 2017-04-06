@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <ImageButton
-            android:id="@+id/btn_back"
+            android:id="@+id/toolbar_btn_back"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
@@ -27,7 +27,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/btn_back"
+            android:layout_toRightOf="@id/toolbar_btn_back"
             android:src="@drawable/ic_badge" />
 
         <LinearLayout
@@ -39,14 +39,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/chat_user_fullname"
-                android:layout_width="wrap_content"
+                android:id="@+id/toolbar_opponent_fullname"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:drawableLeft="@drawable/ic_chat_user_offline"
                 android:drawablePadding="4dp"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="kjakljk"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
 

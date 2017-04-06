@@ -24,10 +24,10 @@ import java.util.List;
 
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.FacebookAlbumsActivity;
-import me.muapp.android.UI.Activity.UserPhotosActivity;
+import me.muapp.android.UI.Activity.ProfileSettingsActivity;
 
 import static android.content.Context.VIBRATOR_SERVICE;
-import static me.muapp.android.UI.Activity.UserPhotosActivity.REQUEST_FACEBOOK_ALBUMS;
+import static me.muapp.android.UI.Activity.ProfileSettingsActivity.REQUEST_FACEBOOK_ALBUMS;
 
 /**
  * Created by rulo on 27/03/17.
@@ -36,14 +36,14 @@ import static me.muapp.android.UI.Activity.UserPhotosActivity.REQUEST_FACEBOOK_A
 public class UserPictureAdapter extends RecyclerView.Adapter<UserPictureAdapter.UserPhotoViewHolder> implements ItemTouchHelperAdapter {
     private final LayoutInflater mInflater;
     public static List<String> picturesData;
-    private UserPhotosActivity mContext;
+    private ProfileSettingsActivity mContext;
     private static final int ACTION_TAKE_PHOTO = 1;
     private static final int ACTION_SELECT_PHOTO = 2;
     private static final int ACTION_GET_PHOTO_FB = 3;
     private static final int ACTION_DELETE_PHOTO = 99;
     private static final int ACTION_CANCEL = 0;
 
-    public UserPictureAdapter(UserPhotosActivity context, List<String> picturesData) {
+    public UserPictureAdapter(ProfileSettingsActivity context, List<String> picturesData) {
         mInflater = LayoutInflater.from(context);
         if (picturesData != null) {
             this.picturesData = picturesData;

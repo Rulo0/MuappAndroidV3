@@ -17,7 +17,13 @@ import me.muapp.android.Classes.Quickblox.QuickbloxHelper;
 
 public class MuappApplication extends Application {
     private static final String TAG = "MuappApplication";
-    public static MixpanelAPI mixpanelAPI;
+    private static MixpanelAPI mixpanelAPI;
+    private static final String projectTokenStagging = "c344cb123c0c544f0c617dc0185c7a5b";
+    private static final String projectTokenProduction = "c15c6fe6ec4a9e0505dc0e4623b57";
+
+    public static MixpanelAPI getMixpanelAPI() {
+        return mixpanelAPI;
+    }
 
     @Override
     public void onCreate() {
@@ -25,10 +31,7 @@ public class MuappApplication extends Application {
         //MIXPANEL TOKEN
         Realm.init(this);
         QuickbloxHelper.init(getApplicationContext());
-
-        String projectToken = "c344cb123c0c544f0c617dc0185c7a5b";
-        mixpanelAPI = MixpanelAPI.getInstance(this, projectToken);
-
+        mixpanelAPI = MixpanelAPI.getInstance(this, projectTokenStagging);
         ConnectionBuddyConfiguration networkInspectorConfiguration =
                 new ConnectionBuddyConfiguration.Builder(this)
                         .registerForMobileNetworkChanges(true)

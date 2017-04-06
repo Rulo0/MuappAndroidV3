@@ -101,7 +101,7 @@ public class MainActivity extends BaseActivity implements
                 }
             }
         }
-        if (preferenceHelper.getFirstLogin() && loggedUser.getFakeAccount())
+        if (preferenceHelper.getFirstLogin() && !loggedUser.getFakeAccount())
             phoneValidation();
         navigation.setOnNavigationItemSelectedListener(this);
         fragmentHashMap.put(R.id.navigation_home, ChatFragment.newInstance(loggedUser));
@@ -122,20 +122,18 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void confirmMyUser() {
-        loggedUser.setFakeAccount(false);
-        saveUser(loggedUser);
-        JSONObject confirmedUser = new JSONObject();
-        try {
-            confirmedUser.put("fake_account", true);
-            new APIService(this).patchUser(confirmedUser, null);
-        } catch (Exception x) {
-
-        }
         AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
             @Override
             public void onSuccess(Account account) {
                 Log.wtf(TAG, account.getId() + " " + account.getPhoneNumber());
 
+                loggedUser.setFakeAccount(true);
+                saveUser(loggedUser);
+                try {
+                    new APIService(MainActivity.this).setUserFakeAccount(true, null);
+                } catch (Exception x) {
+
+                }
             }
 
             @Override
@@ -168,6 +166,7 @@ public class MainActivity extends BaseActivity implements
             } else if (loginResult.wasCancelled()) {
                 Log.wtf(TAG, "login_cancelled");
             } else {
+                Log.wtf(TAG, "confirmMyUser");
                 confirmMyUser();
             }
         }

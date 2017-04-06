@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.quickblox.auth.session.QBSession;
+import com.quickblox.chat.QBIncomingMessagesManager;
 import com.quickblox.chat.model.QBChatDialog;
 
 import java.util.List;
@@ -21,10 +23,11 @@ import io.realm.RealmResults;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatDialogsListener;
 import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatHelper;
+import me.muapp.android.Classes.Quickblox.Login.QuickBloxLoginHelper;
+import me.muapp.android.Classes.Quickblox.Login.QuickBloxLoginListener;
 import me.muapp.android.Classes.Quickblox.cache.CacheUtils;
 import me.muapp.android.Classes.Quickblox.cache.DialogCacheHelper;
 import me.muapp.android.Classes.Quickblox.cache.DialogCacheObject;
-import me.muapp.android.Classes.Quickblox.messages.QuickBloxMessagesHelper;
 import me.muapp.android.Classes.Quickblox.messages.QuickBloxMessagesListener;
 import me.muapp.android.Classes.Util.ProgressUtil;
 import me.muapp.android.R;
@@ -44,6 +47,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     View progress_chats, content_chats;
     private Realm realm;
     RecyclerView recycler_matches, recycler_crushes;
+    QBIncomingMessagesManager incomingMessagesManager;
 
     public ChatFragment() {
 
@@ -91,10 +95,18 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         realm = CacheUtils.getInstance(user);
-        if (QuickBloxChatHelper.getInstance().isSessionActive()) {
+        Log.wtf(TAG, QuickBloxChatHelper.getInstance().isSessionActive() + "");
+        if (!QuickBloxChatHelper.getInstance().isSessionActive()) {
+            QuickBloxLoginHelper.login(getContext(), savedInstanceState, new QuickBloxLoginListener() {
+                @Override
+                public void onSessionCreated(QBSession session) {
+                    QuickBloxChatHelper.getInstance().getDialogs(ChatFragment.this);
+                }
+            });
+        } else {
             QuickBloxChatHelper.getInstance().getDialogs(this);
-            QuickBloxMessagesHelper.getInstance().registerQbChatListeners(realm, ChatFragment.this);
         }
+
     }
 
     @Override
@@ -125,7 +137,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
             @Override
             public void onItemAdded(final DialogCacheObject dialogCacheObject) {
                 Log.wtf("onItemAdded", dialogCacheObject.getDialogId() + "");
-                if (dialogCacheObject.getCrush())
+                if (dialogCacheObject.getCrush() != null && dialogCacheObject.getCrush())
                     recycler_crushes.post(new Runnable() {
                         public void run() {
                             crushesAdapter.addDialog(dialogCacheObject);

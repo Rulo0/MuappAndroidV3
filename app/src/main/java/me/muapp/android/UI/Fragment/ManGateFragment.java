@@ -125,7 +125,8 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Glide.with(this).load(user.getPhoto()).bitmapTransform(new CropCircleTransformation(getContext())).into(img_man_gate);
+        Log.wtf(TAG, user.getPhoto());
+        Glide.with(this).load(user.getPhoto()).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(getContext())).into(img_man_gate);
         txt_entrance_invitation_code.setOnClickListener(this);
         fab_man_edit_photo.setOnClickListener(this);
         img_info_man_gate.setOnClickListener(this);

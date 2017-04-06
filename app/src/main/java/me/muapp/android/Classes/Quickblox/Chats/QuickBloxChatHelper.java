@@ -203,6 +203,10 @@ public class QuickBloxChatHelper {
         }
     }
 
+    public QBChatService getQbChatService() {
+        return qbChatService;
+    }
+
     public void removeLoginListener(@NonNull QuickBloxChatLoginListener listener) {
         loginListeners.remove(listener);
     }
@@ -244,6 +248,7 @@ public class QuickBloxChatHelper {
                 qbChatService.login(user, new QBEntityCallback() {
                     @Override
                     public void onSuccess(Object o, Bundle bundle) {
+                        Log.wtf("loginToChat", "success");
                         chatRoster = QBChatService.getInstance().getRoster(QBRoster.SubscriptionMode.mutual, subscriptionListener);
                         chatRoster.addRosterListener(rosterListener);
                         notifyChatLogin(true);
@@ -251,6 +256,7 @@ public class QuickBloxChatHelper {
 
                     @Override
                     public void onError(QBResponseException e) {
+                        Log.wtf("loginToChat", e.getMessage());
                         e.printStackTrace();
                         notifyChatLogin(false);
                     }

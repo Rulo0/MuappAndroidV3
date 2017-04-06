@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/LeftBubbleStyle"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:id="@+id/poke_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="5sp"
+        android:maxWidth="180dp"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:textColor="@color/chat_text_other"
+        android:textSize="16sp"
+        tools:text="Medium Text"
+        />
+
+    <TextView
+        android:id="@+id/poke_hour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/chat_time_other"
+        android:layout_marginTop="3dp"
+        android:textSize="10sp"
+        tools:text="10:12" />
+
+</LinearLayout>

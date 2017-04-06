@@ -164,13 +164,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         Log.i(TAG, "pending " + loggedUser.getPending());
         if (loggedUser.getConfirmed() != null && loggedUser.getConfirmed()) {
             if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Male) {
+                Log.i(TAG, "User is male");
                 //Usuario hombre
                 if (loggedUser.getPending()) {
                     //Usuario aceptado
-                    startActivity(new Intent(this, MainActivity.class));
+                    startActivity(new Intent(this, ManGateActivity.class));
                 } else {
                     //Usuario no aceptado
-                    startActivity(new Intent(this, ManGateActivity.class));
+                    startActivity(new Intent(this, MainActivity.class));
                 }
             } else {
                 //Usuario mujer

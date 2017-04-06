@@ -138,21 +138,17 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void confirmMyUser() {
-        phone_verification_container.setVisibility(View.GONE);
-        loggedUser.setFakeAccount(false);
-        saveUser(loggedUser);
-        JSONObject confirmedUser = new JSONObject();
-        try {
-            confirmedUser.put("fake_account", true);
-            new APIService(this).patchUser(confirmedUser, null);
-        } catch (Exception x) {
-
-        }
         AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
             @Override
             public void onSuccess(Account account) {
                 Log.wtf(TAG, account.getId() + " " + account.getPhoneNumber());
+                loggedUser.setFakeAccount(true);
+                saveUser(loggedUser);
+                try {
+                    new APIService(SettingsActivity.this).setUserFakeAccount(true, null);
+                } catch (Exception x) {
 
+                }
             }
 
             @Override
@@ -168,7 +164,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     protected void onStop() {
         super.onStop();
         if (loggedUser != null)
-            if (!mainUserSetting.equals(userSettings)) {
+            if (!mainUserSetting.toString().equals(userSettings.toString())) {
                 Log.d(TAG, "Changed");
                 loggedUser.setVisibleEducation(userSettings.getVisibleEducation());
                 loggedUser.setVisibleWork(userSettings.getVisibleWork());

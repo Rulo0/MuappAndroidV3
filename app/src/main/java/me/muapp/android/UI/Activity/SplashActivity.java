@@ -124,7 +124,8 @@ public class SplashActivity extends BaseActivity {
                             Gson gson = new Gson();
                             User u = gson.fromJson(serializeUser(response.getJSONObject("user")), User.class);
                             if (u != null) {
-                                new LoginHelper(SplashActivity.this).performFullLogin();
+                                if (u.getId() != null)
+                                    new LoginHelper(SplashActivity.this).performFullLogin();
                                 Log.wtf(TAG, u.toString());
                                 saveUser(u);
                                 redirectLoggedUser();
@@ -168,24 +169,24 @@ public class SplashActivity extends BaseActivity {
         Log.i(TAG, "confirmed " + loggedUser.getConfirmed());
         Log.i(TAG, "is female " + (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female));
         Log.i(TAG, "pending " + loggedUser.getPending());
-
-        if (loggedUser.getId() == null || loggedUser.getConfirmed() == null || !loggedUser.getConfirmed()) {
-            //Usuario sin confirmar datos
-            animateToActivity(ConfirmUserActivity.class);
-        } else {
+        if (loggedUser.getConfirmed() != null && loggedUser.getConfirmed()) {
             if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Male) {
+                Log.i(TAG, "User is male");
                 //Usuario hombre
                 if (loggedUser.getPending()) {
-                    //Usuario pendiente
+                    //Usuario aceptado
                     animateToActivity(ManGateActivity.class);
                 } else {
-                    //Usuario aceptado
+                    //Usuario no aceptado
                     animateToActivity(MainActivity.class);
                 }
             } else {
                 //Usuario mujer
                 animateToActivity(MainActivity.class);
             }
+        } else {
+            //Usuario sin confirmar datos
+            animateToActivity(ConfirmUserActivity.class);
         }
     }
 

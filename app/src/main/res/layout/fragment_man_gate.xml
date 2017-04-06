@@ -3,9 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_muapp_dark"
     tools:context="me.muapp.android.UI.Fragment.ManGateFragment">
 
+
+    <ImageView
+        android:id="@+id/img_man_gate_back"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/bg_man_gate_blur" />
 
     <TextView
         android:id="@+id/txt_man_gate_title"
@@ -95,7 +109,7 @@
             android:layout_height="280dp"
             android:layout_centerInParent="true"
             app:back_width="10dp"
-            app:front_color1="@color/colorPrimary"
+            app:front_color1="@color/color_muap_green"
             app:front_width="10dp"
             app:max_value="100"
             app:total_engle="270" />

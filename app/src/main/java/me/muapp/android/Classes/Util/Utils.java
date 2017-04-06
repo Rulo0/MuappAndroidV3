@@ -63,4 +63,19 @@ public class Utils {
         return cal;
     }
 
+    public String secondToTimeFormat(int seconds) {
+        int s = seconds % 60;
+        int m = seconds / 60;
+
+        String res = "";
+        if (m < 10) {
+            res += "0";
+        }
+        res += m + ":";
+        if (s < 10) {
+            res += "0";
+        }
+        res += s;
+        return res;
+    }
 }

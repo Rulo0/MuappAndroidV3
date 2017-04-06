@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.LoginHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 
@@ -98,6 +99,7 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void confirmUser() {
+        showProgressDialog();
         new APIService(this).confirmUser(loggedUser, new UserInfoHandler() {
             @Override
             public void onSuccess(int responseCode, String userResponse) {
@@ -110,6 +112,12 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
                             Log.wtf(TAG, u.toString());
                             saveUser(u);
                             if (loggedUser.validate() == User.ValidationResult.Ok) {
+                                ConfirmUserActivity.this.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        new LoginHelper(ConfirmUserActivity.this).performFullLogin();
+                                    }
+                                });
+                                hideProgressDialog();
                                 if (loggedUser.getGender() == User.Gender.Male.getValue())
                                     startActivity(new Intent(ConfirmUserActivity.this, ManGateActivity.class));
                                 else
@@ -119,11 +127,13 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
                                 validateUser();
                             }
                         } else {
+                            hideProgressDialog();
                             Log.wtf(TAG, "user is null");
                         }
                     }
 
                 } catch (Exception x) {
+                    hideProgressDialog();
                     x.printStackTrace();
                 }
             }

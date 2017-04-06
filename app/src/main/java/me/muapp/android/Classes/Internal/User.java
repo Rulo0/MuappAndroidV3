@@ -336,7 +336,7 @@ public class User implements Parcelable {
     }
 
     public String getPhoto() {
-        return photo;
+        return photo != null ? photo : album.get(0);
     }
 
     public void setPhoto(String photo) {

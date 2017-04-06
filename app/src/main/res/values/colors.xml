@@ -9,4 +9,10 @@
     <color name="color_muap_green">#50e3c2</color>
     <color name="color_muapp_divider">#d8e0e9</color>
     <color name="color_muapp_light_grey">#ececee</color>
+    <color name="chat_text_you">@android:color/white</color>
+    <color name="chat_time_you">#4d4d4d</color>
+    <color name="chat_text_other">#353535</color>
+    <color name="chat_time_other">#646464</color>
+    <color name="chat_text_voice_record">#ff4f5f70</color>
+    <color name="chat_icon_recording">#ffff6873</color>
 </resources>

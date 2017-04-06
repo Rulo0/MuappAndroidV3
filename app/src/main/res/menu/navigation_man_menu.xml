@@ -11,8 +11,8 @@
         android:icon="@drawable/ic_dumie"
         android:title="@string/lbl_menu_profile" />
 
-    <item
-        android:id="@+id/navigation_profile_man_muappis"
-        android:icon="@drawable/ic_dumie"
-        android:title="@string/lbl_menu_rewards" />
+    <!-- <item
+         android:id="@+id/navigation_profile_man_muappis"
+         android:icon="@drawable/ic_dumie"
+         android:title="@string/lbl_menu_rewards" />-->
 </menu>

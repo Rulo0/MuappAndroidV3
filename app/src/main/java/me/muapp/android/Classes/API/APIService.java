@@ -38,7 +38,11 @@ import static me.muapp.android.Classes.Util.Utils.serializeUser;
  */
 
 public class APIService {
-    OkHttpClient client = new OkHttpClient();
+    OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build();
     Context mContext;
     SimpleDateFormat dateFormat;
     private static final String BASE_URL = "http://dev.muapp.me/";
@@ -118,6 +122,7 @@ public class APIService {
                 .build();
         Log.i("confirmUser", url);
         Log.i("confirmUser", sendObject.toString());
+
         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -144,7 +149,6 @@ public class APIService {
                             Log.wtf("confirmUser", "user is null");
                         }
                     }
-
                 } catch (Exception x) {
                     Log.wtf("confirmUser", x.getMessage());
                     x.printStackTrace();
@@ -205,6 +209,58 @@ public class APIService {
             }
         });
     }
+
+    public void setUserFakeAccount(Boolean fakeAccount, final UserInfoHandler handler) {
+        String url = BASE_URL + "user/fake_account";
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject sendObject = new JSONObject();
+        try {
+            JSONObject userData = new JSONObject();
+            userData.put("authentication", fakeAccount);
+            sendObject.put("fake_params", userData);
+        } catch (Exception x) {
+        }
+        RequestBody body = RequestBody.create(mediaType, sendObject.toString());
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Log.i("setUserFakeAccount", url);
+        Log.i("setUserFakeAccount", sendObject.toString());
+        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (handler != null)
+                    handler.onFailure(false, e.getMessage());
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseString = response.body().string();
+                if (handler != null)
+                    handler.onSuccess(response.code(), responseString);
+                try {
+                    JSONObject serverResponse = new JSONObject(responseString);
+                    if (serverResponse.has("user")) {
+                        Gson gson = new Gson();
+                        User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
+                        if (u != null) {
+                            Log.wtf("setUserFakeAccount", u.toString());
+                            if (handler != null)
+                                handler.onSuccess(response.code(), u);
+                        } else {
+                            Log.wtf("setUserFakeAccount", "user is null");
+                        }
+                    }
+                } catch (Exception x) {
+                    Log.wtf("setUserFakeAccount", x.getMessage());
+                    x.printStackTrace();
+                }
+            }
+        });
+    }
+
 
     public void redeemInvitationCode(String code, final CodeRedeemHandler handler) {
         String url = BASE_URL + String.format("user/validate_code/%s", code);
