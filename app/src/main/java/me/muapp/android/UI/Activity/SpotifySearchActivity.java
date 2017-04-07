@@ -15,6 +15,7 @@ public class SpotifySearchActivity extends BaseActivity implements SearchView.On
         setContentView(R.layout.activity_spotify_search);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         srch_spotify_tracks = (SearchView) findViewById(R.id.srch_spotify_tracks);
+        srch_spotify_tracks.setOnQueryTextListener(this);
     }
 
     @Override

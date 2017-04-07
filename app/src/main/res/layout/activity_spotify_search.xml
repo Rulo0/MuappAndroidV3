@@ -29,7 +29,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <SearchView
+        <android.support.v7.widget.SearchView
             android:id="@+id/srch_spotify_tracks"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
