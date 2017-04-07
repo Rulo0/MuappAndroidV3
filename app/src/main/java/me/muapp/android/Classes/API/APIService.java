@@ -72,6 +72,7 @@ public class APIService {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String responseString = response.body().string();
+                    Log.wtf("getUserProfile", responseString);
                     if (handler != null)
                         handler.onSuccess(response.code(), responseString);
                     try {

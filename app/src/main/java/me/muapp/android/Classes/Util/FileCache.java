@@ -61,7 +61,7 @@ public class FileCache {
 
         } catch (final IOException e) {
             Log.wtf("downloadUrlToCache", e.getMessage(), e);
-            Log.e(TAG, "Error in downloadBitmap - " + e);
+            Log.e(TAG, "ErrorData in downloadBitmap - " + e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

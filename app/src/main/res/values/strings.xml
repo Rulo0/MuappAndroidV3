@@ -33,12 +33,13 @@
     <string name="lbl_correct">It’s correct</string>
     <string name="lbl_synchronize">Synchronize</string>
 
-    <!--Error-->
+    <!--ErrorData-->
     <string name="email_contact">info@muapp.me</string>
-    <string name="lbl_error_requeriments">We’re sorry but you don’t meet the requirements to register. You can contact us at</string>
+    <string name="lbl_error_requirements">We’re sorry but you don’t meet the requirements to register. You can contact us at</string>
     <string name="lbl_error_minor">We’re sorry but you can’t register in muapp yet, you need to be 18. We’ll be waiting for you!</string>
     <string name="lbl_error_real_person">We’re sorry but you don’t meet the requirements to verify that you’re a real person. If we’ve made a mistake, please contact us:\ninfo@muapp.me</string>
     <string name="lbl_error_profile_picture">Without a profile picture in Facebook, you can’t register in muapp. Please, add a profile picture in Facebook and try again. We’ll be waiting for you!</string>
+    <string name="lbl_error_permissions">In order to show you better results, we need you to grant all Facebook permissions.</string>
 
     <!--Confirm gender-->
     <string name="lbl_confirm_gender">Choose your gender</string>

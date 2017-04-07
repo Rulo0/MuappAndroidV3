@@ -144,8 +144,10 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
             public void run() {
                 cbp_gate.setCurrentValues(value);
                 txt_progress_gate.setText(value + " %");
-                if (value == 100) {
+                if (value >= 60) {
                     container_code.setVisibility(View.GONE);
+                }
+                if (value == 100) {
                     txt_man_invite.setText(getString(R.string.lbl_click_on_start));
                     btn_action_man_gate.setVisibility(View.INVISIBLE);
                     btn_action_man_gate.setOnClickListener(null);

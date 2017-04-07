@@ -41,6 +41,7 @@ import me.muapp.android.R;
 import me.muapp.android.UI.Fragment.BasicFragment;
 import me.muapp.android.UI.Fragment.ChatFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
+import me.muapp.android.UI.Fragment.ProfileFragment;
 
 public class MainActivity extends BaseActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
@@ -52,6 +53,7 @@ public class MainActivity extends BaseActivity implements
     HashMap<Integer, Fragment> fragmentHashMap = new HashMap<>();
     private Realm realm;
     BottomNavigationView navigation;
+
 
     public void phoneValidation() {
         final Intent intent = new Intent(this, AccountKitActivity.class);
@@ -106,14 +108,14 @@ public class MainActivity extends BaseActivity implements
         navigation.setOnNavigationItemSelectedListener(this);
         fragmentHashMap.put(R.id.navigation_home, ChatFragment.newInstance(loggedUser));
         fragmentHashMap.put(R.id.navigation_dashboard, BasicFragment.newInstance(loggedUser));
-        fragmentHashMap.put(R.id.navigation_notifications, BasicFragment.newInstance(loggedUser));
+        fragmentHashMap.put(R.id.navigation_notifications, ProfileFragment.newInstance(loggedUser));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
         ft.replace(R.id.content_main_male, fragmentHashMap.get(R.id.navigation_home));
         ft.commit();
 
         navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
-
+        startActivity(new Intent(this, SpotifySearchActivity.class));
     }
 
     @Override

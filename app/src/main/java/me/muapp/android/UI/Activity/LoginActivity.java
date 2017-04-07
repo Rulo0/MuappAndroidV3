@@ -29,6 +29,7 @@ import java.util.Set;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.Internal.Errors.Login.LoginError;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.LoginHelper;
@@ -36,6 +37,8 @@ import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
 
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
+import static me.muapp.android.UI.Activity.ErrorActivity.ERROR_EXTRA;
+import static me.muapp.android.UI.Activity.ErrorActivity.ERROR_SHOW_EMAIL;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
     CallbackManager callbackManager;
@@ -133,10 +136,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                             } else {
                                 Log.wtf(TAG, "user is null");
                             }
+                        } else {
+                            if (response.has("error")) {
+                                Gson gson = new Gson();
+                                LoginError le = gson.fromJson(response.toString(), LoginError.class);
+                                if (le != null)
+                                    validateError(le);
+                            }
                         }
 
                     } catch (Exception x) {
-                        Log.wtf(TAG, x.getMessage());
+                        Log.wtf(TAG, "ErrorData " + x.getMessage());
                         x.printStackTrace();
                     }
 
@@ -150,12 +160,47 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 @Override
                 public void onFailure(boolean isSuccessful, String responseString) {
                     hideProgressDialog();
-                    Log.wtf(TAG, responseString);
+                    Log.wtf(TAG, "onFailure " + responseString);
+                    Gson gson = new Gson();
+                    LoginError le = gson.fromJson(responseString, LoginError.class);
+                    if (le != null)
+                        Log.wtf(TAG, "onFailure " + le.toString());
                 }
             });
         } catch (Exception x) {
             x.printStackTrace();
         }
+    }
+
+    private void validateError(LoginError le) {
+        Intent errorIntent = new Intent(LoginActivity.this, ErrorActivity.class);
+        switch (le.getErrorType()) {
+            case NoPhoto:
+                Log.wtf(TAG, "NoPhoto");
+                errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_profile_picture));
+                break;
+            case Underage:
+                Log.wtf(TAG, "Underage");
+                errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_minor));
+                break;
+            case NoFriends:
+                Log.wtf(TAG, "NoFriends");
+                errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_real_person));
+                errorIntent.putExtra(ERROR_SHOW_EMAIL, true);
+                break;
+            case Expelled:
+                Log.wtf(TAG, "Expelled");
+                errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_requirements));
+                break;
+            case FBPermissions:
+                Log.wtf(TAG, "FBPermissions");
+                errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_permissions));
+                break;
+            default:
+                Log.wtf(TAG, "U");
+                break;
+        }
+        startActivity(errorIntent);
     }
 
     private void redirectLoggedUser() {

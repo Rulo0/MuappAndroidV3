@@ -14,7 +14,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="@string/lbl_error_requeriments"
+        android:text="@string/lbl_error_requirements"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@color/color_muapp_dark"
         app:layout_constraintHorizontal_bias="0.497"

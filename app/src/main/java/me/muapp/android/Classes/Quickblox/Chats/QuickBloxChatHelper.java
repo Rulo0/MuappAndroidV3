@@ -372,7 +372,7 @@ public class QuickBloxChatHelper {
 
             @Override
             public void onError(QBResponseException e) {
-                Log.wtf("updateDialog", "Error " + e.getMessage());
+                Log.wtf("updateDialog", "ErrorData " + e.getMessage());
                 e.printStackTrace();
                 if (listener != null) {
                     listener.onDialogUpdated(null);

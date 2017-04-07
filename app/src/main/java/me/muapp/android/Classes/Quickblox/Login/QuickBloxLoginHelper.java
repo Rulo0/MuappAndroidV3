@@ -75,23 +75,24 @@ public class QuickBloxLoginHelper {
 
 
     private static void performLogin(final Context ctx, final QuickBloxLoginListener listener) {
-        ((Activity) ctx).runOnUiThread(new Runnable() {
-            public void run() {
-                int uId = new UserHelper(ctx).getLoggedUser().getId();
-                QBUser usr = new QBUser("usermuapp-" + uId, "passMuapp-" + uId);
-                QBAuth.createSession(usr).performAsync(new QBEntityCallback<QBSession>() {
-                    @Override
-                    public void onSuccess(QBSession qbSession, Bundle bundle) {
-                        SubscribeService.subscribeToPushes(ctx, false);
-                        listener.onSessionCreated(qbSession);
-                    }
+        if (new UserHelper(ctx).getLoggedUser().getId() != null)
+            ((Activity) ctx).runOnUiThread(new Runnable() {
+                public void run() {
+                    int uId = new UserHelper(ctx).getLoggedUser().getId();
+                    QBUser usr = new QBUser("usermuapp-" + uId, "passMuapp-" + uId);
+                    QBAuth.createSession(usr).performAsync(new QBEntityCallback<QBSession>() {
+                        @Override
+                        public void onSuccess(QBSession qbSession, Bundle bundle) {
+                            SubscribeService.subscribeToPushes(ctx, false);
+                            listener.onSessionCreated(qbSession);
+                        }
 
-                    @Override
-                    public void onError(QBResponseException e) {
-                        listener.onSessionCreated(null);
-                    }
-                });
-            }
-        });
+                        @Override
+                        public void onError(QBResponseException e) {
+                            listener.onSessionCreated(null);
+                        }
+                    });
+                }
+            });
     }
 }
