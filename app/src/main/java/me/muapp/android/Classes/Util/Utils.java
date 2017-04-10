@@ -1,9 +1,14 @@
 package me.muapp.android.Classes.Util;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
 
 import org.json.JSONObject;
@@ -77,5 +82,21 @@ public class Utils {
         }
         res += s;
         return res;
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    public static void animView(final View v, final boolean show) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            v.setVisibility(show ? View.VISIBLE : View.GONE);
+            v.animate().setDuration(200).alpha(
+                    !show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    v.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            v.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 }

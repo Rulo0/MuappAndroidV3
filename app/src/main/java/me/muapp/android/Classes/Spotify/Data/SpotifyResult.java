@@ -7,12 +7,17 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class SpotifyResult implements Parcelable
 {
 
-    @SerializedName("tracks")
+    @SerializedName("items")
     @Expose
-    private Tracks tracks;
+    private List<Song> songs = null;
+    @SerializedName("total")
+    @Expose
+    private Integer total;
     public final static Parcelable.Creator<SpotifyResult> CREATOR = new Creator<SpotifyResult>() {
 
 
@@ -21,7 +26,8 @@ public class SpotifyResult implements Parcelable
         })
         public SpotifyResult createFromParcel(Parcel in) {
             SpotifyResult instance = new SpotifyResult();
-            instance.tracks = ((Tracks) in.readValue((Tracks.class.getClassLoader())));
+            in.readList(instance.songs, (me.muapp.android.Classes.Spotify.Data.Song.class.getClassLoader()));
+            instance.total = ((Integer) in.readValue((Integer.class.getClassLoader())));
             return instance;
         }
 
@@ -32,16 +38,25 @@ public class SpotifyResult implements Parcelable
     }
     ;
 
-    public Tracks getTracks() {
-        return tracks;
+    public List<Song> getSongs() {
+        return songs;
     }
 
-    public void setTracks(Tracks tracks) {
-        this.tracks = tracks;
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
+    }
+
+    public Integer getTotal() {
+        return total;
+    }
+
+    public void setTotal(Integer total) {
+        this.total = total;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(tracks);
+        dest.writeList(songs);
+        dest.writeValue(total);
     }
 
     public int describeContents() {

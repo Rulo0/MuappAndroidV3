@@ -4,7 +4,9 @@
     <color name="colorPrimaryDark">#c95258</color>
     <color name="colorAccent">#ff949a</color>
     <color name="black_overlay">#66000000</color>
+    <color name="black_dim">#26000000</color>
     <color name="color_muapp_dark">#3e4c5c</color>
+    <color name="color_muapp_dark_sub">#929292</color>
     <color name="color_muapp_button_light">#9fa6ae</color>
     <color name="color_muap_green">#50e3c2</color>
     <color name="color_muapp_divider">#d8e0e9</color>
@@ -15,4 +17,5 @@
     <color name="chat_time_other">#646464</color>
     <color name="chat_text_voice_record">#ff4f5f70</color>
     <color name="chat_icon_recording">#ffff6873</color>
+    <color name="color_placeholder_grey">#a4a4a4</color>
 </resources>

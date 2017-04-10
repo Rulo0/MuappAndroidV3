@@ -3,7 +3,7 @@ package me.muapp.android.Classes.Spotify.Data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
+import android.os.Parcelable.Creator;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -16,9 +16,6 @@ public class Artist implements Parcelable
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("uri")
-    @Expose
-    private String uri;
     public final static Parcelable.Creator<Artist> CREATOR = new Creator<Artist>() {
 
 
@@ -29,7 +26,6 @@ public class Artist implements Parcelable
             Artist instance = new Artist();
             instance.id = ((String) in.readValue((String.class.getClassLoader())));
             instance.name = ((String) in.readValue((String.class.getClassLoader())));
-            instance.uri = ((String) in.readValue((String.class.getClassLoader())));
             return instance;
         }
 
@@ -56,18 +52,9 @@ public class Artist implements Parcelable
         this.name = name;
     }
 
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(id);
         dest.writeValue(name);
-        dest.writeValue(uri);
     }
 
     public int describeContents() {

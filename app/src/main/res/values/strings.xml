@@ -152,5 +152,7 @@
 
     <string name="matches_fragment_list_empty">You have no matches yet</string>
     <string name="crushes_fragment_list_empty">You have no crushes yet</string>
-
+    <string name="lbl_placeholder_spotify">Find a song on Spotify to add it to your content</string>
+    <string name="lbl_about_song">What do you tell us about this song?</string>
+    <string name="lbl_publish">Publish</string>
 </resources>

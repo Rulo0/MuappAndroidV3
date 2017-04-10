@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -53,7 +55,7 @@ public class MainActivity extends BaseActivity implements
     HashMap<Integer, Fragment> fragmentHashMap = new HashMap<>();
     private Realm realm;
     BottomNavigationView navigation;
-
+    FloatingActionButton fab_add_content;
 
     public void phoneValidation() {
         final Intent intent = new Intent(this, AccountKitActivity.class);
@@ -74,6 +76,7 @@ public class MainActivity extends BaseActivity implements
         setContentView(R.layout.activity_main_male);
         realm = CacheUtils.getInstance(loggedUser);
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
         if (checkPlayServices()) {
             final String token = FirebaseInstanceId.getInstance().getToken();
             if (!TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token)) {
@@ -113,7 +116,7 @@ public class MainActivity extends BaseActivity implements
         ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
         ft.replace(R.id.content_main_male, fragmentHashMap.get(R.id.navigation_home));
         ft.commit();
-
+        fab_add_content.hide();
         navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
         startActivity(new Intent(this, SpotifySearchActivity.class));
     }
@@ -197,6 +200,16 @@ public class MainActivity extends BaseActivity implements
                 ft.show(frag);
                 ft.commit();
             }
+            if (frag instanceof ProfileFragment)
+                fab_add_content.show();
+            else
+                fab_add_content.hide();
+            fab_add_content.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
             navigationElement = new CurrentNavigationElement(item, frag);
         } catch (Exception x) {
             x.printStackTrace();

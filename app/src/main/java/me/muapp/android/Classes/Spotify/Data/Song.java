@@ -7,17 +7,12 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
-public class Item implements Parcelable
+public class Song implements Parcelable
 {
 
     @SerializedName("album")
     @Expose
     private Album album;
-    @SerializedName("artists")
-    @Expose
-    private List<Artist> artists = null;
     @SerializedName("explicit")
     @Expose
     private Boolean explicit;
@@ -30,33 +25,28 @@ public class Item implements Parcelable
     @SerializedName("preview_url")
     @Expose
     private String previewUrl;
-    @SerializedName("type")
-    @Expose
-    private String type;
     @SerializedName("uri")
     @Expose
     private String uri;
-    public final static Parcelable.Creator<Item> CREATOR = new Creator<Item>() {
+    public final static Parcelable.Creator<Song> CREATOR = new Creator<Song>() {
 
 
         @SuppressWarnings({
             "unchecked"
         })
-        public Item createFromParcel(Parcel in) {
-            Item instance = new Item();
+        public Song createFromParcel(Parcel in) {
+            Song instance = new Song();
             instance.album = ((Album) in.readValue((Album.class.getClassLoader())));
-            in.readList(instance.artists, (me.muapp.android.Classes.Spotify.Data.Artist.class.getClassLoader()));
             instance.explicit = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
             instance.id = ((String) in.readValue((String.class.getClassLoader())));
             instance.name = ((String) in.readValue((String.class.getClassLoader())));
             instance.previewUrl = ((String) in.readValue((String.class.getClassLoader())));
-            instance.type = ((String) in.readValue((String.class.getClassLoader())));
             instance.uri = ((String) in.readValue((String.class.getClassLoader())));
             return instance;
         }
 
-        public Item[] newArray(int size) {
-            return (new Item[size]);
+        public Song[] newArray(int size) {
+            return (new Song[size]);
         }
 
     }
@@ -68,14 +58,6 @@ public class Item implements Parcelable
 
     public void setAlbum(Album album) {
         this.album = album;
-    }
-
-    public List<Artist> getArtists() {
-        return artists;
-    }
-
-    public void setArtists(List<Artist> artists) {
-        this.artists = artists;
     }
 
     public Boolean getExplicit() {
@@ -110,14 +92,6 @@ public class Item implements Parcelable
         this.previewUrl = previewUrl;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getUri() {
         return uri;
     }
@@ -128,12 +102,10 @@ public class Item implements Parcelable
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(album);
-        dest.writeList(artists);
         dest.writeValue(explicit);
         dest.writeValue(id);
         dest.writeValue(name);
         dest.writeValue(previewUrl);
-        dest.writeValue(type);
         dest.writeValue(uri);
     }
 
