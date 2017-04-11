@@ -155,4 +155,7 @@
     <string name="lbl_placeholder_spotify">Find a song on Spotify to add it to your content</string>
     <string name="lbl_about_song">What do you tell us about this song?</string>
     <string name="lbl_publish">Publish</string>
+    <string name="title_activity_add_phothos">AddPhothosActivity</string>
+    <string name="section_format">Hello World from section: %s</string>
+    <string name="title_activity_add_photos">AddPhotosActivity</string>
 </resources>

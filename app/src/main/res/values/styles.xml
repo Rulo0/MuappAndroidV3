@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -9,15 +9,13 @@
         <item name="colorControlHighlight">@color/colorAccent</item>
     </style>
 
-
     <style name="AppLoginTheme" parent="Theme.AccountKit">
-
-        <item name="com_accountkit_primary_color">@color/colorPrimary</item>
-        <item name="com_accountkit_primary_text_color">@color/colorPrimary</item>
-        <item name="com_accountkit_header_background_color">@color/colorPrimary</item>
+        <item name="com_accountkit_primary_color">@color/colorAccent</item>
+        <item name="com_accountkit_primary_text_color">@color/colorAccent</item>
+        <item name="com_accountkit_header_background_color">@color/colorAccent</item>
         <item name="com_accountkit_secondary_text_color">@color/color_muapp_dark</item>
         <item name="com_accountkit_button_text_color">@android:color/white</item>
-        <item name="com_accountkit_status_bar_color">@color/colorPrimaryDark</item>
+        <item name="com_accountkit_status_bar_color">@color/colorAccent</item>
         <item name="com_accountkit_input_accent_color">?attr/com_accountkit_primary_color</item>
         <item name="com_accountkit_input_border_color">?attr/com_accountkit_primary_color</item>
 
@@ -28,7 +26,7 @@
     </style>
 
     <style name="color_button_main" parent="ThemeOverlay.AppCompat.Dark">
-        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="colorButtonNormal">@color/colorAccent</item>
     </style>
 
     <style name="green_button_layout_style">
@@ -47,7 +45,11 @@
         <item name="colorButtonNormal">@color/color_muapp_button_light</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -66,7 +68,7 @@
         <item name="colorAccent">#fffca9ad</item>
     </style>
 
-    <style name="LeftBubbleStyle" parent="WrapContent">
+    <style name="LeftBubbleStyle">
         <item name="android:layout_marginBottom">10dp</item>
         <item name="android:layout_marginLeft">10dp</item>
         <item name="android:background">@drawable/bk_chat_bubble_other</item>
@@ -76,7 +78,7 @@
         <item name="android:paddingTop">5dp</item>
     </style>
 
-    <style name="RightBubbleStyle" parent="WrapContent">
+    <style name="RightBubbleStyle">
         <item name="android:layout_marginBottom">10dp</item>
         <item name="android:layout_marginRight">10dp</item>
         <item name="android:background">@drawable/bk_chat_bubble_you</item>

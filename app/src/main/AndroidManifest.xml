@@ -89,8 +89,20 @@
             android:label="@string/title_activity_chat"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".UI.Activity.SpotifySearchActivity" />
-        <activity android:name=".UI.Activity.SpotifyDetailActivity"></activity>
+        <activity
+            android:name=".UI.Activity.SpotifySearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.SpotifyDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.AddPhotoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.AddPhotosActivity"
+            android:label="@string/title_activity_add_photos"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

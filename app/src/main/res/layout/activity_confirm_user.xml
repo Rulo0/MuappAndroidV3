@@ -88,7 +88,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorAccent"
                 app:layout_constraintBaseline_toBaselineOf="@+id/lbl_gender"
                 app:layout_constraintLeft_toRightOf="@+id/lbl_gender"
                 app:layout_constraintRight_toRightOf="parent" />
@@ -100,7 +100,7 @@
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorAccent"
                 app:layout_constraintBottom_toBottomOf="@+id/lbl_age"
                 app:layout_constraintLeft_toLeftOf="@+id/txt_gender" />
 

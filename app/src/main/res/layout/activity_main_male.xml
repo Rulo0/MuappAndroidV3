@@ -39,6 +39,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:background="?android:attr/windowBackground"
+            app:itemIconTint="@drawable/bnv_selector"
+            app:itemTextColor="@drawable/bnv_selector"
             app:menu="@menu/navigation_menu" />
     </LinearLayout>
+    <!-- Bottom Sheet -->
+    <include layout="@layout/add_item_dialog_layout" />
 </android.support.design.widget.CoordinatorLayout>

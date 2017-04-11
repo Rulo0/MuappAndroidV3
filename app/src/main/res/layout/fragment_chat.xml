@@ -29,7 +29,7 @@
             android:paddingLeft="8dp"
             android:text="@string/chat_crush_at"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorAccent"
             android:visibility="visible" />
 
         <RelativeLayout
@@ -54,7 +54,7 @@
             android:paddingLeft="8dp"
             android:text="@string/chat_match_at"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorAccent"
             android:visibility="visible" />
 
         <LinearLayout

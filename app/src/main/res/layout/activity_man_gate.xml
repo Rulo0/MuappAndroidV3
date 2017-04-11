@@ -20,6 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
+        app:itemIconTint="@drawable/bnv_selector"
+        app:itemTextColor="@drawable/bnv_selector"
         app:menu="@menu/navigation_man_menu" />
 
 </LinearLayout>

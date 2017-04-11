@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -47,7 +50,7 @@ import me.muapp.android.UI.Fragment.ProfileFragment;
 
 public class MainActivity extends BaseActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
-        OnFragmentInteractionListener, SearchView.OnQueryTextListener {
+        OnFragmentInteractionListener, SearchView.OnQueryTextListener, View.OnClickListener {
     private static final int PHONE_REQUEST_CODE = 79;
     public static final String TAG = "MainActivity";
     private CurrentNavigationElement navigationElement;
@@ -56,6 +59,9 @@ public class MainActivity extends BaseActivity implements
     private Realm realm;
     BottomNavigationView navigation;
     FloatingActionButton fab_add_content;
+    ConstraintLayout add_item_layout;
+    BottomSheetBehavior bsb;
+    ImageButton btn_add_quote, btn_add_voice, btn_add_photo, btn_add_giphy, btn_add_spotify, btn_add_youtube;
 
     public void phoneValidation() {
         final Intent intent = new Intent(this, AccountKitActivity.class);
@@ -75,6 +81,8 @@ public class MainActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_male);
         realm = CacheUtils.getInstance(loggedUser);
+        add_item_layout = (ConstraintLayout) findViewById(R.id.add_item_layout);
+        bsb = BottomSheetBehavior.from(add_item_layout);
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
         if (checkPlayServices()) {
@@ -118,7 +126,20 @@ public class MainActivity extends BaseActivity implements
         ft.commit();
         fab_add_content.hide();
         navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
-        startActivity(new Intent(this, SpotifySearchActivity.class));
+        btn_add_quote = (ImageButton) findViewById(R.id.btn_add_quote);
+        btn_add_voice = (ImageButton) findViewById(R.id.btn_add_voice);
+        btn_add_photo = (ImageButton) findViewById(R.id.btn_add_photo);
+        btn_add_giphy = (ImageButton) findViewById(R.id.btn_add_giphy);
+        btn_add_spotify = (ImageButton) findViewById(R.id.btn_add_spotify);
+        btn_add_youtube = (ImageButton) findViewById(R.id.btn_add_youtube);
+        btn_add_quote.setOnClickListener(this);
+        btn_add_voice.setOnClickListener(this);
+        btn_add_photo.setOnClickListener(this);
+        btn_add_giphy.setOnClickListener(this);
+        btn_add_spotify.setOnClickListener(this);
+        btn_add_youtube.setOnClickListener(this);
+
+        //  startActivity(new Intent(this, SpotifySearchActivity.class));
     }
 
     @Override
@@ -207,13 +228,25 @@ public class MainActivity extends BaseActivity implements
             fab_add_content.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    bsb.setState(BottomSheetBehavior.STATE_EXPANDED);
+                  /*  Log.wtf("show dialog", "mmm");
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    OauthInstagramDialog frag = new OauthInstagramDialog();
+                    frag.show(ft, "ADD_CONTENT");*/
                 }
             });
             navigationElement = new CurrentNavigationElement(item, frag);
         } catch (Exception x) {
             x.printStackTrace();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (bsb.getState() == BottomSheetBehavior.STATE_EXPANDED)
+            bsb.setState(BottomSheetBehavior.STATE_HIDDEN);
+        else
+            super.onBackPressed();
     }
 
     @Override
@@ -233,5 +266,31 @@ public class MainActivity extends BaseActivity implements
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
+    }
+
+    @Override
+    public void onClick(final View v) {
+        switch (v.getId()) {
+            case R.id.btn_add_quote:
+                break;
+            case R.id.btn_add_voice:
+                break;
+            case R.id.btn_add_photo:
+                startActivity(new Intent(MainActivity.this, AddPhotosActivity.class));
+                break;
+            case R.id.btn_add_giphy:
+                break;
+            case R.id.btn_add_spotify:
+                startActivity(new Intent(MainActivity.this, SpotifySearchActivity.class));
+                break;
+            case R.id.btn_add_youtube:
+                break;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        bsb.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 }
