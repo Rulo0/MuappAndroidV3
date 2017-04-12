@@ -151,6 +151,7 @@ public class InstagramPhotosFragment extends Fragment implements ValueEventListe
         @Override
         protected void onPostExecute(InstagramPhotos instagramPhotos) {
             super.onPostExecute(instagramPhotos);
+
             for (InstagramPhoto p : instagramPhotos.getData()) {
                 Log.wtf("onPostExecute", p.toString());
                 ada.addPhotho(p);
