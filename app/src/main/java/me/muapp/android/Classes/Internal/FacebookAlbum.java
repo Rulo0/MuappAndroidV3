@@ -32,6 +32,7 @@ public class FacebookAlbum implements Parcelable {
 
     public FacebookAlbum() {
     }
+
     public String getId() {
         return id;
     }
@@ -102,6 +103,19 @@ public class FacebookAlbum implements Parcelable {
         return items;
     }
 
+    public static List<FacebookImage> imagesAsAlbumList(JSONArray jsonArray) {
+        List<FacebookImage> items = new ArrayList<>();
+        try {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonAlbum = jsonArray.getJSONObject(i);
+                items.add(imageFromJsonAlbum(jsonAlbum));
+            }
+        } catch (JSONException e) {
+            Log.e("Facebook", e.getMessage());
+        }
+        return items;
+    }
+
     public static FacebookAlbum fromJson(JSONObject jsonAlbum) throws JSONException {
         FacebookAlbum album = new FacebookAlbum();
         if (jsonAlbum.has(JSON_ID) && !jsonAlbum.isNull(JSON_ID))
@@ -129,6 +143,10 @@ public class FacebookAlbum implements Parcelable {
         if (jsonAlbum.has(JSON_ID) && !jsonAlbum.isNull(JSON_ID))
             pictureId = jsonAlbum.getString(JSON_ID);
         return pictureId;
+    }
+
+    public static FacebookImage imageFromJsonAlbum(JSONObject jsonAlbum) throws JSONException {
+        return new FacebookImage(jsonAlbum.optString(JSON_ID), jsonAlbum.optString(JSON_CREATED_TIME));
     }
 
     protected FacebookAlbum(Parcel in) {

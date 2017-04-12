@@ -19,4 +19,7 @@
     <color name="chat_text_voice_record">#ff4f5f70</color>
     <color name="chat_icon_recording">#ffff6873</color>
     <color name="color_placeholder_grey">#a4a4a4</color>
+
+    <color name="color_active_tab">#3e4c5c</color>
+    <color name="color_inactive_tab">#cfd2d6</color>
 </resources>

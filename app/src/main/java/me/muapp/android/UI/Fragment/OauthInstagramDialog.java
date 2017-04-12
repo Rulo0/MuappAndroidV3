@@ -64,6 +64,13 @@ public class OauthInstagramDialog extends DialogFragment {
             Log.wtf("opening", mainUrl);
             webViewOauth.loadUrl(mainUrl);
             webViewOauth.setWebViewClient(new WebViewClient() {
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                    view.setVisibility(View.VISIBLE);
+                }
+
                 @SuppressWarnings("deprecation")
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView webView, String url) {
@@ -79,6 +86,8 @@ public class OauthInstagramDialog extends DialogFragment {
 
                 private boolean shouldOverrideUrlLoading(final String url) {
                     Log.i(TAG, "shouldOverrideUrlLoading() URL : " + url);
+                    if (url.startsWith("http://dev.muapp.me/oauth/callback") && url.contains("&code="))
+                        OauthInstagramDialog.this.dismiss();
                     return false; // Returning True means that application wants to leave the current WebView and handle the url itself, otherwise return false.
                 }
             });

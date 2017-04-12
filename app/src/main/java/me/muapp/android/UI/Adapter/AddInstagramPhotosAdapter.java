@@ -11,25 +11,23 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import me.muapp.android.Classes.Internal.FacebookImage;
-import me.muapp.android.Classes.Util.PreferenceHelper;
+import me.muapp.android.Classes.Instagram.Data.InstagramPhoto;
 import me.muapp.android.R;
 
 /**
  * Created by rulo on 28/03/17.
  */
 
-public class AddFBPhotosAdapter extends RecyclerView.Adapter<AddFBPhotosAdapter.PhotoViewHolder> {
+public class AddInstagramPhotosAdapter extends RecyclerView.Adapter<AddInstagramPhotosAdapter.PhotoViewHolder> {
     private static final String ALBUM_PHOTO_FORMAT = "https://graph.facebook.com/%s/picture?access_token=%s";
     private final LayoutInflater mInflater;
-    private SortedList<FacebookImage> photos;
+    private SortedList<InstagramPhoto> photos;
     private Context mContext;
-    private String userFBToken;
 
-    public AddFBPhotosAdapter(Context context) {
+    public AddInstagramPhotosAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
 
-        this.photos = new SortedList<>(FacebookImage.class, new SortedList.Callback<FacebookImage>() {
+        this.photos = new SortedList<>(InstagramPhoto.class, new SortedList.Callback<InstagramPhoto>() {
             @Override
             public void onInserted(int position, int count) {
                 notifyItemRangeInserted(position, count);
@@ -46,8 +44,18 @@ public class AddFBPhotosAdapter extends RecyclerView.Adapter<AddFBPhotosAdapter.
             }
 
             @Override
-            public int compare(FacebookImage o1, FacebookImage o2) {
-                return o1.getCreatedTime().compareTo(o2.getCreatedTime());
+            public int compare(InstagramPhoto o1, InstagramPhoto o2) {
+                Long created1 = 0L;
+                Long created2 = 0L;
+                try {
+                    created1 = Long.parseLong(o1.getCreatedTime());
+                } catch (Exception x) {
+                }
+                try {
+                    created2 = Long.parseLong(o2.getCreatedTime());
+                } catch (Exception x) {
+                }
+                return created1.compareTo(created2);
             }
 
             @Override
@@ -56,26 +64,24 @@ public class AddFBPhotosAdapter extends RecyclerView.Adapter<AddFBPhotosAdapter.
             }
 
             @Override
-            public boolean areContentsTheSame(FacebookImage oldItem, FacebookImage newItem) {
+            public boolean areContentsTheSame(InstagramPhoto oldItem, InstagramPhoto newItem) {
                 return oldItem.getId().equals(newItem.getId());
             }
 
             @Override
-            public boolean areItemsTheSame(FacebookImage item1, FacebookImage item2) {
-                return false;
+            public boolean areItemsTheSame(InstagramPhoto item1, InstagramPhoto item2) {
+                return item1.equals(item2);
             }
         });
-
         this.mContext = context;
-        this.userFBToken = new PreferenceHelper(context).getFacebookToken();
     }
 
-    public void setPhotos(SortedList<FacebookImage> photos) {
+    public void setPhotos(SortedList<InstagramPhoto> photos) {
         this.photos = photos;
         notifyDataSetChanged();
     }
 
-    public void addPhotho(FacebookImage image) {
+    public void addPhotho(InstagramPhoto image) {
         photos.add(image);
     }
 
@@ -107,9 +113,8 @@ public class AddFBPhotosAdapter extends RecyclerView.Adapter<AddFBPhotosAdapter.
             this.img_photo_fb_item = (ImageView) itemView.findViewById(R.id.img_photo_fb_item);
         }
 
-        public void bind(final FacebookImage image) {
-            photoUrl = String.format(ALBUM_PHOTO_FORMAT, image.getId(), userFBToken);
-            Glide.with(mContext).load(photoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
+        public void bind(final InstagramPhoto image) {
+            Glide.with(mContext).load(image.getImages().getStandardResolution().getUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
             itemView.setOnClickListener(this);
         }
 
