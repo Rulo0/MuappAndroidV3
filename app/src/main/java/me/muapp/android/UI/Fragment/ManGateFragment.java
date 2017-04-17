@@ -47,7 +47,7 @@ import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
 import static android.app.Activity.RESULT_OK;
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
-import static me.muapp.android.UI.Activity.FacebookPhothoDetailActivity.PHOTO_URL;
+import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
 
 public class ManGateFragment extends Fragment implements View.OnClickListener {
     public static final int REQUEST_USER_PHOTOS_FACEBOOK = 448;

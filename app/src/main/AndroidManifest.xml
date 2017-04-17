@@ -75,7 +75,7 @@
             android:name=".UI.Activity.FacebookPhotosActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".UI.Activity.FacebookPhothoDetailActivity"
+            android:name=".UI.Activity.FacebookPhotoDetailActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".UI.Activity.SettingsActivity"
@@ -93,13 +93,18 @@
             android:name=".UI.Activity.SpotifyDetailActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".UI.Activity.AddPhotoActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".UI.Activity.AddPhotosActivity"
-            android:label="@string/title_activity_add_photos"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".UI.Activity.AddPhotosDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.AddGiphyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.AddGiphyDetailActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

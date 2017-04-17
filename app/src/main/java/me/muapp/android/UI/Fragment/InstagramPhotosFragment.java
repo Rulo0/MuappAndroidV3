@@ -75,6 +75,7 @@ public class InstagramPhotosFragment extends Fragment implements ValueEventListe
         loggedUser = args.getParcelable(ARG_LOGGED_USER);
         userInstagramReference = FirebaseDatabase.getInstance().getReference().child("users").child(String.valueOf(loggedUser.getId()));
         ada = new AddInstagramPhotosAdapter(getContext());
+        ada.setOnImageSelectedListener(onImageSelectedListener);
     }
 
     @Override
@@ -95,6 +96,7 @@ public class InstagramPhotosFragment extends Fragment implements ValueEventListe
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
+        Log.wtf("MyUser", loggedUser.getId() + "");
         userInfo = dataSnapshot.getValue(UserInfo.class);
         if (userInfo != null) {
             Log.wtf("onDataChange", userInfo.toString());
@@ -123,7 +125,7 @@ public class InstagramPhotosFragment extends Fragment implements ValueEventListe
     @Override
     public void onStart() {
         super.onStart();
-        userInstagramReference.addListenerForSingleValueEvent(this);
+        userInstagramReference.addValueEventListener(this);
     }
 
     private class InstagramDataTask extends AsyncTask<UserInfo, Void, InstagramPhotos> {

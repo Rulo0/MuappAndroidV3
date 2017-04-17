@@ -13,6 +13,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +23,10 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.muapp.android.Classes.Internal.UserMedia;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.R;
+import me.muapp.android.UI.Adapter.AddDevicePhotosAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnImageSelectedListener;
 
 /**
@@ -31,6 +35,7 @@ import me.muapp.android.UI.Fragment.Interface.OnImageSelectedListener;
 
 public class GalleryPhotosFragment extends Fragment {
     private static final int REQUEST_MEDIA = 44;
+    RecyclerView recycler_add_device;
     OnImageSelectedListener onImageSelectedListener;
     User loggedUser;
     private static final String ARG_LOGGED_USER = "LOGGED_USER";
@@ -42,6 +47,7 @@ public class GalleryPhotosFragment extends Fragment {
             MediaStore.Files.FileColumns.MIME_TYPE,
             MediaStore.Files.FileColumns.TITLE
     };
+    AddDevicePhotosAdapter ada;
 
     public GalleryPhotosFragment() {
     }
@@ -70,19 +76,29 @@ public class GalleryPhotosFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         loggedUser = args.getParcelable(ARG_LOGGED_USER);
+        ada = new AddDevicePhotosAdapter(getContext());
+        ada.setOnImageSelectedListener(onImageSelectedListener);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.gallery_add_photos, container, false);
-
+        recycler_add_device = (RecyclerView) rootView.findViewById(R.id.recycler_add_device);
         return rootView;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        recycler_add_device.setLayoutManager(new GridLayoutManager(getContext(), 4));
+        recycler_add_device.setAdapter(ada);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         if (checkAndRequestPermissions())
             getAllUserMedia();
     }
@@ -112,8 +128,10 @@ public class GalleryPhotosFragment extends Fragment {
             Cursor cursor = cursorLoader.loadInBackground();
             try {
                 while (cursor.moveToNext()) {
-                    Log.wtf("getAllUserMedia", cursor.getString(0) + " | " + cursor.getString(1) + " | " + cursor.getString(2) + " | " + cursor.getString(3) + " | " + cursor.getString(4) + " | " + cursor.getString(5));
-                    Log.wtf("getAllUserMedia", Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getString(0)).toString());
+                    UserMedia dp = new UserMedia(cursor.getInt(0), cursor.getString(1), Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getString(0)), cursor.getLong(2), cursor.getInt(3));
+                    Log.wtf("getAllUserMedia", dp.toString());
+                    ada.addPhoto(dp);
+                    recycler_add_device.scrollToPosition(0);
                 }
             } finally {
                 cursor.close();

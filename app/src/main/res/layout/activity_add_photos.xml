@@ -30,16 +30,26 @@
             android:layout_width="match_parent"
             android:layout_height="270dp">
 
-            <com.fenchtose.nocropper.CropperView
-                android:id="@+id/cropper_view"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <VideoView
+                    android:id="@+id/vv_video_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/img_photo_preview"
                 android:layout_width="match_parent"
                 android:layout_height="270dp"
                 android:layout_centerInParent="true"
-                app:add_padding_to_make_square="true"
-                app:grid_color="@color/colorAccent"
-                app:grid_opacity="0.8"
-                app:grid_thickness="0.8dp"
-                app:padding_color="#ff282828" />
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop" />
         </RelativeLayout>
 
         <android.support.design.widget.TabLayout

@@ -1,6 +1,7 @@
 package me.muapp.android.UI.Adapter;
 
 import android.content.Context;
+import android.provider.MediaStore;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import me.muapp.android.Classes.Instagram.Data.InstagramPhoto;
 import me.muapp.android.R;
+import me.muapp.android.UI.Fragment.Interface.OnImageSelectedListener;
 
 /**
  * Created by rulo on 28/03/17.
@@ -23,6 +25,12 @@ public class AddInstagramPhotosAdapter extends RecyclerView.Adapter<AddInstagram
     private final LayoutInflater mInflater;
     private SortedList<InstagramPhoto> photos;
     private Context mContext;
+
+    public void setOnImageSelectedListener(OnImageSelectedListener onImageSelectedListener) {
+        this.onImageSelectedListener = onImageSelectedListener;
+    }
+
+    OnImageSelectedListener onImageSelectedListener;
 
     public AddInstagramPhotosAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
@@ -65,12 +73,12 @@ public class AddInstagramPhotosAdapter extends RecyclerView.Adapter<AddInstagram
 
             @Override
             public boolean areContentsTheSame(InstagramPhoto oldItem, InstagramPhoto newItem) {
-                return oldItem.getId().equals(newItem.getId());
+                return oldItem.getId().equals(newItem.getId()) && oldItem.getLink().equals(newItem.getLink());
             }
 
             @Override
             public boolean areItemsTheSame(InstagramPhoto item1, InstagramPhoto item2) {
-                return item1.equals(item2);
+                return item1.getId().equals(item2.getId());
             }
         });
         this.mContext = context;
@@ -114,13 +122,15 @@ public class AddInstagramPhotosAdapter extends RecyclerView.Adapter<AddInstagram
         }
 
         public void bind(final InstagramPhoto image) {
-            Glide.with(mContext).load(image.getImages().getStandardResolution().getUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
+            Glide.with(mContext).load(photoUrl = image.getImages().getStandardResolution().getUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-
+            if (onImageSelectedListener != null) {
+                onImageSelectedListener.onImageSelected(photoUrl, null, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+            }
         }
     }
 }

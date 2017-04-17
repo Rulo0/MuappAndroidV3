@@ -10,7 +10,7 @@ import me.muapp.android.Classes.Internal.FacebookAlbum;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.UserFBPhotosAdapter;
 
-import static me.muapp.android.UI.Activity.FacebookPhothoDetailActivity.PHOTO_URL;
+import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
 
 public class FacebookPhotosActivity extends BaseActivity {
     public static final String ALBUM_EXTRA = "ALBUM_EXTRA";

@@ -115,7 +115,7 @@ public class MainActivity extends BaseActivity implements
             }
         }
         if (preferenceHelper.getFirstLogin() && !loggedUser.getFakeAccount())
-        phoneValidation();
+            phoneValidation();
         navigation.setOnNavigationItemSelectedListener(this);
         fragmentHashMap.put(R.id.navigation_home, ChatFragment.newInstance(loggedUser));
         fragmentHashMap.put(R.id.navigation_dashboard, BasicFragment.newInstance(loggedUser));
@@ -277,6 +277,7 @@ public class MainActivity extends BaseActivity implements
                 startActivity(new Intent(MainActivity.this, AddPhotosActivity.class));
                 break;
             case R.id.btn_add_giphy:
+                startActivity(new Intent(MainActivity.this, AddGiphyActivity.class));
                 break;
             case R.id.btn_add_spotify:
                 startActivity(new Intent(MainActivity.this, SpotifySearchActivity.class));

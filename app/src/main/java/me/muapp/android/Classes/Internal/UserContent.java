@@ -10,8 +10,10 @@ import android.os.Parcelable;
 public class UserContent implements Parcelable {
     String catContent;
     String comment;
+    String contentUrl;
     Long createdAt;
     int likes;
+    String thumbUrl;
     String videoId;
     SpotifyData spotifyData;
 
@@ -34,6 +36,14 @@ public class UserContent implements Parcelable {
         this.comment = comment;
     }
 
+    public String getContentUrl() {
+        return contentUrl;
+    }
+
+    public void setContentUrl(String contentUrl) {
+        this.contentUrl = contentUrl;
+    }
+
     public Long getCreatedAt() {
         return createdAt;
     }
@@ -48,6 +58,14 @@ public class UserContent implements Parcelable {
 
     public void setLikes(int likes) {
         this.likes = likes;
+    }
+
+    public String getThumbUrl() {
+        return thumbUrl;
+    }
+
+    public void setThumbUrl(String thumbUrl) {
+        this.thumbUrl = thumbUrl;
     }
 
     public String getVideoId() {
@@ -69,8 +87,10 @@ public class UserContent implements Parcelable {
     protected UserContent(Parcel in) {
         catContent = in.readString();
         comment = in.readString();
+        contentUrl = in.readString();
         createdAt = in.readByte() == 0x00 ? null : in.readLong();
         likes = in.readInt();
+        thumbUrl = in.readString();
         videoId = in.readString();
         spotifyData = (SpotifyData) in.readValue(SpotifyData.class.getClassLoader());
     }
@@ -84,6 +104,7 @@ public class UserContent implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(catContent);
         dest.writeString(comment);
+        dest.writeString(contentUrl);
         if (createdAt == null) {
             dest.writeByte((byte) (0x00));
         } else {
@@ -91,6 +112,7 @@ public class UserContent implements Parcelable {
             dest.writeLong(createdAt);
         }
         dest.writeInt(likes);
+        dest.writeString(thumbUrl);
         dest.writeString(videoId);
         dest.writeValue(spotifyData);
     }

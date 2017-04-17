@@ -14,10 +14,10 @@ import java.util.List;
 
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
-import me.muapp.android.UI.Activity.FacebookPhothoDetailActivity;
+import me.muapp.android.UI.Activity.FacebookPhotoDetailActivity;
 import me.muapp.android.UI.Activity.FacebookPhotosActivity;
 
-import static me.muapp.android.UI.Activity.FacebookPhothoDetailActivity.PHOTO_URL;
+import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
 import static me.muapp.android.UI.Activity.FacebookPhotosActivity.FACEBOOK_PHOTO_REQUEST_CODE;
 
 /**
@@ -87,7 +87,7 @@ public class UserFBPhotosAdapter extends RecyclerView.Adapter<UserFBPhotosAdapte
 
         @Override
         public void onClick(View v) {
-            Intent i = new Intent(mContext, FacebookPhothoDetailActivity.class);
+            Intent i = new Intent(mContext, FacebookPhotoDetailActivity.class);
             i.putExtra(PHOTO_URL, photoUrl);
             mContext.startActivityForResult(i, FACEBOOK_PHOTO_REQUEST_CODE);
         }

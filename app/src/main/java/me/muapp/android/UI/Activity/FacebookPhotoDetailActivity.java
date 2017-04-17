@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide;
 
 import me.muapp.android.R;
 
-public class FacebookPhothoDetailActivity extends AppCompatActivity {
+public class FacebookPhotoDetailActivity extends AppCompatActivity {
     public static final String PHOTO_URL = "photo_url";
     ImageView img_photo_detail;
     String photoUrl;
@@ -20,7 +20,7 @@ public class FacebookPhothoDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_facebook_photho_detail);
+        setContentView(R.layout.activity_facebook_photo_detail);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         img_photo_detail = (ImageView) findViewById(R.id.img_photo_detail);
         if (getIntent().hasExtra(PHOTO_URL)) {

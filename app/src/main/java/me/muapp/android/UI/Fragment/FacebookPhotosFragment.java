@@ -29,8 +29,6 @@ import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.AddFBPhotosAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnImageSelectedListener;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
-
 /**
  * Created by rulo on 12/04/17.
  */
@@ -39,7 +37,6 @@ public class FacebookPhotosFragment extends Fragment {
     OnImageSelectedListener onImageSelectedListener;
     User loggedUser;
     private static final String ARG_LOGGED_USER = "LOGGED_USER";
-    private static final String ARG_FACEBOOK_IMAGES = "FACEBOOK_IMAGES";
     RecyclerView recycler_photo_add;
     AddFBPhotosAdapter ada;
     boolean hasImage = false;
@@ -71,6 +68,8 @@ public class FacebookPhotosFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         loggedUser = args.getParcelable(ARG_LOGGED_USER);
+        ada = new AddFBPhotosAdapter(getContext());
+        ada.setOnImageSelectedListener(onImageSelectedListener);
     }
 
     @Override
@@ -84,53 +83,30 @@ public class FacebookPhotosFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ada = new AddFBPhotosAdapter(getContext());
         recycler_photo_add.setLayoutManager(new GridLayoutManager(getContext(), 4));
         recycler_photo_add.setAdapter(ada);
+
         new GraphRequest(
-                AccessToken.getCurrentAccessToken(), String.format(
-                "/%s/albums", new PreferenceHelper(getContext()).getFacebookId()),
+                AccessToken.getCurrentAccessToken(),
+                String.format("me/photos/uploaded", new PreferenceHelper(getContext()).getFacebookId()),
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
                         try {
                             JSONObject graph = response.getJSONObject();
+                            Log.wtf("ALBUMS", response.toString());
                             if (graph.has("data") && !graph.isNull("data")) {
                                 JSONArray array = graph.getJSONArray("data");
-                                List<FacebookAlbum> albums = FacebookAlbum.asList(array);
-                                for (final FacebookAlbum a : albums) {
-                                    new GraphRequest(
-                                            AccessToken.getCurrentAccessToken(), String.format("/%s/photos", a.getId()),
-                                            null,
-                                            HttpMethod.GET,
-                                            new GraphRequest.Callback() {
-                                                public void onCompleted(GraphResponse response) {
-                                                    try {
-                                                        Log.wtf("ALBUMS", response.toString());
-                                                        JSONObject albumGraph = response.getJSONObject();
-                                                        List<FacebookImage> photos;
-                                                        if (albumGraph.has("data") && !albumGraph.isNull("data")) {
-                                                            JSONArray array = albumGraph.getJSONArray("data");
-                                                            photos = FacebookAlbum.imagesAsAlbumList(array);
-                                                            for (FacebookImage i : photos) {
-                                                                ada.addPhotho(i);
-                                                                recycler_photo_add.scrollToPosition(0);
-                                                            }
-                                                        }
-                                                    } catch (Exception x) {
-                                                        x.printStackTrace();
-                                                    }
-                                                }
-                                            }
-                                    ).executeAsync();
+                                List<FacebookImage> photos = FacebookAlbum.imagesAsAlbumList(array);
+                                for (FacebookImage i : photos) {
+                                    ada.addPhoto(i);
+                                    recycler_photo_add.scrollToPosition(0);
                                 }
                             }
                         } catch (Exception x) {
-                            Log.e(TAG, x.toString());
                             x.printStackTrace();
                         }
-
                     }
                 }
         ).executeAsync();

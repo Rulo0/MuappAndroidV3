@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -62,6 +64,8 @@ public class OauthInstagramDialog extends DialogFragment {
         try {
             String mainUrl = String.format("http://dev.muapp.me/oauth/connect?user_id=%s", userId);
             Log.wtf("opening", mainUrl);
+            clearCookies();
+            webViewOauth.clearCache(true);
             webViewOauth.loadUrl(mainUrl);
             webViewOauth.setWebViewClient(new WebViewClient() {
 
@@ -95,6 +99,24 @@ public class OauthInstagramDialog extends DialogFragment {
             webSettings.setJavaScriptEnabled(true);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public void clearCookies() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            Log.d(TAG, "Using clearCookies code for API >=" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
+        } else {
+            Log.d(TAG, "Using clearCookies code for API <" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
+            CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(getContext());
+            cookieSyncMngr.startSync();
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.removeAllCookie();
+            cookieManager.removeSessionCookie();
+            cookieSyncMngr.stopSync();
+            cookieSyncMngr.sync();
         }
     }
 

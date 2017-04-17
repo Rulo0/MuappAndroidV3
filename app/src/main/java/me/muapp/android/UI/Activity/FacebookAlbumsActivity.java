@@ -22,7 +22,7 @@ import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.UserFBAlbumsAdapter;
 
-import static me.muapp.android.UI.Activity.FacebookPhothoDetailActivity.PHOTO_URL;
+import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
 
 public class FacebookAlbumsActivity extends BaseActivity {
     List<FacebookAlbum> albums;
