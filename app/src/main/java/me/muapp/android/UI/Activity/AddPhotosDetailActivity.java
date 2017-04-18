@@ -41,6 +41,7 @@ public class AddPhotosDetailActivity extends BaseActivity {
     VideoView vv_video_detail;
     ImageView img_photo_detail;
     StorageReference mainReference;
+    public static final int PHOTOS_REQUEST = 711;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

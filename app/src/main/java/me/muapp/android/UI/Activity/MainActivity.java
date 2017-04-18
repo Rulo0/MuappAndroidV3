@@ -210,13 +210,21 @@ public class MainActivity extends BaseActivity implements
         try {
             Log.wtf("selectFragment", item.getTitle().toString());
             Fragment frag = fragmentHashMap.get(item.getItemId());
+            if (frag instanceof ProfileFragment) {
+                Log.wtf("selectFragment", "Profile");
+            }
+
             mSelectedItem = item.getItemId();
             if (frag != null) {
                 FragmentManager manager = getSupportFragmentManager();
                 FragmentTransaction ft = manager.beginTransaction();
                 ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
                 ft.hide(navigationElement.getFrag());
-                ft.show(frag);
+                if (frag.isAdded()) {
+                    ft.show(frag);
+                } else {
+                    ft.add(R.id.content_main_male, frag, item.getTitle().toString());
+                }
                 ft.commit();
             }
             if (frag instanceof ProfileFragment)

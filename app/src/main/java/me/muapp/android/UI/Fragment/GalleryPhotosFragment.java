@@ -23,8 +23,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.muapp.android.Classes.Internal.UserMedia;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Internal.UserMedia;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.AddDevicePhotosAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnImageSelectedListener;
@@ -107,9 +107,9 @@ public class GalleryPhotosFragment extends Fragment {
         try {
             String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                     + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
-                    + " OR "
+                   /* + " OR "
                     + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                    + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO*/
                     + " AND "
                     + MediaStore.Files.FileColumns.DATA
                     + " NOT LIKE '%Muapp/voiceNotes%'";

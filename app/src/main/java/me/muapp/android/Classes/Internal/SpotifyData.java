@@ -91,4 +91,15 @@ public class SpotifyData implements Parcelable {
             return new SpotifyData[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "SpotifyData{" +
+                "artistName='" + artistName + '\'' +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", previewUrl='" + previewUrl + '\'' +
+                ", thumb='" + thumb + '\'' +
+                '}';
+    }
 }

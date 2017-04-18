@@ -160,4 +160,7 @@
     <string name="title_activity_add_phothos">AddPhothosActivity</string>
     <string name="section_format">Hello World from section: %s</string>
     <string name="title_activity_add_photos">AddPhotosActivity</string>
+
+    <string name="format_user_years">%d years </string>
+    <string name="format_user_hometown">, i was born on </string>
 </resources>

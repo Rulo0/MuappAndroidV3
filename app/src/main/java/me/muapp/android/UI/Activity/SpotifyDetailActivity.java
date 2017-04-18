@@ -116,6 +116,7 @@ public class SpotifyDetailActivity extends BaseActivity implements MediaPlayer.O
         spotifyData.setArtistName(currentSong.getAlbum().getArtistNames());
         spotifyData.setPreviewUrl(currentSong.getPreviewUrl());
         spotifyData.setId(currentSong.getId());
+        spotifyData.setName(currentSong.getName());
         spotifyData.setThumb(currentSong.getAlbum().getHigherImage());
         thisContent.setSpotifyData(spotifyData);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));

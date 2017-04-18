@@ -8,6 +8,7 @@ import android.os.Parcelable;
  */
 
 public class UserContent implements Parcelable {
+    String key;
     String catContent;
     String comment;
     String contentUrl;
@@ -18,6 +19,14 @@ public class UserContent implements Parcelable {
     SpotifyData spotifyData;
 
     public UserContent() {
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getCatContent() {
@@ -85,6 +94,7 @@ public class UserContent implements Parcelable {
     }
 
     protected UserContent(Parcel in) {
+        key = in.readString();
         catContent = in.readString();
         comment = in.readString();
         contentUrl = in.readString();
@@ -102,6 +112,7 @@ public class UserContent implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(key);
         dest.writeString(catContent);
         dest.writeString(comment);
         dest.writeString(contentUrl);
@@ -129,4 +140,19 @@ public class UserContent implements Parcelable {
             return new UserContent[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "UserContent{" +
+                "key='" + key + '\'' +
+                ", catContent='" + catContent + '\'' +
+                ", comment='" + comment + '\'' +
+                ", contentUrl='" + contentUrl + '\'' +
+                ", createdAt=" + createdAt +
+                ", likes=" + likes +
+                ", thumbUrl='" + thumbUrl + '\'' +
+                ", videoId='" + videoId + '\'' +
+                ", spotifyData=" + (spotifyData != null ? spotifyData.toString() : spotifyData) +
+                '}';
+    }
 }

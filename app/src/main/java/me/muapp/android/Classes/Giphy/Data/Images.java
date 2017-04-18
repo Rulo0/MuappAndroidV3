@@ -15,6 +15,9 @@ public class Images implements Parcelable {
     @SerializedName("preview_gif")
     @Expose
     private PreviewGif previewGif;
+    @SerializedName("fixed_height_small")
+    @Expose
+    private Fixed fixed;
     public final static Parcelable.Creator<Images> CREATOR = new Creator<Images>() {
 
 
@@ -25,6 +28,7 @@ public class Images implements Parcelable {
             Images instance = new Images();
             instance.original = ((Original) in.readValue((Original.class.getClassLoader())));
             instance.previewGif = ((PreviewGif) in.readValue((PreviewGif.class.getClassLoader())));
+            instance.fixed = ((Fixed) in.readValue((Fixed.class.getClassLoader())));
             return instance;
         }
 
@@ -50,9 +54,18 @@ public class Images implements Parcelable {
         this.previewGif = previewGif;
     }
 
+    public Fixed getFixed() {
+        return fixed;
+    }
+
+    public void setFixed(Fixed fixed) {
+        this.fixed = fixed;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(original);
         dest.writeValue(previewGif);
+        dest.writeValue(fixed);
     }
 
     public int describeContents() {

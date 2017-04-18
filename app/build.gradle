@@ -57,29 +57,8 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:10.0.1'
     compile 'com.fenchtose.nocropper:nocropper:0.1.7'
     compile 'com.google.firebase:firebase-storage:10.0.1'
+    compile 'com.romandanylyk:pageindicatorview:0.1.2'
     testCompile 'junit:junit:4.12'
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 apply plugin: 'com.google.gms.google-services'

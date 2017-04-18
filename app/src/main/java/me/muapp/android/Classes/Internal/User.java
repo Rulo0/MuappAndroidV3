@@ -90,19 +90,19 @@ public class User implements Parcelable {
     private Integer gender;
     @SerializedName("education")
     @Expose
-    private Object education;
+    private String education;
     @SerializedName("work")
     @Expose
-    private Object work;
+    private String work;
     @SerializedName("hometown")
     @Expose
-    private Object hometown;
+    private String hometown;
     @SerializedName("location")
     @Expose
     private Object location;
     @SerializedName("audio_id")
     @Expose
-    private Object audioId;
+    private int audioId;
     @SerializedName("first_name")
     @Expose
     private String firstName;
@@ -200,11 +200,11 @@ public class User implements Parcelable {
             User instance = new User();
             instance.birthday = ((String) in.readValue((String.class.getClassLoader())));
             instance.gender = ((Integer) in.readValue((Integer.class.getClassLoader())));
-            instance.education = ((Object) in.readValue((Object.class.getClassLoader())));
-            instance.work = ((Object) in.readValue((Object.class.getClassLoader())));
-            instance.hometown = ((Object) in.readValue((Object.class.getClassLoader())));
+            instance.education = ((String) in.readValue((String.class.getClassLoader())));
+            instance.work = ((String) in.readValue((String.class.getClassLoader())));
+            instance.hometown = ((String) in.readValue((String.class.getClassLoader())));
             instance.location = ((Object) in.readValue((Object.class.getClassLoader())));
-            instance.audioId = ((Object) in.readValue((Object.class.getClassLoader())));
+            instance.audioId = ((int) in.readValue((int.class.getClassLoader())));
             instance.firstName = ((String) in.readValue((String.class.getClassLoader())));
             instance.photo = ((String) in.readValue((String.class.getClassLoader())));
             instance.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
@@ -287,27 +287,27 @@ public class User implements Parcelable {
         this.gender = gender;
     }
 
-    public Object getEducation() {
+    public String getEducation() {
         return education;
     }
 
-    public void setEducation(Object education) {
+    public void setEducation(String education) {
         this.education = education;
     }
 
-    public Object getWork() {
+    public String getWork() {
         return work;
     }
 
-    public void setWork(Object work) {
+    public void setWork(String work) {
         this.work = work;
     }
 
-    public Object getHometown() {
+    public String getHometown() {
         return hometown;
     }
 
-    public void setHometown(Object hometown) {
+    public void setHometown(String hometown) {
         this.hometown = hometown;
     }
 
@@ -319,11 +319,11 @@ public class User implements Parcelable {
         this.location = location;
     }
 
-    public Object getAudioId() {
+    public int getAudioId() {
         return audioId;
     }
 
-    public void setAudioId(Object audioId) {
+    public void setAudioId(int audioId) {
         this.audioId = audioId;
     }
 

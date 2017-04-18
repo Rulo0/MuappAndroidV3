@@ -32,19 +32,19 @@ import me.muapp.android.UI.Fragment.InstagramPhotosFragment;
 import me.muapp.android.UI.Fragment.Interface.OnImageSelectedListener;
 
 import static me.muapp.android.UI.Activity.AddPhotosDetailActivity.CURRENT_MEDIA;
+import static me.muapp.android.UI.Activity.AddPhotosDetailActivity.PHOTOS_REQUEST;
 
 public class AddPhotosActivity extends BaseActivity implements OnImageSelectedListener {
-    private static final int MEDIA_REQUEST = 711;
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
+
+    public static Boolean hasSelectedMedia = false;
     TabLayout tabLayout;
     int[] activeIcons = new int[]{R.drawable.ic_tab_fb, R.drawable.ic_tab_gal, R.drawable.ic_tab_inst};
     int[] inactiveIcons = new int[]{R.drawable.ic_tab_fb_inactive, R.drawable.ic_tab_gal_inactive, R.drawable.ic_tab_inst_inactive};
     ImageView img_photo_preview;
     VideoView vv_video_preview;
-    public static Boolean hasSelectedMedia = false;
     UserMedia currentMedia;
-
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +124,7 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
                 Log.wtf("CurrentMedia", currentMedia.toString());
                 Intent photoIntent = new Intent(this, AddPhotosDetailActivity.class);
                 photoIntent.putExtra(CURRENT_MEDIA, currentMedia);
-                startActivityForResult(photoIntent, MEDIA_REQUEST);
+                startActivityForResult(photoIntent, PHOTOS_REQUEST);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -169,6 +169,17 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
         currentMedia.setPath(url);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case PHOTOS_REQUEST:
+                    finish();
+                    break;
+            }
+        }
+    }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
         Fragment[] fragments = new Fragment[]{FacebookPhotosFragment.newInstance(loggedUser), GalleryPhotosFragment.newInstance(loggedUser), InstagramPhotosFragment.newInstance(loggedUser)};
