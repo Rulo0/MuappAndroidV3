@@ -17,6 +17,7 @@ public class UserContent implements Parcelable {
     String thumbUrl;
     String videoId;
     SpotifyData spotifyData;
+    GiphyMeasureData giphyMeasureData;
 
     public UserContent() {
     }
@@ -93,6 +94,14 @@ public class UserContent implements Parcelable {
         this.spotifyData = spotifyData;
     }
 
+    public GiphyMeasureData getGiphyMeasureData() {
+        return giphyMeasureData;
+    }
+
+    public void setGiphyMeasureData(GiphyMeasureData giphyMeasureData) {
+        this.giphyMeasureData = giphyMeasureData;
+    }
+
     protected UserContent(Parcel in) {
         key = in.readString();
         catContent = in.readString();
@@ -103,6 +112,7 @@ public class UserContent implements Parcelable {
         thumbUrl = in.readString();
         videoId = in.readString();
         spotifyData = (SpotifyData) in.readValue(SpotifyData.class.getClassLoader());
+        giphyMeasureData = (GiphyMeasureData) in.readValue(GiphyMeasureData.class.getClassLoader());
     }
 
     @Override
@@ -126,6 +136,7 @@ public class UserContent implements Parcelable {
         dest.writeString(thumbUrl);
         dest.writeString(videoId);
         dest.writeValue(spotifyData);
+        dest.writeValue(giphyMeasureData);
     }
 
     @SuppressWarnings("unused")
@@ -153,6 +164,7 @@ public class UserContent implements Parcelable {
                 ", thumbUrl='" + thumbUrl + '\'' +
                 ", videoId='" + videoId + '\'' +
                 ", spotifyData=" + (spotifyData != null ? spotifyData.toString() : spotifyData) +
+                ", giphyMeasureData=" + (giphyMeasureData != null ? giphyMeasureData.toString() : giphyMeasureData) +
                 '}';
     }
 }

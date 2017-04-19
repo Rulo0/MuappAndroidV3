@@ -1,23 +1,40 @@
 package me.muapp.android.UI.Adapter;
 
 import android.content.Context;
+import android.graphics.Point;
+import android.media.MediaPlayer;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.github.curioustechizen.ago.RelativeTimeTextView;
 
 import java.util.Date;
 import java.util.HashMap;
 
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import me.muapp.android.Classes.Internal.GiphyMeasureData;
+import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 
 /**
  * Created by rulo on 18/04/17.
  */
-
 public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.UserContentHolder> {
     SortedList<UserContent> userContentList;
     HashMap<String, Integer> viewTypeMap = new HashMap<String, Integer>() {{
@@ -32,6 +49,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     }};
     Context context;
     LayoutInflater mInflater;
+    MediaPlayer mediaPlayer;
+    String currentPlaying = "";
+    ImageButton previewPlayedButtonSpotify;
+    int screenWidth;
 
     public UserContentAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
@@ -72,13 +93,51 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             }
         });
         this.context = context;
+        mediaPlayer = new MediaPlayer();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        screenWidth = size.x;
     }
 
+    public void addContent(UserContent c) {
+        userContentList.add(c);
+    }
+
+    public void removeContent(String contentKey) {
+        for (int i = 0; i < userContentList.size(); i++) {
+            if (userContentList.get(i).getKey().equals(contentKey)) {
+                userContentList.removeItemAt(i);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return viewTypeMap.get(userContentList.get(position).getCatContent());
+    }
 
     @Override
     public UserContentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View itemView = mInflater.inflate(R.layout.user_content_picture_item_layout, parent, false);
-        return new PictureHolder(itemView);
+        Log.wtf("ViewType", viewType + "");
+        UserContentHolder holder;
+        switch (viewType) {
+            case 3:
+                View gifView = mInflater.inflate(R.layout.user_content_gif_item_layout, parent, false);
+                holder = new GifContentHolder(gifView);
+                break;
+            case 6:
+                View spotifyView = mInflater.inflate(R.layout.user_content_spotify_item_layout, parent, false);
+                holder = new SpotifyContentHolder(spotifyView);
+                break;
+            default:
+                View picView = mInflater.inflate(R.layout.user_content_picture_item_layout, parent, false);
+                holder = new PictureContentHolder(picView);
+                break;
+        }
+        return holder;
     }
 
     @Override
@@ -86,44 +145,186 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         holder.bind(userContentList.get(position));
     }
 
-    public void addContent(UserContent content) {
-        userContentList.add(content);
-    }
-
     @Override
     public int getItemCount() {
-        return viewTypeMap.size();
+        return userContentList.size();
     }
 
-    interface userContentBinderInterface {
-        void bind(UserContent content);
+    interface UserContentInterface {
+        void bind(UserContent c);
     }
 
-    public class UserContentHolder extends RecyclerView.ViewHolder implements userContentBinderInterface {
-        public UserContentHolder(View v) {
-            super(v);
+    class UserContentHolder extends RecyclerView.ViewHolder implements UserContentInterface, View.OnClickListener {
+        public UserContentHolder(View itemView) {
+            super(itemView);
         }
 
         @Override
-        public void bind(UserContent content) {
+        public void bind(UserContent c) {
 
-        }
-    }
-
-    public class PictureHolder extends UserContentHolder {
-        TextView txt_test;
-
-        public PictureHolder(View v) {
-            super(v);
-            this.txt_test = (TextView) v.findViewById(R.id.txt_test);
         }
 
         @Override
-        public void bind(UserContent content) {
-            super.bind(content);
-            txt_test.setText(content.getKey());
+        public void onClick(View v) {
+
         }
     }
 
+    class PictureContentHolder extends UserContentHolder {
+        TextView txt_image_comment;
+        RelativeTimeTextView txt_picture_date;
+        ImageView img_picture_content;
+
+
+        public PictureContentHolder(View itemView) {
+            super(itemView);
+            this.txt_image_comment = (TextView) itemView.findViewById(R.id.txt_image_comment);
+            this.txt_picture_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_picture_date);
+            this.img_picture_content = (ImageView) itemView.findViewById(R.id.img_picture_content);
+        }
+
+        @Override
+        public void bind(UserContent c) {
+            super.bind(c);
+            Glide.with(context).load(c.getContentUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_picture_content);
+            if (!TextUtils.isEmpty(c.getComment())) {
+                txt_image_comment.setText(c.getComment());
+                txt_image_comment.setVisibility(View.VISIBLE);
+            } else {
+                txt_image_comment.setVisibility(View.GONE);
+            }
+            txt_picture_date.setReferenceTime(c.getCreatedAt());
+        }
+    }
+
+    class GifContentHolder extends UserContentHolder {
+        TextView txt_gif_comment;
+        RelativeTimeTextView txt_gif_date;
+        ImageView img_gif_content;
+        View contentView;
+
+        public GifContentHolder(View itemView) {
+            super(itemView);
+            this.contentView = itemView;
+            this.txt_gif_comment = (TextView) itemView.findViewById(R.id.txt_gif_comment);
+            this.txt_gif_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_gif_date);
+            this.img_gif_content = (ImageView) itemView.findViewById(R.id.img_gif_content);
+        }
+
+        @Override
+        public void bind(UserContent c) {
+            super.bind(c);
+            if (!TextUtils.isEmpty(c.getComment())) {
+                txt_gif_comment.setText(c.getComment());
+                txt_gif_comment.setVisibility(View.VISIBLE);
+            } else {
+                txt_gif_comment.setVisibility(View.GONE);
+            }
+            txt_gif_date.setReferenceTime(c.getCreatedAt());
+
+            GiphyMeasureData giphyMeasureData = c.getGiphyMeasureData();
+            float aspectRatio;
+            if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
+                aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
+                Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_content);
+            } else {
+                aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
+                Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
+            }
+        }
+    }
+
+    class SpotifyContentHolder extends UserContentHolder {
+        TextView txt_spotify_comment;
+        RelativeTimeTextView txt_spotify_date;
+        ImageView img_detail_album_blurred, img_detail_album;
+        TextView txt_detail_name, txt_detail_artist;
+        ImageButton btn_play_detail;
+        SpotifyData currentData;
+
+        public SpotifyContentHolder(View itemView) {
+            super(itemView);
+            this.txt_spotify_comment = (TextView) itemView.findViewById(R.id.txt_spotify_comment);
+            this.txt_spotify_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_spotify_date);
+            this.btn_play_detail = (ImageButton) itemView.findViewById(R.id.btn_play_detail);
+            this.img_detail_album_blurred = (ImageView) itemView.findViewById(R.id.img_detail_album_blurred);
+            this.img_detail_album = (ImageView) itemView.findViewById(R.id.img_detail_album);
+            this.txt_detail_name = (TextView) itemView.findViewById(R.id.txt_detail_name);
+            this.txt_detail_artist = (TextView) itemView.findViewById(R.id.txt_detail_artist);
+        }
+
+        @Override
+        public void bind(UserContent c) {
+            super.bind(c);
+            if (!TextUtils.isEmpty(c.getComment())) {
+                txt_spotify_comment.setText(c.getComment());
+                txt_spotify_comment.setVisibility(View.VISIBLE);
+            } else {
+                txt_spotify_comment.setVisibility(View.GONE);
+            }
+            txt_spotify_date.setReferenceTime(c.getCreatedAt());
+            if ((currentData = c.getSpotifyData()) != null) {
+                Glide.with(context).load(currentData.getThumb()).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).centerCrop().into(img_detail_album);
+                Glide.with(context).load(currentData.getThumb()).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).bitmapTransform(new CenterCrop(context), new BlurTransformation(context)).into(img_detail_album_blurred);
+                txt_detail_name.setText(currentData.getName());
+                txt_detail_artist.setText(currentData.getArtistName());
+                if (currentPlaying.equals(currentData.getPreviewUrl())) {
+                    btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                } else {
+                    btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                }
+                btn_play_detail.setOnClickListener(this);
+            }
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            super.onClick(v);
+            try {
+                if (!currentPlaying.equals(currentData.getPreviewUrl())) {
+                    if (previewPlayedButtonSpotify != null) {
+                        previewPlayedButtonSpotify.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    }
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            currentPlaying = "";
+                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                        }
+                    });
+                    mediaPlayer.prepare();
+                    previewPlayedButtonSpotify = (ImageButton) v;
+                } else {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    } else {
+                        mediaPlayer.start();
+                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                    }
+                }
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+        }
+    }
+
+    public void stopMediaPlayer() {
+        mediaPlayer.stop();
+    }
+
+    public void releaseMediaPlayer() {
+        mediaPlayer.release();
+    }
 
 }

@@ -5,7 +5,7 @@
     <color name="colorPrimaryDark">#cdcdcd</color>
     <color name="colorAccent">#ff666e</color>
     <color name="black_overlay">#66000000</color>
-    <color name="black_dim">#26000000</color>
+    <color name="black_dim">#48000000</color>
     <color name="color_muapp_dark">#3e4c5c</color>
     <color name="color_muapp_dark_sub">#929292</color>
     <color name="color_muapp_button_light">#9fa6ae</color>

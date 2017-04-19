@@ -10,31 +10,23 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <me.muapp.android.UI.View.SquareRelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/img_picture_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </me.muapp.android.UI.View.SquareRelativeLayout>
+        <include layout="@layout/spotify_control_layout" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/img_gif_icon"
+                android:id="@+id/img_spotify_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_margin="8dp"
-                app:srcCompat="@drawable/ic_camera" />
+                app:srcCompat="@drawable/ic_spotify_red" />
 
             <ImageButton
-                android:id="@+id/btn_gif_menu"
+                android:id="@+id/btn_spotify_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -48,18 +40,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_toLeftOf="@id/btn_gif_menu"
-                android:layout_toRightOf="@+id/img_gif_icon"
+                android:layout_toLeftOf="@id/btn_spotify_menu"
+                android:layout_toRightOf="@+id/img_spotify_icon"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/txt_image_comment"
+                    android:id="@+id/txt_spotify_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Content" />
 
                 <com.github.curioustechizen.ago.RelativeTimeTextView
-                    android:id="@+id/txt_picture_date"
+                    android:id="@+id/txt_spotify_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="time ago"

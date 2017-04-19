@@ -18,6 +18,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.Date;
 
 import me.muapp.android.Classes.Giphy.Data.GiphyEntry;
+import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 
@@ -69,6 +70,10 @@ public class AddGiphyDetailActivity extends BaseActivity {
         thisContent.setLikes(0);
         thisContent.setContentUrl(currentGiphy.getImages().getOriginal().getUrl());
         thisContent.setCatContent("contentGif");
+        GiphyMeasureData giphyMeasureData = new GiphyMeasureData();
+        giphyMeasureData.setWidth(Integer.parseInt(currentGiphy.getImages().getOriginal().getWidth()));
+        giphyMeasureData.setHeight(Integer.parseInt(currentGiphy.getImages().getOriginal().getHeight()));
+        thisContent.setGiphyMeasureData(giphyMeasureData);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
         String key = ref.push().getKey();
         ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {

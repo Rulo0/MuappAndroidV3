@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +38,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     TextView txt_profile_info;
     UserContentAdapter adapter;
     RecyclerView recycler_my_content;
+
 
     public ProfileFragment() {
     }
@@ -115,7 +115,14 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     @Override
     public void onStop() {
         super.onStop();
+        adapter.stopMediaPlayer();
         myUserReference.removeEventListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        adapter.releaseMediaPlayer();
     }
 
     @Override
@@ -146,25 +153,35 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         UserContent c = dataSnapshot.getValue(UserContent.class);
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
-            Log.wtf("Content", c.toString());
-
-            //  adapter.addContent(c);
+            adapter.addContent(c);
         }
     }
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+        UserContent c = dataSnapshot.getValue(UserContent.class);
+        if (c != null) {
+            c.setKey(dataSnapshot.getKey());
+            adapter.removeContent(dataSnapshot.getKey());
+            adapter.addContent(c);
+        }
     }
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+        UserContent c = dataSnapshot.getValue(UserContent.class);
+        if (c != null) {
+            adapter.removeContent(dataSnapshot.getKey());
+        }
     }
 
     @Override
     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+        UserContent c = dataSnapshot.getValue(UserContent.class);
+        if (c != null) {
+            c.setKey(dataSnapshot.getKey());
+            adapter.addContent(c);
+        }
     }
 
     @Override

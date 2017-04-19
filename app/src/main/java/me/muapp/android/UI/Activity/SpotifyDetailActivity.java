@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -57,8 +58,8 @@ public class SpotifyDetailActivity extends BaseActivity implements MediaPlayer.O
             mp.prepareAsync();
             Log.wtf("currentSong", currentSong.toString());
             Log.wtf("currentSong", currentSong.getPreviewUrl());
-            Glide.with(this).load(currentSong.getAlbum().getHigherImage()).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_detail_album);
-            Glide.with(this).load(currentSong.getAlbum().getHigherImage()).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CenterCrop(this), new BlurTransformation(this)).into(img_detail_album_blurred);
+            Glide.with(this).load(currentSong.getAlbum().getHigherImage()).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).centerCrop().into(img_detail_album);
+            Glide.with(this).load(currentSong.getAlbum().getHigherImage()).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).bitmapTransform(new CenterCrop(this), new BlurTransformation(this)).into(img_detail_album_blurred);
             txt_detail_name.setText(currentSong.getName());
             txt_detail_artist.setText(currentSong.getAlbum().getArtistNames());
         } catch (Exception x) {
