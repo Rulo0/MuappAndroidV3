@@ -19,10 +19,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.rd.PageIndicatorView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.ProfilePicturesAdapter;
+import me.muapp.android.UI.Adapter.SectionedProfileAdapter;
 import me.muapp.android.UI.Adapter.UserContentAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
@@ -38,7 +42,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     TextView txt_profile_info;
     UserContentAdapter adapter;
     RecyclerView recycler_my_content;
-
+    SectionedProfileAdapter mSectionedAdapter;
 
     public ProfileFragment() {
     }
@@ -63,6 +67,12 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         }
         profilePicturesAdapter = new ProfilePicturesAdapter(getContext(), testing);*/
         adapter = new UserContentAdapter(getContext());
+        List<SectionedProfileAdapter.Section> sections = new ArrayList<>();
+        sections.add(new SectionedProfileAdapter.Section(0, user));
+        SectionedProfileAdapter.Section[] dummy = new SectionedProfileAdapter.Section[sections.size()];
+        mSectionedAdapter = new
+                SectionedProfileAdapter(getContext(), R.layout.profile_header_layout, R.id.pillbox_section_text, R.id.pillbox_divider_icon, adapter);
+        mSectionedAdapter.setSections(sections.toArray(dummy));
         myUserReference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(user.getId()));
     }
 
@@ -72,6 +82,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         recycler_my_content = (RecyclerView) v.findViewById(R.id.recycler_my_content);
         recycler_my_content.setLayoutManager(new LinearLayoutManager(getContext()));
+        recycler_my_content.setNestedScrollingEnabled(false);
        /* pager_profile_pictures = (ViewPager) v.findViewById(R.id.pager_profile_pictures);
         indicator_profile_pictures = (PageIndicatorView) v.findViewById(R.id.indicator_profile_pictures);
         indicator_profile_pictures.setAnimationType(AnimationType.SWAP);
@@ -86,7 +97,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
      /*   pager_profile_pictures.setAdapter(profilePicturesAdapter);
         indicator_profile_pictures.setViewPager(pager_profile_pictures);
         createHeader(user);*/
-        recycler_my_content.setAdapter(adapter);
+        recycler_my_content.setAdapter(mSectionedAdapter);
+        //recycler_my_content.setAdapter(adapter);
     }
 
     /*private void createHeader(User user) {
@@ -154,6 +166,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
             adapter.addContent(c);
+            recycler_my_content.scrollToPosition(0);
         }
     }
 

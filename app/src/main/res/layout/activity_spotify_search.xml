@@ -5,29 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="me.muapp.android.UI.Activity.SpotifySearchActivity">
+    <!--
+        <View
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:focusableInTouchMode="true" />
 
-    <View
-        android:layout_width="1dp"
-        android:layout_height="1dp"
-        android:focusableInTouchMode="true" />
+         <android.support.v7.widget.CardView
+               android:id="@+id/container_search"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="8dp"
+               android:layout_marginRight="8dp"
+               android:layout_marginTop="8dp"
+               app:layout_constraintLeft_toLeftOf="parent"
+               app:layout_constraintRight_toRightOf="parent"
+               app:layout_constraintTop_toTopOf="parent">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/container_search"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <android.support.v7.widget.SearchView
-            android:id="@+id/srch_spotify_tracks"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:iconifiedByDefault="false" />
-    </android.support.v7.widget.CardView>
+               <android.support.v7.widget.SearchView
+                   android:id="@+id/srch_spotify_tracks"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   app:iconifiedByDefault="false" />
+           </android.support.v7.widget.CardView>-->
 
     <RelativeLayout
         android:layout_width="0dp"
@@ -36,7 +36,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/container_search">
+        app:layout_constraintTop_toTopOf="parent"><!--
+    app:layout_constraintTop_toBottomOf="@+id/container_search"
+    >-->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_spotify"

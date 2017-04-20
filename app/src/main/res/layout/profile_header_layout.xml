@@ -3,12 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
+
     <me.muapp.android.UI.View.SquareRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <android.support.v4.view.ViewPager
             android:id="@+id/pager_profile_pictures"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <com.rd.PageIndicatorView
+            android:id="@+id/indicator_profile_pictures"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/activity_vertical_margin" />
     </me.muapp.android.UI.View.SquareRelativeLayout>
+
+    <ImageView
+        android:id="@+id/pillbox_divider_icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin" />
+
+
+    <TextView
+        android:id="@+id/pillbox_section_text"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="72dp"
+        android:background="@android:color/transparent"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 </LinearLayout>

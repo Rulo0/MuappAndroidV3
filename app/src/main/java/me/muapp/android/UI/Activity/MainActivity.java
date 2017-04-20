@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -62,6 +63,7 @@ public class MainActivity extends BaseActivity implements
     ConstraintLayout add_item_layout;
     BottomSheetBehavior bsb;
     ImageButton btn_add_quote, btn_add_voice, btn_add_photo, btn_add_giphy, btn_add_spotify, btn_add_youtube;
+    Toolbar toolbar;
 
     public void phoneValidation() {
         final Intent intent = new Intent(this, AccountKitActivity.class);
@@ -227,10 +229,11 @@ public class MainActivity extends BaseActivity implements
                 }
                 ft.commit();
             }
-            if (frag instanceof ProfileFragment)
+            if (frag instanceof ProfileFragment) {
                 fab_add_content.show();
-            else
+            } else {
                 fab_add_content.hide();
+            }
             fab_add_content.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

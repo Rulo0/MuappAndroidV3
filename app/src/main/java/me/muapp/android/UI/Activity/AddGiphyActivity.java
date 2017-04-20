@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
@@ -24,6 +25,7 @@ import java.util.Locale;
 import me.muapp.android.Classes.Giphy.Data.GiphyEntries;
 import me.muapp.android.Classes.Giphy.Data.GiphyEntry;
 import me.muapp.android.Classes.Util.ProgressUtil;
+import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.AddGiphyAdapter;
 import okhttp3.OkHttpClient;
@@ -37,6 +39,7 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
     ProgressBar progress_giphy;
     AddGiphyAdapter ada;
     ProgressUtil progressUtil;
+    LinearLayout placeholder_giphy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,7 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
         progressUtil = new ProgressUtil(this, recycler_add_giphy, progress_giphy);
         recycler_add_giphy.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         recycler_add_giphy.setAdapter(ada);
+        placeholder_giphy = (LinearLayout) findViewById(R.id.placeholder_giphy);
         new GetGyphyTask().execute();
     }
 
@@ -104,13 +108,20 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
         protected void onPreExecute() {
             super.onPreExecute();
             progressUtil.showProgress(true);
+            Utils.animView(placeholder_giphy, false);
         }
 
         @Override
         protected void onPostExecute(List<GiphyEntry> result) {
             super.onPostExecute(result);
             progressUtil.showProgress(false);
-            ada.addPhotos(result);
+            if (result.size() > 0) {
+                ada.addPhotos(result);
+                Utils.animView(recycler_add_giphy, true);
+            } else {
+                Utils.animView(placeholder_giphy, true);
+                Utils.animView(recycler_add_giphy, false);
+            }
         }
 
         @Override
@@ -147,7 +158,11 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
         protected void onPostExecute(List<GiphyEntry> result) {
             super.onPostExecute(result);
             progressUtil.showProgress(false);
-            ada.addPhotos(result);
+            if (result.size() > 0) {
+                ada.addPhotos(result);
+            } else {
+
+            }
         }
 
         @Override

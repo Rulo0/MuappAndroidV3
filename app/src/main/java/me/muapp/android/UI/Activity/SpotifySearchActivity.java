@@ -1,5 +1,7 @@
 package me.muapp.android.UI.Activity;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -7,9 +9,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -33,7 +37,7 @@ import static me.muapp.android.UI.Activity.SpotifyDetailActivity.SPOTIFY_REQUEST
 
 public class SpotifySearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
     public static String TAG = "SpotifySearchActivity";
-    SearchView srch_spotify_tracks;
+    /*SearchView srch_spotify_tracks;*/
     RecyclerView recycler_spotify;
     LinearLayout placeholder_spotify;
     ProgressBar progress_spotify;
@@ -46,14 +50,35 @@ public class SpotifySearchActivity extends BaseActivity implements SearchView.On
         ada = new SpotifyAdapter(this);
         setContentView(R.layout.activity_spotify_search);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        srch_spotify_tracks = (SearchView) findViewById(R.id.srch_spotify_tracks);
+        //srch_spotify_tracks = (SearchView) findViewById(srch_spotify_tracks);
         placeholder_spotify = (LinearLayout) findViewById(R.id.placeholder_spotify);
         progress_spotify = (ProgressBar) findViewById(R.id.progress_spotify);
-        srch_spotify_tracks.setOnQueryTextListener(this);
+        //srch_spotify_tracks.setOnQueryTextListener(this);
         recycler_spotify = (RecyclerView) findViewById(R.id.recycler_spotify);
         recycler_spotify.setLayoutManager(new LinearLayoutManager(this));
         recycler_spotify.setAdapter(ada);
         progressUtil = new ProgressUtil(this, recycler_spotify, progress_spotify);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        search.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
+        search.setOnQueryTextListener(this);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -84,8 +109,13 @@ public class SpotifySearchActivity extends BaseActivity implements SearchView.On
         protected void onPostExecute(List<Song> songs) {
             super.onPostExecute(songs);
             progressUtil.showProgress(false);
-            for (Song s : songs) {
-                ada.addSong(s);
+            if (songs.size() > 0) {
+                for (Song s : songs) {
+                    ada.addSong(s);
+                }
+            } else {
+                ((TextView) findViewById(R.id.txt_placeholder_spotify)).setText(getString(R.string.lbl_no_results_found));
+                Utils.animView(placeholder_spotify, true);
             }
         }
 
@@ -127,7 +157,8 @@ public class SpotifySearchActivity extends BaseActivity implements SearchView.On
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case SPOTIFY_REQUEST_CODE:
-                    Toast.makeText(this, "Published", Toast.LENGTH_SHORT).show();
+                    finish();
+                    break;
             }
         }
     }
