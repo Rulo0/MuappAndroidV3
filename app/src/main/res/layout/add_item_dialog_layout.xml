@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryAlpha"
+    android:clickable="true"
     android:orientation="vertical"
     app:behavior_hideable="true"
     app:behavior_peekHeight="0dp"
@@ -30,18 +31,20 @@
 
             <ImageButton
                 android:id="@+id/btn_add_quote"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
                 android:src="@drawable/ic_add_quotes" />
 
             <ImageButton
                 android:id="@+id/btn_add_voice"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
                 android:src="@drawable/ic_add_mic" />
         </TableRow>
 
@@ -52,18 +55,20 @@
 
             <ImageButton
                 android:id="@+id/btn_add_photo"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
                 android:src="@drawable/ic_add_photo" />
 
             <ImageButton
                 android:id="@+id/btn_add_giphy"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
                 android:src="@drawable/ic_add_giphy" />
         </TableRow>
 
@@ -74,18 +79,21 @@
 
             <ImageButton
                 android:id="@+id/btn_add_spotify"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
                 android:src="@drawable/ic_add_spotify" />
 
             <ImageButton
                 android:id="@+id/btn_add_youtube"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
                 android:src="@drawable/ic_add_youtube" />
         </TableRow>
 

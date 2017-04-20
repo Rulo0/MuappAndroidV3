@@ -90,7 +90,7 @@ public class InstagramPhotosFragment extends Fragment implements ValueEventListe
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recycler_add_instagram.setLayoutManager(new GridLayoutManager(getContext(), 4));
+        recycler_add_instagram.setLayoutManager(new GridLayoutManager(getContext(), 3));
         recycler_add_instagram.setAdapter(ada);
     }
 

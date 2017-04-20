@@ -81,9 +81,12 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_male);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         realm = CacheUtils.getInstance(loggedUser);
         add_item_layout = (ConstraintLayout) findViewById(R.id.add_item_layout);
+        add_item_layout.bringToFront();
         bsb = BottomSheetBehavior.from(add_item_layout);
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
@@ -221,12 +224,12 @@ public class MainActivity extends BaseActivity implements
                 FragmentManager manager = getSupportFragmentManager();
                 FragmentTransaction ft = manager.beginTransaction();
                 ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-                ft.hide(navigationElement.getFrag());
                 if (frag.isAdded()) {
                     ft.show(frag);
                 } else {
                     ft.add(R.id.content_main_male, frag, item.getTitle().toString());
                 }
+                ft.hide(navigationElement.getFrag());
                 ft.commit();
             }
             if (frag instanceof ProfileFragment) {
@@ -234,16 +237,17 @@ public class MainActivity extends BaseActivity implements
             } else {
                 fab_add_content.hide();
             }
-            fab_add_content.setOnClickListener(new View.OnClickListener() {
+
+           /* fab_add_content.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     bsb.setState(BottomSheetBehavior.STATE_EXPANDED);
-                  /*  Log.wtf("show dialog", "mmm");
+                  *//*  Log.wtf("show dialog", "mmm");
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     OauthInstagramDialog frag = new OauthInstagramDialog();
-                    frag.show(ft, "ADD_CONTENT");*/
+                    frag.show(ft, "ADD_CONTENT");*//*
                 }
-            });
+            });*/
             navigationElement = new CurrentNavigationElement(item, frag);
         } catch (Exception x) {
             x.printStackTrace();

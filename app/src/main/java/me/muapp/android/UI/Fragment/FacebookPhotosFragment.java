@@ -83,7 +83,7 @@ public class FacebookPhotosFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recycler_photo_add.setLayoutManager(new GridLayoutManager(getContext(), 4));
+        recycler_photo_add.setLayoutManager(new GridLayoutManager(getContext(), 3));
         recycler_photo_add.setAdapter(ada);
 
         new GraphRequest(
@@ -95,6 +95,7 @@ public class FacebookPhotosFragment extends Fragment {
                     public void onCompleted(GraphResponse response) {
                         try {
                             JSONObject graph = response.getJSONObject();
+                            Log.wtf("response", graph.toString());
                             Log.wtf("ALBUMS", response.toString());
                             if (graph.has("data") && !graph.isNull("data")) {
                                 JSONArray array = graph.getJSONArray("data");

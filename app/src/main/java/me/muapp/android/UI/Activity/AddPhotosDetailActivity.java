@@ -25,9 +25,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Date;
 
 import me.muapp.android.Classes.Internal.UserContent;
@@ -144,6 +148,7 @@ public class AddPhotosDetailActivity extends BaseActivity {
                                     if (task.isSuccessful()) {
                                         @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
                                         thisContent.setContentUrl(downloadUrl.toString());
+                                        thisContent.setStorageName(mainReference.getPath());
                                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
                                         String key = ref.push().getKey();
                                         ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -158,6 +163,49 @@ public class AddPhotosDetailActivity extends BaseActivity {
                             });
                         }
                     });
+        } else if (currentMedia.getMediaType() == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
+            File file = new File(currentMedia.getPath());
+            int size = (int) file.length();
+            byte[] bytes = new byte[size];
+            try {
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+                buf.read(bytes, 0, bytes.length);
+                buf.close();
+                UploadTask uploadTask = mainReference.putBytes(bytes);
+                final long startTime = System.currentTimeMillis();
+                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        @SuppressWarnings("VisibleForTests") Long transfered = taskSnapshot.getBytesTransferred();
+                        @SuppressWarnings("VisibleForTests") Long total = taskSnapshot.getTotalByteCount();
+                        Log.wtf("Uploading", transfered + " of " + total);
+                    }
+                });
+                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
+                            thisContent.setContentUrl(downloadUrl.toString());
+                            thisContent.setStorageName(mainReference.getPath());
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
+                            String key = ref.push().getKey();
+                            ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    long stopTime = System.currentTimeMillis();
+                                    long elapsedTime = stopTime - startTime;
+                                    Log.wtf("Upload time", elapsedTime + "");
+                                    setResult(RESULT_OK);
+                                    finish();
+                                }
+                            });
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

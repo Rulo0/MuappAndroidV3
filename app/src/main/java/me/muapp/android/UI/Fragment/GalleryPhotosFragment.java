@@ -6,6 +6,7 @@ import android.content.CursorLoader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -92,7 +93,7 @@ public class GalleryPhotosFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recycler_add_device.setLayoutManager(new GridLayoutManager(getContext(), 4));
+        recycler_add_device.setLayoutManager(new GridLayoutManager(getContext(), 3));
         recycler_add_device.setAdapter(ada);
     }
 
@@ -104,19 +105,24 @@ public class GalleryPhotosFragment extends Fragment {
     }
 
     private void getAllUserMedia() {
-        try {
-            String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+        new getUserMediaTask().execute(getContext());
+    }
+
+    class getUserMediaTask extends AsyncTask<Context, Void, List<UserMedia>> {
+        CursorLoader cursorLoader;
+        String selection;
+        @Override
+        protected void onPreExecute() {
+            selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                     + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
-                   /* + " OR "
+                    + " OR "
                     + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                    + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO*/
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
                     + " AND "
                     + MediaStore.Files.FileColumns.DATA
                     + " NOT LIKE '%Muapp/voiceNotes%'";
-
             Uri queryUri = MediaStore.Files.getContentUri("external");
-
-            CursorLoader cursorLoader = new CursorLoader(
+            cursorLoader = new CursorLoader(
                     getContext(),
                     queryUri,
                     projection,
@@ -124,21 +130,36 @@ public class GalleryPhotosFragment extends Fragment {
                     null, // Selection args (none).
                     MediaStore.Files.FileColumns.DATE_ADDED + " DESC" // Sort order.
             );
+        }
 
-            Cursor cursor = cursorLoader.loadInBackground();
+        @Override
+        protected List<UserMedia> doInBackground(Context... params) {
+            List<UserMedia> result = new ArrayList<>();
             try {
-                while (cursor.moveToNext()) {
-                    UserMedia dp = new UserMedia(cursor.getInt(0), cursor.getString(1), Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getString(0)), cursor.getLong(2), cursor.getInt(3));
-                    Log.wtf("getAllUserMedia", dp.toString());
-                    ada.addPhoto(dp);
-                    recycler_add_device.scrollToPosition(0);
+                Cursor cursor = cursorLoader.loadInBackground();
+                try {
+                    while (cursor.moveToNext()) {
+                        UserMedia dp = new UserMedia(cursor.getInt(0), cursor.getString(1), Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getString(0)), cursor.getLong(2), cursor.getInt(3));
+                        Log.wtf("getAllUserMedia", dp.toString());
+                        result.add(dp);
+                    }
+                } finally {
+                    cursor.close();
                 }
-            } finally {
-                cursor.close();
+            } catch (Exception x) {
+                Log.wtf("GALLERY", x.getMessage());
+                x.printStackTrace();
             }
-        } catch (Exception x) {
-            Log.wtf("GALLERY", x.getMessage());
-            x.printStackTrace();
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(List<UserMedia> userMedias) {
+            super.onPostExecute(userMedias);
+            for (UserMedia m : userMedias) {
+                ada.addPhoto(m);
+                recycler_add_device.scrollToPosition(0);
+            }
         }
     }
 
