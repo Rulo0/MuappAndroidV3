@@ -81,9 +81,9 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_main_male);
+    /*    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);*/
         realm = CacheUtils.getInstance(loggedUser);
         add_item_layout = (ConstraintLayout) findViewById(R.id.add_item_layout);
         add_item_layout.bringToFront();
@@ -238,16 +238,15 @@ public class MainActivity extends BaseActivity implements
                 fab_add_content.hide();
             }
 
-           /* fab_add_content.setOnClickListener(new View.OnClickListener() {
+            fab_add_content.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     bsb.setState(BottomSheetBehavior.STATE_EXPANDED);
-                  *//*  Log.wtf("show dialog", "mmm");
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                 /*   FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     OauthInstagramDialog frag = new OauthInstagramDialog();
-                    frag.show(ft, "ADD_CONTENT");*//*
+                    frag.show(ft, "ADD_CONTENT");*/
                 }
-            });*/
+            });
             navigationElement = new CurrentNavigationElement(item, frag);
         } catch (Exception x) {
             x.printStackTrace();
@@ -295,9 +294,10 @@ public class MainActivity extends BaseActivity implements
                 startActivity(new Intent(MainActivity.this, AddGiphyActivity.class));
                 break;
             case R.id.btn_add_spotify:
-                startActivity(new Intent(MainActivity.this, SpotifySearchActivity.class));
+                startActivity(new Intent(MainActivity.this, AddSpotifyActivity.class));
                 break;
             case R.id.btn_add_youtube:
+                startActivity(new Intent(MainActivity.this, AddYoutubeActivity.class));
                 break;
         }
     }

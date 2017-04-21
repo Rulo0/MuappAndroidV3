@@ -13,10 +13,8 @@ import android.widget.TextView;
 import com.rd.PageIndicatorView;
 import com.rd.animation.AnimationType;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.R;
@@ -94,14 +92,10 @@ public class SectionedProfileAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         public void bindHeader(Section section) {
             title.setText(section.getTitle());
-            List<String> testing = new ArrayList<>();
-            for (int i = 0; i < 6; i++) {
-                testing.add(section.user.getAlbum().get(0));
-            }
-            profilePicturesAdapter = new ProfilePicturesAdapter(mContext, testing);
+            profilePicturesAdapter = new ProfilePicturesAdapter(mContext, section.user.getAlbum());
             pager_profile_pictures.setAdapter(profilePicturesAdapter);
             indicator_profile_pictures.setAnimationType(AnimationType.SWAP);
-            indicator_profile_pictures.setCount(testing.size());
+            indicator_profile_pictures.setCount(section.user.getAlbum().size());
             indicator_profile_pictures.setRadius(5);
         }
     }

@@ -29,7 +29,7 @@ import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Spotify.Data.Song;
 import me.muapp.android.R;
 
-public class SpotifyDetailActivity extends BaseActivity implements MediaPlayer.OnPreparedListener {
+public class AddSpotifyDetailActivity extends BaseActivity implements MediaPlayer.OnPreparedListener {
     public static final String CURRENT_SONG = "CURRENT_SONG";
     public static final int SPOTIFY_REQUEST_CODE = 488;
     Song currentSong;
@@ -74,10 +74,10 @@ public class SpotifyDetailActivity extends BaseActivity implements MediaPlayer.O
             @Override
             public void onClick(View v) {
                 if (mp.isPlaying()) {
-                    btn_play_detail.setImageDrawable(ContextCompat.getDrawable(SpotifyDetailActivity.this, R.drawable.ic_play_circle));
+                    btn_play_detail.setImageDrawable(ContextCompat.getDrawable(AddSpotifyDetailActivity.this, R.drawable.ic_play_circle));
                     mp.pause();
                 } else {
-                    btn_play_detail.setImageDrawable(ContextCompat.getDrawable(SpotifyDetailActivity.this, R.drawable.ic_pause_circle));
+                    btn_play_detail.setImageDrawable(ContextCompat.getDrawable(AddSpotifyDetailActivity.this, R.drawable.ic_pause_circle));
                     mp.start();
                 }
             }
@@ -104,7 +104,7 @@ public class SpotifyDetailActivity extends BaseActivity implements MediaPlayer.O
         return super.onOptionsItemSelected(item);
     }
 
-    public SpotifyDetailActivity() {
+    public AddSpotifyDetailActivity() {
     }
 
     private void publishThisSong() {

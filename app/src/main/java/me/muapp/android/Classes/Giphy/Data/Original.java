@@ -7,8 +7,7 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Original implements Parcelable
-{
+public class Original implements Parcelable {
 
     @SerializedName("url")
     @Expose
@@ -23,7 +22,7 @@ public class Original implements Parcelable
 
 
         @SuppressWarnings({
-            "unchecked"
+                "unchecked"
         })
         public Original createFromParcel(Parcel in) {
             Original instance = new Original();
@@ -37,15 +36,14 @@ public class Original implements Parcelable
             return (new Original[size]);
         }
 
-    }
-    ;
+    };
 
     public String getUrl() {
         return url;
     }
 
     public void setUrl(String url) {
-        this.url = url;
+        this.url = url.replace("http://", "https://");
     }
 
     public String getWidth() {
@@ -79,7 +77,7 @@ public class Original implements Parcelable
     }
 
     public int describeContents() {
-        return  0;
+        return 0;
     }
 
 }

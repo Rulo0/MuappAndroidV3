@@ -166,7 +166,6 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
             adapter.addContent(c);
-            recycler_my_content.scrollToPosition(0);
         }
     }
 

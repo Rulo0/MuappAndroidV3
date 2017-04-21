@@ -155,11 +155,13 @@
     <string name="crushes_fragment_list_empty">You have no crushes yet</string>
     <string name="lbl_placeholder_spotify">Find a song on Spotify to add it to your content</string>
     <string name="lbl_about_song">What do you tell us about this song?</string>
+    <string name="lbl_about_video">What do you tell us about this video?</string>
     <string name="lbl_write_comment">Write a comment</string>
     <string name="lbl_publish">Publish</string>
     <string name="title_activity_add_phothos">AddPhothosActivity</string>
     <string name="section_format">Hello World from section: %s</string>
     <string name="title_activity_add_photos">AddPhotosActivity</string>
+    <string name="lbl_add_videos">Add videos to your profile</string>
 
     <string name="format_user_years">%d years </string>
     <string name="format_user_hometown">, i was born on </string>

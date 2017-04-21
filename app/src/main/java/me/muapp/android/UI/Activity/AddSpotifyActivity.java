@@ -33,10 +33,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static me.muapp.android.UI.Activity.SpotifyDetailActivity.SPOTIFY_REQUEST_CODE;
+import static me.muapp.android.UI.Activity.AddSpotifyDetailActivity.SPOTIFY_REQUEST_CODE;
 
-public class SpotifySearchActivity extends BaseActivity implements SearchView.OnQueryTextListener {
-    public static String TAG = "SpotifySearchActivity";
+public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQueryTextListener {
+    public static String TAG = "AddSpotifyActivity";
     /*SearchView srch_spotify_tracks;*/
     RecyclerView recycler_spotify;
     LinearLayout placeholder_spotify;
