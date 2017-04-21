@@ -22,6 +22,9 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubeThumbnailLoader;
+import com.google.android.youtube.player.YouTubeThumbnailView;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +34,8 @@ import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
+
+import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 
 /**
  * Created by rulo on 18/04/17.
@@ -131,6 +136,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             case 6:
                 View spotifyView = mInflater.inflate(R.layout.user_content_spotify_item_layout, parent, false);
                 holder = new SpotifyContentHolder(spotifyView);
+                break;
+            case 8:
+                View youtubeView = mInflater.inflate(R.layout.user_content_youtube_item_layout, parent, false);
+                holder = new YoutubeContentHolder(youtubeView);
                 break;
             default:
                 View picView = mInflater.inflate(R.layout.user_content_picture_item_layout, parent, false);
@@ -316,6 +325,51 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             } catch (Exception x) {
                 x.printStackTrace();
             }
+        }
+    }
+
+    class YoutubeContentHolder extends UserContentHolder {
+        TextView txt_youtube_comment;
+        RelativeTimeTextView txt_youtube_date;
+        View contentView;
+        String youtubeVideoId;
+        YouTubeThumbnailView youtube_thumbnail;
+
+        public YoutubeContentHolder(View itemView) {
+            super(itemView);
+            this.contentView = itemView;
+            this.youtube_thumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.youtube_thumbnail);
+            this.txt_youtube_comment = (TextView) itemView.findViewById(R.id.txt_youtube_comment);
+            this.txt_youtube_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_youtube_date);
+        }
+
+        @Override
+        public void bind(final UserContent c) {
+            super.bind(c);
+            this.youtubeVideoId = c.getVideoId();
+            if (!TextUtils.isEmpty(c.getComment())) {
+                txt_youtube_comment.setText(c.getComment());
+                txt_youtube_comment.setVisibility(View.VISIBLE);
+            } else {
+                txt_youtube_comment.setVisibility(View.GONE);
+            }
+            txt_youtube_date.setReferenceTime(c.getCreatedAt());
+            youtube_thumbnail.initialize(getYoutubeApiKey(), new YouTubeThumbnailView.OnInitializedListener() {
+                @Override
+                public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
+                    youTubeThumbnailLoader.setVideo(c.getVideoId());
+                }
+
+                @Override
+                public void onInitializationFailure(YouTubeThumbnailView youTubeThumbnailView, YouTubeInitializationResult youTubeInitializationResult) {
+
+                }
+            });
+            youtube_thumbnail.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
         }
     }
 

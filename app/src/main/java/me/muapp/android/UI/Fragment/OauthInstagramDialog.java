@@ -39,13 +39,6 @@ public class OauthInstagramDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
     }
 
-    private void saveAccessToken(String url) {
-        // extract the token if it exists
-        String paths[] = url.split("access_token=");
-        for (String s : paths) {
-            Log.wtf("redirecting", s);
-        }
-    }
 
     @Override
     public void onStart() {

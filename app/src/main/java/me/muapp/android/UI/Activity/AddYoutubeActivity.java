@@ -2,6 +2,7 @@ package me.muapp.android.UI.Activity;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +32,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
+import static me.muapp.android.UI.Activity.AddYoutubeDetailActivity.YOUTUBE_REQUEST_CODE;
 
 public class AddYoutubeActivity extends BaseActivity implements SearchView.OnQueryTextListener {
     LinearLayout placeholder_youtube;
@@ -38,6 +40,7 @@ public class AddYoutubeActivity extends BaseActivity implements SearchView.OnQue
     private ProgressUtil progressUtil;
     RecyclerView recycler_youtube;
     YoutubeAdapter ada;
+    private final String TAG = "AddYoutubeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,6 @@ public class AddYoutubeActivity extends BaseActivity implements SearchView.OnQue
         ada = new YoutubeAdapter(this);
         placeholder_youtube = (LinearLayout) findViewById(R.id.placeholder_youtube);
         progress_youtube = (ProgressBar) findViewById(R.id.progress_youtube);
-        //srch_spotify_tracks.setOnQueryTextListener(this);
         recycler_youtube = (RecyclerView) findViewById(R.id.recycler_youtube);
         recycler_youtube.setLayoutManager(new LinearLayoutManager(this));
         recycler_youtube.setAdapter(ada);
@@ -132,6 +134,17 @@ public class AddYoutubeActivity extends BaseActivity implements SearchView.OnQue
                 x.printStackTrace();
             }
             return result;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case YOUTUBE_REQUEST_CODE:
+                    finish();
+            }
         }
     }
 }

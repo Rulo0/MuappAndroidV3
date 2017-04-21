@@ -5,7 +5,7 @@ package me.muapp.android.Classes.Youtube;
  */
 
 public class Config {
-    public static final String YOUTUBE_API_KEY = "AIzaSyDdYI_lLRAQXjlfLtfJAmv6f7b6m7Yb_9M";
+    public static final String YOUTUBE_API_KEY = "AIzaSyB1GH1diRNVlDSszDiVFoy7Yj7UEHjvM7Y";
 
     public static String getYoutubeApiKey() {
         return YOUTUBE_API_KEY;

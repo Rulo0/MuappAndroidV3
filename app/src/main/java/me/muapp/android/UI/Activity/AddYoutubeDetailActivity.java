@@ -6,26 +6,38 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Date;
+
+import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Youtube.Data.YoutubeVideo;
 import me.muapp.android.R;
 
-public class AddYoutubeDetailActivity extends BaseActivity {
+import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
+
+public class AddYoutubeDetailActivity extends BaseActivity implements YouTubePlayer.OnInitializedListener {
     public static final String CURRENT_VIDEO = "CURRENT_VIDEO";
-    public static final int YOUTUBE_REQUEST_CODE = 488;
+    public static final int YOUTUBE_REQUEST_CODE = 511;
     YoutubeVideo currentVideo;
     EditText et_youtube_about;
-    YouTubePlayer ytpv_youtube_view;
+    YouTubePlayerFragment youtube_fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_youtube_detail);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        et_youtube_about = (EditText) findViewById(R.id.et_youtube_about);
-        //ytpv_youtube_view = (YouTubePlayer) findViewById(R.id.ytpv_youtube_view);
         try {
+            setContentView(R.layout.activity_add_youtube_detail);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            et_youtube_about = (EditText) findViewById(R.id.et_youtube_about);
+            youtube_fragment = (YouTubePlayerFragment) getFragmentManager()
+                    .findFragmentById(R.id.youtube_fragment);
+            youtube_fragment.initialize(getYoutubeApiKey(), this);
             currentVideo = getIntent().getParcelableExtra(CURRENT_VIDEO);
         } catch (Exception x) {
             Log.wtf("currentVideo", x.getMessage());
@@ -56,18 +68,13 @@ public class AddYoutubeDetailActivity extends BaseActivity {
     }
 
     private void publishThisVIdeo() {
-     /*   UserContent thisContent = new UserContent();
-        thisContent.setComment(et_spotify_about.getText().toString());
+        UserContent thisContent = new UserContent();
+        thisContent.setComment(et_youtube_about.getText().toString());
         thisContent.setCreatedAt(new Date().getTime());
         thisContent.setLikes(0);
-        thisContent.setCatContent("contentSpt");
-        SpotifyData spotifyData = new SpotifyData();
-        spotifyData.setArtistName(currentSong.getAlbum().getArtistNames());
-        spotifyData.setPreviewUrl(currentSong.getPreviewUrl());
-        spotifyData.setId(currentSong.getId());
-        spotifyData.setName(currentSong.getName());
-        spotifyData.setThumb(currentSong.getAlbum().getHigherImage());
-        thisContent.setSpotifyData(spotifyData);
+        thisContent.setCatContent("contentYtv");
+        thisContent.setThumbUrl(currentVideo.getSnippet().getThumbnails().getHigh().getUrl());
+        thisContent.setVideoId(currentVideo.getId().getVideoId());
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
         String key = ref.push().getKey();
         ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -76,6 +83,20 @@ public class AddYoutubeDetailActivity extends BaseActivity {
                 setResult(RESULT_OK);
                 finish();
             }
-        });*/
+        });
+    }
+
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored) {
+        YouTubePlayer.PlayerStyle style = YouTubePlayer.PlayerStyle.MINIMAL;
+        youTubePlayer.setPlayerStyle(style);
+        if (!wasRestored) {
+            youTubePlayer.cueVideo(currentVideo.getId().getVideoId());
+        }
+    }
+
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+
     }
 }
