@@ -284,8 +284,10 @@ public class MainActivity extends BaseActivity implements
     public void onClick(final View v) {
         switch (v.getId()) {
             case R.id.btn_add_quote:
+                startActivity(new Intent(MainActivity.this, AddQuoteActivity.class));
                 break;
             case R.id.btn_add_voice:
+                startActivity(new Intent(MainActivity.this, AddVoiceNoteActivity.class));
                 break;
             case R.id.btn_add_photo:
                 startActivity(new Intent(MainActivity.this, AddPhotosActivity.class));

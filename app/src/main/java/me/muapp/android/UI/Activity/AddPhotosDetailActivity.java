@@ -125,7 +125,7 @@ public class AddPhotosDetailActivity extends BaseActivity {
             thisContent.setCatContent("contentVid");
         }
 
-        mainReference = mainReference.child(String.valueOf(loggedUser.getId())).child("rand" + new Date().getTime());
+        mainReference = mainReference.child(String.valueOf(loggedUser.getId())).child("media" + new Date().getTime());
         if (currentMedia.getMediaType() == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
             Glide.with(this)
                     .load(currentMedia.getPath())

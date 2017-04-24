@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name=".Application.MuappApplication"
@@ -111,6 +112,17 @@
         <activity
             android:name=".UI.Activity.AddYoutubeDetailActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.AddQuoteActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.AddVoiceNoteActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.YoutubeViewActivity"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
     </application>
 
 </manifest>

@@ -1,8 +1,10 @@
 package me.muapp.android.UI.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.media.MediaPlayer;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
@@ -26,14 +28,19 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
+import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
+import me.muapp.android.UI.Activity.YoutubeViewActivity;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 
@@ -56,8 +63,15 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     LayoutInflater mInflater;
     MediaPlayer mediaPlayer;
     String currentPlaying = "";
-    ImageButton previewPlayedButtonSpotify;
+    ImageButton previewPlayedButton;
     int screenWidth;
+    List<MuappQuote> quoteList;
+    String lang;
+    FragmentTransaction fragmentTransaction;
+
+    public void setFragmentTransaction(FragmentTransaction fragmentTransaction) {
+        this.fragmentTransaction = fragmentTransaction;
+    }
 
     public UserContentAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
@@ -98,6 +112,8 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             }
         });
         this.context = context;
+        this.quoteList = new ArrayList<>();
+        this.lang = Locale.getDefault().getLanguage();
         mediaPlayer = new MediaPlayer();
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -108,6 +124,11 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     public void addContent(UserContent c) {
         userContentList.add(c);
+    }
+
+    public void setQuoteList(List<MuappQuote> quoteList) {
+        this.quoteList = quoteList;
+        notifyDataSetChanged();
     }
 
     public void removeContent(String contentKey) {
@@ -129,9 +150,17 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         Log.wtf("ViewType", viewType + "");
         UserContentHolder holder;
         switch (viewType) {
+            case 1:
+                View voiceView = mInflater.inflate(R.layout.user_content_audio_item_layout, parent, false);
+                holder = new AudioContentHolder(voiceView);
+                break;
             case 3:
                 View gifView = mInflater.inflate(R.layout.user_content_gif_item_layout, parent, false);
                 holder = new GifContentHolder(gifView);
+                break;
+            case 5:
+                View quoteView = mInflater.inflate(R.layout.user_content_quote_item_layout, parent, false);
+                holder = new QuoteContentHolder(quoteView);
                 break;
             case 6:
                 View spotifyView = mInflater.inflate(R.layout.user_content_spotify_item_layout, parent, false);
@@ -168,9 +197,11 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             super(itemView);
         }
 
+        UserContent itemContent;
+
         @Override
         public void bind(UserContent c) {
-
+            itemContent = c;
         }
 
         @Override
@@ -292,8 +323,8 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             super.onClick(v);
             try {
                 if (!currentPlaying.equals(currentData.getPreviewUrl())) {
-                    if (previewPlayedButtonSpotify != null) {
-                        previewPlayedButtonSpotify.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    if (previewPlayedButton != null) {
+                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                     }
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
@@ -311,8 +342,8 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                             btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
                     });
-                    mediaPlayer.prepare();
-                    previewPlayedButtonSpotify = (ImageButton) v;
+                    mediaPlayer.prepareAsync();
+                    previewPlayedButton = (ImageButton) v;
                 } else {
                     if (mediaPlayer.isPlaying()) {
                         mediaPlayer.pause();
@@ -370,6 +401,108 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
         @Override
         public void onClick(View v) {
+            Intent youtubeIntent = new Intent(context, YoutubeViewActivity.class);
+            youtubeIntent.putExtra("itemContent", itemContent);
+            context.startActivity(youtubeIntent);
+        }
+    }
+
+    class QuoteContentHolder extends UserContentHolder {
+        TextView txt_quote_comment;
+        TextView txt_quote_prefix;
+        RelativeTimeTextView txt_quote_date;
+
+
+        public QuoteContentHolder(View itemView) {
+            super(itemView);
+            this.txt_quote_comment = (TextView) itemView.findViewById(R.id.txt_quote_comment);
+            txt_quote_prefix = (TextView) itemView.findViewById(R.id.txt_quote_prefix);
+            this.txt_quote_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_quote_date);
+        }
+
+        @Override
+        public void bind(UserContent c) {
+            super.bind(c);
+            txt_quote_prefix.setText(getQuote(c.getQuoteId()));
+            txt_quote_comment.setText(c.getComment());
+            txt_quote_date.setReferenceTime(c.getCreatedAt());
+        }
+
+        private String getQuote(String quoteId) {
+            if (quoteList != null) {
+                for (MuappQuote q : quoteList) {
+                    if (q.getKey().equals(quoteId))
+                        return lang.equals("es") ? q.getCaptionSpa() : q.getCaptionEng();
+                }
+            }
+            return "";
+        }
+    }
+
+    class AudioContentHolder extends UserContentHolder {
+        TextView txt_audio_comment;
+        RelativeTimeTextView txt_audio_date;
+        ImageButton btn_audio_content;
+
+        public AudioContentHolder(View itemView) {
+            super(itemView);
+            this.txt_audio_comment = (TextView) itemView.findViewById(R.id.txt_audio_comment);
+            this.txt_audio_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_audio_date);
+            this.btn_audio_content = (ImageButton) itemView.findViewById(R.id.btn_audio_content);
+        }
+
+        @Override
+        public void bind(UserContent c) {
+            super.bind(c);
+            if (!TextUtils.isEmpty(c.getComment())) {
+                txt_audio_comment.setText(c.getComment());
+                txt_audio_comment.setVisibility(View.VISIBLE);
+            } else {
+                txt_audio_comment.setVisibility(View.GONE);
+            }
+            txt_audio_date.setReferenceTime(c.getCreatedAt());
+            btn_audio_content.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            super.onClick(v);
+            try {
+                if (!currentPlaying.equals(itemContent.getContentUrl())) {
+                    if (previewPlayedButton != null) {
+                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    }
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
+                    Log.wtf("trying to play", currentPlaying);
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            currentPlaying = "firebasestorage";
+                            btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                        }
+                    });
+                    mediaPlayer.prepareAsync();
+                    previewPlayedButton = (ImageButton) v;
+                } else {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                    } else {
+                        mediaPlayer.start();
+                        btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
+                    }
+                }
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
         }
     }
 

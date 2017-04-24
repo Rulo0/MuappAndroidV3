@@ -10,7 +10,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/spotify_control_layout" />
+        <ImageButton
+            android:id="@+id/btn_audio_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_content_play" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -23,7 +31,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_margin="8dp"
-                app:srcCompat="@drawable/ic_spotify_red" />
+                app:srcCompat="@drawable/ic_mic_red" />
 
             <ImageButton
                 android:id="@+id/btn_audio_menu"
@@ -45,13 +53,13 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/txt_spotify_comment"
+                    android:id="@+id/txt_audio_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Content" />
 
                 <com.github.curioustechizen.ago.RelativeTimeTextView
-                    android:id="@+id/txt_spotify_date"
+                    android:id="@+id/txt_audio_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="time ago"
