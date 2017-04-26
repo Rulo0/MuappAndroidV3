@@ -48,7 +48,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Content"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/black" />
 
 
                 <TextView
@@ -58,7 +59,6 @@
                     android:gravity="center"
                     android:text="Content"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
-
             </LinearLayout>
 
         </RelativeLayout>
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content">
 
             <View
-                android:id="@+id/img_gif_icon"
+                android:id="@+id/img_video_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentLeft="true"
@@ -76,7 +76,7 @@
                 android:layout_margin="8dp" />
 
             <ImageButton
-                android:id="@+id/btn_gif_menu"
+                android:id="@+id/btn_quote_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -91,7 +91,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_toLeftOf="@id/btn_gif_menu"
-                android:layout_toRightOf="@+id/img_gif_icon"
+                android:layout_toRightOf="@+id/img_video_icon"
                 android:orientation="vertical">
 
                 <com.github.curioustechizen.ago.RelativeTimeTextView

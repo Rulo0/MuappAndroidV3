@@ -30,6 +30,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
@@ -37,6 +38,8 @@ import java.util.Date;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Internal.UserMedia;
 import me.muapp.android.R;
+
+import static com.bumptech.glide.Glide.with;
 
 public class AddPhotosDetailActivity extends BaseActivity {
     public static final String CURRENT_MEDIA = "CURRENT_MEDIA";
@@ -76,9 +79,9 @@ public class AddPhotosDetailActivity extends BaseActivity {
             if (vv_video_detail.getVisibility() != View.GONE)
                 vv_video_detail.setVisibility(View.GONE);
             if (currentMedia.getPath() != null) {
-                Glide.with(this).load(currentMedia.getPath()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_detail);
+                with(this).load(currentMedia.getPath()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_detail);
             } else {
-                Glide.with(this).load(currentMedia.getUri()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_detail);
+                with(this).load(currentMedia.getUri()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_detail);
             }
         } else if (currentMedia.getMediaType() == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
             if (vv_video_detail.getVisibility() != View.VISIBLE)
@@ -112,11 +115,12 @@ public class AddPhotosDetailActivity extends BaseActivity {
     }
 
     private void publishThisMedia() {
+        showProgressDialog();
         final UserContent thisContent = new UserContent();
         thisContent.setComment(et_media_comment.getText().toString());
         thisContent.setCreatedAt(new Date().getTime());
         thisContent.setLikes(0);
-        mainReference = FirebaseStorage.getInstance().getReference();
+        mainReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId()));
         if (currentMedia.getMediaType() == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
             mainReference = mainReference.child("post-images");
             thisContent.setCatContent("contentPic");
@@ -125,7 +129,7 @@ public class AddPhotosDetailActivity extends BaseActivity {
             thisContent.setCatContent("contentVid");
         }
 
-        mainReference = mainReference.child(String.valueOf(loggedUser.getId())).child("media" + new Date().getTime());
+        mainReference = mainReference.child("media" + new Date().getTime());
         if (currentMedia.getMediaType() == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
             Glide.with(this)
                     .load(currentMedia.getPath())
@@ -154,6 +158,7 @@ public class AddPhotosDetailActivity extends BaseActivity {
                                         ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
+                                                hideProgressDialog();
                                                 setResult(RESULT_OK);
                                                 finish();
                                             }
@@ -164,49 +169,80 @@ public class AddPhotosDetailActivity extends BaseActivity {
                         }
                     });
         } else if (currentMedia.getMediaType() == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
-            File file = new File(currentMedia.getPath());
-            int size = (int) file.length();
-            byte[] bytes = new byte[size];
+            final StorageReference thumbReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("post-previewVideo").child("media" + new Date().getTime());
             try {
-                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-                buf.read(bytes, 0, bytes.length);
-                buf.close();
-                UploadTask uploadTask = mainReference.putBytes(bytes);
-                final long startTime = System.currentTimeMillis();
-                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        @SuppressWarnings("VisibleForTests") Long transfered = taskSnapshot.getBytesTransferred();
-                        @SuppressWarnings("VisibleForTests") Long total = taskSnapshot.getTotalByteCount();
-                        Log.wtf("Uploading", transfered + " of " + total);
-                    }
-                });
-                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
-                            thisContent.setContentUrl(downloadUrl.toString());
-                            thisContent.setStorageName(mainReference.getPath());
-                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
-                            String key = ref.push().getKey();
-                            ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    long stopTime = System.currentTimeMillis();
-                                    long elapsedTime = stopTime - startTime;
-                                    Log.wtf("Upload time", elapsedTime + "");
-                                    setResult(RESULT_OK);
-                                    finish();
-                                }
-                            });
-                        }
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
+                Glide.with(this)
+                        .load(currentMedia.getPath())
+                        .asBitmap()
+                        .override(400, 400)
+                        .centerCrop()
+                        .skipMemoryCache(true)
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap thumbResource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                Log.wtf("ThumbReady", thumbResource.getHeight() + " " + thumbResource.getWidth());
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                thumbResource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                byte[] thumb = stream.toByteArray();
+                                UploadTask thumbUploadTask = thumbReference.putBytes(thumb);
+                                thumbUploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> thumbTask) {
+                                        if (thumbTask.isSuccessful()) {
+                                            @SuppressWarnings("VisibleForTests") Uri thumbDownloadUrl = thumbTask.getResult().getDownloadUrl();
+                                            thisContent.setThumbUrl(thumbDownloadUrl.toString());
+                                            thisContent.setVideoThumbStorage(thumbReference.getPath());
+                                            File file = new File(currentMedia.getPath());
+                                            int size = (int) file.length();
+                                            byte[] bytes = new byte[size];
+                                            try {
+                                                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+                                                buf.read(bytes, 0, bytes.length);
+                                                buf.close();
+                                                UploadTask uploadTask = mainReference.putBytes(bytes);
+                                                final long startTime = System.currentTimeMillis();
+                                                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        @SuppressWarnings("VisibleForTests") Long transfered = taskSnapshot.getBytesTransferred();
+                                                        @SuppressWarnings("VisibleForTests") Long total = taskSnapshot.getTotalByteCount();
+                                                        Log.wtf("Uploading", transfered + " of " + total);
+                                                    }
+                                                });
+                                                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                                        if (task.isSuccessful()) {
+                                                            @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
+                                                            thisContent.setContentUrl(downloadUrl.toString());
+                                                            thisContent.setStorageName(mainReference.getPath());
+                                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
+                                                            String key = ref.push().getKey();
+                                                            ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    long stopTime = System.currentTimeMillis();
+                                                                    long elapsedTime = stopTime - startTime;
+                                                                    Log.wtf("Upload time", elapsedTime + "");
+                                                                    setResult(RESULT_OK);
+                                                                    finish();
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        });
+            } catch (Exception x) {
+                x.printStackTrace();
             }
         }
     }
-
 }
+

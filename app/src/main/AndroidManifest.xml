@@ -120,9 +120,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".UI.Activity.YoutubeViewActivity"
-            android:label=""
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

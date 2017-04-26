@@ -64,6 +64,7 @@ public class AddGiphyDetailActivity extends BaseActivity {
     }
 
     private void publishThisMedia() {
+        showProgressDialog();
         final UserContent thisContent = new UserContent();
         thisContent.setComment(et_giphy_comment.getText().toString());
         thisContent.setCreatedAt(new Date().getTime());
@@ -79,6 +80,7 @@ public class AddGiphyDetailActivity extends BaseActivity {
         ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                hideProgressDialog();
                 setResult(RESULT_OK);
                 finish();
             }

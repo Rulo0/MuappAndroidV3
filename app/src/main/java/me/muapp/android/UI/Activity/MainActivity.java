@@ -65,6 +65,10 @@ public class MainActivity extends BaseActivity implements
     ImageButton btn_add_quote, btn_add_voice, btn_add_photo, btn_add_giphy, btn_add_spotify, btn_add_youtube;
     Toolbar toolbar;
 
+    public FloatingActionButton getFab_add_content() {
+        return fab_add_content;
+    }
+
     public void phoneValidation() {
         final Intent intent = new Intent(this, AccountKitActivity.class);
         AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =

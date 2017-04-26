@@ -281,12 +281,11 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
 
     private void publishVoiceNote() {
         final StorageReference mainReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("post-audios").child("audio" + new Date().getTime());
-        ;
         if (thisFile != null) {
             int size = (int) thisFile.length();
             byte[] bytes = new byte[size];
             try {
-
+                showProgressDialog();
                 final UserContent thisContent = new UserContent();
                 thisContent.setComment(et_voicenote_comment.getText().toString());
                 thisContent.setCreatedAt(new Date().getTime());
@@ -310,7 +309,6 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if (task.isSuccessful()) {
                             @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
-
                             thisContent.setContentUrl(downloadUrl.toString());
                             thisContent.setStorageName(mainReference.getPath());
                             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
@@ -321,6 +319,8 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                                     long stopTime = System.currentTimeMillis();
                                     long elapsedTime = stopTime - startTime;
                                     Log.wtf("Upload time", elapsedTime + "");
+                                    hideProgressDialog();
+                                    thisFile.delete();
                                     setResult(RESULT_OK);
                                     finish();
                                 }

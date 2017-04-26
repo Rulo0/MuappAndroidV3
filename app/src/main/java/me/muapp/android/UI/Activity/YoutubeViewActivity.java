@@ -1,7 +1,6 @@
 package me.muapp.android.UI.Activity;
 
 import android.os.Bundle;
-import android.view.ViewGroup;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -15,7 +14,6 @@ import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 
 public class YoutubeViewActivity extends YouTubeBaseActivity implements
         YouTubePlayer.OnInitializedListener {
-
     private YouTubePlayerView youtube_player;
     UserContent thisContent;
 
@@ -23,7 +21,6 @@ public class YoutubeViewActivity extends YouTubeBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube_view);
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         youtube_player = (YouTubePlayerView) findViewById(R.id.youtube_player);
         thisContent = getIntent().getParcelableExtra("itemContent");
     }

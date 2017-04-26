@@ -26,7 +26,7 @@
                 app:srcCompat="@drawable/ic_spotify_red" />
 
             <ImageButton
-                android:id="@+id/btn_audio_menu"
+                android:id="@+id/btn_spotify_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"

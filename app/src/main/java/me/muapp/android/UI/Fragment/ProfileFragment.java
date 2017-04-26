@@ -3,6 +3,7 @@ package me.muapp.android.UI.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +25,7 @@ import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
+import me.muapp.android.UI.Activity.MainActivity;
 import me.muapp.android.UI.Adapter.SectionedProfileAdapter;
 import me.muapp.android.UI.Adapter.UserContentAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
@@ -37,6 +39,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     UserContentAdapter adapter;
     RecyclerView recycler_my_content;
     SectionedProfileAdapter mSectionedAdapter;
+    FloatingActionButton fab_add_content;
 
     public ProfileFragment() {
     }
@@ -56,7 +59,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
             user = getArguments().getParcelable(ARG_CURRENT_USER);
         }
         adapter = new UserContentAdapter(getContext());
-        adapter.setFragmentTransaction(getChildFragmentManager().beginTransaction());
+        adapter.setFragmentManager(getChildFragmentManager());
         List<SectionedProfileAdapter.Section> sections = new ArrayList<>();
         sections.add(new SectionedProfileAdapter.Section(0, user));
         SectionedProfileAdapter.Section[] dummy = new SectionedProfileAdapter.Section[sections.size()];
@@ -94,8 +97,26 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         recycler_my_content = (RecyclerView) v.findViewById(R.id.recycler_my_content);
+        if (getContext() instanceof MainActivity) {
+            this.fab_add_content = ((MainActivity) getContext()).getFab_add_content();
+        }
         recycler_my_content.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler_my_content.setNestedScrollingEnabled(false);
+        recycler_my_content.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (fab_add_content != null) {
+                    if (dy > 0) {
+                        if (fab_add_content.isShown())
+                            fab_add_content.hide();
+                    } else {
+                        if (!fab_add_content.isShown())
+                            fab_add_content.show();
+                    }
+                }
+            }
+        });
         return v;
     }
 
@@ -153,6 +174,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         UserContent c = dataSnapshot.getValue(UserContent.class);
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
+            recycler_my_content.scrollToPosition(0);
             adapter.addContent(c);
         }
     }

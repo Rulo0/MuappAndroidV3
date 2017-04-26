@@ -1,23 +1,28 @@
 package me.muapp.android.UI.Adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.media.MediaPlayer;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.util.SortedList;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
@@ -27,6 +32,8 @@ import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,8 +46,10 @@ import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.YoutubeViewActivity;
+import me.muapp.android.UI.Fragment.VideoViewDialogFragment;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 
@@ -67,10 +76,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     int screenWidth;
     List<MuappQuote> quoteList;
     String lang;
-    FragmentTransaction fragmentTransaction;
+    FragmentManager fragmentManager;
 
-    public void setFragmentTransaction(FragmentTransaction fragmentTransaction) {
-        this.fragmentTransaction = fragmentTransaction;
+    public void setFragmentManager(FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
     }
 
     public UserContentAdapter(Context context) {
@@ -166,6 +175,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 View spotifyView = mInflater.inflate(R.layout.user_content_spotify_item_layout, parent, false);
                 holder = new SpotifyContentHolder(spotifyView);
                 break;
+            case 7:
+                View videoView = mInflater.inflate(R.layout.user_content_video_item_layout, parent, false);
+                holder = new VideoContentHolder(videoView);
+                break;
             case 8:
                 View youtubeView = mInflater.inflate(R.layout.user_content_youtube_item_layout, parent, false);
                 holder = new YoutubeContentHolder(youtubeView);
@@ -197,16 +210,59 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             super(itemView);
         }
 
+        ImageButton btnMenu;
+        PopupMenu menu;
         UserContent itemContent;
+
+        public void setBtnMenu(ImageButton btnMenu) {
+            this.btnMenu = btnMenu;
+            btnMenu.setOnClickListener(this);
+        }
 
         @Override
         public void bind(UserContent c) {
             itemContent = c;
+            menu = new PopupMenu(context, btnMenu);
+            menu.inflate(R.menu.content_menu);
+            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.action_delete_content:
+                            Toast.makeText(context, itemContent.getKey(), Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                }
+            });
         }
 
         @Override
         public void onClick(View v) {
+            if (v.getId() == btnMenu.getId()) {
+                // menu.show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setItems(new CharSequence[]{context.getString(R.string.lbl_delete_content), context.getString(android.R.string.cancel)}
+                        , new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0) {
+                                    deleteContent();
+                                }
+                            }
+                        });
+                builder.show();
+            }
+        }
 
+        private void deleteContent() {
+            FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue();
+
+            if (!TextUtils.isEmpty(itemContent.getStorageName())) {
+                FirebaseStorage.getInstance().getReference().child(itemContent.getStorageName()).delete();
+            }
+            if (!TextUtils.isEmpty(itemContent.getVideoThumbStorage())) {
+                FirebaseStorage.getInstance().getReference().child(itemContent.getVideoThumbStorage()).delete();
+            }
         }
     }
 
@@ -214,13 +270,15 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         TextView txt_image_comment;
         RelativeTimeTextView txt_picture_date;
         ImageView img_picture_content;
-
+        ImageButton btn_picture_menu;
 
         public PictureContentHolder(View itemView) {
             super(itemView);
             this.txt_image_comment = (TextView) itemView.findViewById(R.id.txt_image_comment);
             this.txt_picture_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_picture_date);
             this.img_picture_content = (ImageView) itemView.findViewById(R.id.img_picture_content);
+            this.btn_picture_menu = (ImageButton) itemView.findViewById(R.id.btn_picture_menu);
+            setBtnMenu(btn_picture_menu);
         }
 
         @Override
@@ -237,11 +295,53 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         }
     }
 
+    class VideoContentHolder extends UserContentHolder {
+        TextView txt_video_comment;
+        RelativeTimeTextView txt_video_date;
+        ImageView img_video_content;
+        ImageButton btn_video_menu;
+
+        public VideoContentHolder(View itemView) {
+            super(itemView);
+            this.txt_video_comment = (TextView) itemView.findViewById(R.id.txt_video_comment);
+            this.txt_video_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_video_date);
+            this.img_video_content = (ImageView) itemView.findViewById(R.id.img_video_content);
+            this.btn_video_menu = (ImageButton) itemView.findViewById(R.id.btn_video_menu);
+            setBtnMenu(btn_video_menu);
+        }
+
+        @Override
+        public void bind(UserContent c) {
+            super.bind(c);
+            Glide.with(context).load(c.getThumbUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_video_content);
+            if (!TextUtils.isEmpty(c.getComment())) {
+                txt_video_comment.setText(c.getComment());
+                txt_video_comment.setVisibility(View.VISIBLE);
+            } else {
+                txt_video_comment.setVisibility(View.GONE);
+            }
+            txt_video_date.setReferenceTime(c.getCreatedAt());
+            img_video_content.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            super.onClick(v);
+            try {
+                VideoViewDialogFragment videoViewDialogFragment = VideoViewDialogFragment.newInstance(itemContent);
+                videoViewDialogFragment.show(fragmentManager.beginTransaction(), "VideoViewDialogFragment");
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+        }
+    }
+
     class GifContentHolder extends UserContentHolder {
         TextView txt_gif_comment;
         RelativeTimeTextView txt_gif_date;
         ImageView img_gif_content;
         View contentView;
+        ImageButton btn_gif_menu;
 
         public GifContentHolder(View itemView) {
             super(itemView);
@@ -249,6 +349,8 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             this.txt_gif_comment = (TextView) itemView.findViewById(R.id.txt_gif_comment);
             this.txt_gif_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_gif_date);
             this.img_gif_content = (ImageView) itemView.findViewById(R.id.img_gif_content);
+            this.btn_gif_menu = (ImageButton) itemView.findViewById(R.id.btn_gif_menu);
+            setBtnMenu(btn_gif_menu);
         }
 
         @Override
@@ -281,6 +383,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         TextView txt_detail_name, txt_detail_artist;
         ImageButton btn_play_detail;
         SpotifyData currentData;
+        ImageButton btn_spotify_menu;
 
         public SpotifyContentHolder(View itemView) {
             super(itemView);
@@ -291,6 +394,8 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             this.img_detail_album = (ImageView) itemView.findViewById(R.id.img_detail_album);
             this.txt_detail_name = (TextView) itemView.findViewById(R.id.txt_detail_name);
             this.txt_detail_artist = (TextView) itemView.findViewById(R.id.txt_detail_artist);
+            this.btn_spotify_menu = (ImageButton) itemView.findViewById(R.id.btn_spotify_menu);
+            setBtnMenu(btn_spotify_menu);
         }
 
         @Override
@@ -321,41 +426,42 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         @Override
         public void onClick(View v) {
             super.onClick(v);
-            try {
-                if (!currentPlaying.equals(currentData.getPreviewUrl())) {
-                    if (previewPlayedButton != null) {
-                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
-                    }
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
-                            mediaPlayer.start();
+            if (v.getId() == btn_play_detail.getId())
+                try {
+                    if (!currentPlaying.equals(currentData.getPreviewUrl())) {
+                        if (previewPlayedButton != null) {
+                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
-                    });
-                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            currentPlaying = "";
-                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
-                        }
-                    });
-                    mediaPlayer.prepareAsync();
-                    previewPlayedButton = (ImageButton) v;
-                } else {
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
-                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                        mediaPlayer.reset();
+                        mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
+                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                                mediaPlayer.start();
+                            }
+                        });
+                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                currentPlaying = "";
+                                btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                            }
+                        });
+                        mediaPlayer.prepareAsync();
+                        previewPlayedButton = (ImageButton) v;
                     } else {
-                        mediaPlayer.start();
-                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                        if (mediaPlayer.isPlaying()) {
+                            mediaPlayer.pause();
+                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                        } else {
+                            mediaPlayer.start();
+                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                        }
                     }
+                } catch (Exception x) {
+                    x.printStackTrace();
                 }
-            } catch (Exception x) {
-                x.printStackTrace();
-            }
         }
     }
 
@@ -365,6 +471,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         View contentView;
         String youtubeVideoId;
         YouTubeThumbnailView youtube_thumbnail;
+        ImageButton btn_youtube_menu;
 
         public YoutubeContentHolder(View itemView) {
             super(itemView);
@@ -372,12 +479,13 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             this.youtube_thumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.youtube_thumbnail);
             this.txt_youtube_comment = (TextView) itemView.findViewById(R.id.txt_youtube_comment);
             this.txt_youtube_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_youtube_date);
+            this.btn_youtube_menu = (ImageButton) itemView.findViewById(R.id.btn_youtube_menu);
+            setBtnMenu(btn_youtube_menu);
         }
 
         @Override
         public void bind(final UserContent c) {
             super.bind(c);
-            this.youtubeVideoId = c.getVideoId();
             if (!TextUtils.isEmpty(c.getComment())) {
                 txt_youtube_comment.setText(c.getComment());
                 txt_youtube_comment.setVisibility(View.VISIBLE);
@@ -401,9 +509,18 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
         @Override
         public void onClick(View v) {
-            Intent youtubeIntent = new Intent(context, YoutubeViewActivity.class);
-            youtubeIntent.putExtra("itemContent", itemContent);
-            context.startActivity(youtubeIntent);
+            super.onClick(v);
+            if (v.getId() == youtube_thumbnail.getId()) {
+                Intent youtubeIntent = new Intent(context, YoutubeViewActivity.class);
+                youtubeIntent.putExtra("itemContent", itemContent);
+                context.startActivity(youtubeIntent);
+             /*   try {
+                    YoutubeViewDialogFragment editNameDialogFragment = YoutubeViewDialogFragment.newInstance(itemContent);
+                    editNameDialogFragment.show(fragmentManager.beginTransaction(), "YoutubeViewDialogFragment");
+                } catch (Exception x) {
+                    x.printStackTrace();
+                }*/
+            }
         }
     }
 
@@ -411,13 +528,15 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         TextView txt_quote_comment;
         TextView txt_quote_prefix;
         RelativeTimeTextView txt_quote_date;
-
+        ImageButton btn_quote_menu;
 
         public QuoteContentHolder(View itemView) {
             super(itemView);
             this.txt_quote_comment = (TextView) itemView.findViewById(R.id.txt_quote_comment);
-            txt_quote_prefix = (TextView) itemView.findViewById(R.id.txt_quote_prefix);
+            this.txt_quote_prefix = (TextView) itemView.findViewById(R.id.txt_quote_prefix);
             this.txt_quote_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_quote_date);
+            this.btn_quote_menu = (ImageButton) itemView.findViewById(R.id.btn_quote_menu);
+            setBtnMenu(btn_quote_menu);
         }
 
         @Override
@@ -443,12 +562,15 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         TextView txt_audio_comment;
         RelativeTimeTextView txt_audio_date;
         ImageButton btn_audio_content;
+        ImageButton btn_audio_menu;
 
         public AudioContentHolder(View itemView) {
             super(itemView);
             this.txt_audio_comment = (TextView) itemView.findViewById(R.id.txt_audio_comment);
             this.txt_audio_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_audio_date);
             this.btn_audio_content = (ImageButton) itemView.findViewById(R.id.btn_audio_content);
+            this.btn_audio_menu = (ImageButton) itemView.findViewById(R.id.btn_audio_menu);
+            setBtnMenu(this.btn_audio_menu);
         }
 
         @Override
@@ -467,42 +589,43 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         @Override
         public void onClick(View v) {
             super.onClick(v);
-            try {
-                if (!currentPlaying.equals(itemContent.getContentUrl())) {
-                    if (previewPlayedButton != null) {
-                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
-                    }
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
-                    Log.wtf("trying to play", currentPlaying);
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
-                            mediaPlayer.start();
+            if (v.getId() == btn_audio_content.getId())
+                try {
+                    if (!currentPlaying.equals(itemContent.getContentUrl())) {
+                        if (previewPlayedButton != null) {
+                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
-                    });
-                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            currentPlaying = "firebasestorage";
-                            btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
-                        }
-                    });
-                    mediaPlayer.prepareAsync();
-                    previewPlayedButton = (ImageButton) v;
-                } else {
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.pause();
-                        btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                        mediaPlayer.reset();
+                        mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
+                        Log.wtf("trying to play", currentPlaying);
+                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
+                                mediaPlayer.start();
+                            }
+                        });
+                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                currentPlaying = "firebasestorage";
+                                btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                            }
+                        });
+                        mediaPlayer.prepareAsync();
+                        previewPlayedButton = (ImageButton) v;
                     } else {
-                        mediaPlayer.start();
-                        btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
+                        if (mediaPlayer.isPlaying()) {
+                            mediaPlayer.pause();
+                            btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                        } else {
+                            mediaPlayer.start();
+                            btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
+                        }
                     }
+                } catch (Exception x) {
+                    x.printStackTrace();
                 }
-            } catch (Exception x) {
-                x.printStackTrace();
-            }
         }
     }
 

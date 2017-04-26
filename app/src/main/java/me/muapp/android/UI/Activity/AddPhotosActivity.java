@@ -35,7 +35,6 @@ import static me.muapp.android.UI.Activity.AddPhotosDetailActivity.CURRENT_MEDIA
 import static me.muapp.android.UI.Activity.AddPhotosDetailActivity.PHOTOS_REQUEST;
 
 public class AddPhotosActivity extends BaseActivity implements OnImageSelectedListener {
-
     public static Boolean hasSelectedMedia = false;
     TabLayout tabLayout;
     int[] activeIcons = new int[]{R.drawable.ic_tab_fb, R.drawable.ic_tab_gal, R.drawable.ic_tab_inst};
@@ -45,6 +44,7 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
     UserMedia currentMedia;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    Fragment[] fragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +53,7 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        fragments = new Fragment[]{FacebookPhotosFragment.newInstance(loggedUser), GalleryPhotosFragment.newInstance(loggedUser), InstagramPhotosFragment.newInstance(loggedUser)};
         Log.wtf("MyUserIs", loggedUser.getId() + "");
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         img_photo_preview = (ImageView) findViewById(R.id.img_photo_preview);
@@ -78,6 +79,7 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
             @Override
             public void onPageSelected(int position) {
                 setupTabIcons(position);
+                setFirstPhoto(fragments[position]);
             }
 
             @Override
@@ -90,6 +92,10 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
         setupTabIcons(0);
     }
 
+
+    private void setFirstPhoto(Fragment fragment) {
+        Log.wtf("setFitsgPhotho", "Entered");
+    }
 
     private void setupTabIcons(int pos) {
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
@@ -181,9 +187,7 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
         }
     }
 
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        Fragment[] fragments = new Fragment[]{FacebookPhotosFragment.newInstance(loggedUser), GalleryPhotosFragment.newInstance(loggedUser), InstagramPhotosFragment.newInstance(loggedUser)};
-
+    class SectionsPagerAdapter extends FragmentPagerAdapter {
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }

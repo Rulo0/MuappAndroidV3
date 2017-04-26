@@ -34,6 +34,7 @@ public class AddQuoteActivity extends BaseActivity {
     List<MuappQuote> quoteList;
     ImageButton bnt_quote_left, bnt_quote_right;
     EditText et_quote_comment;
+    ArrayList<String> usedQuotes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,22 +48,42 @@ public class AddQuoteActivity extends BaseActivity {
         quotesAdapter = new MuappQuotesAdapter(this);
         pager_quotes.setAdapter(quotesAdapter);
         quoteList = new ArrayList<>();
-        FirebaseDatabase.getInstance().getReference().child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference contentReference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(loggedUser.getId()));
+        contentReference.orderByChild("catContent").equalTo("contentQte").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                try {
-                    for (DataSnapshot s : dataSnapshot.getChildren()) {
-                        MuappQuote q = s.getValue(MuappQuote.class);
-                        if (q != null) {
-                            q.setKey(s.getKey());
-                            quoteList.add(q);
+                for (DataSnapshot s : dataSnapshot.getChildren()) {
+                    UserContent c = s.getValue(UserContent.class);
+                    if (c != null) {
+                        Log.wtf("Quotes", c.toString());
+                        usedQuotes.add(c.getQuoteId());
+                    }
+                }
+                FirebaseDatabase.getInstance().getReference().child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        try {
+                            for (DataSnapshot s : dataSnapshot.getChildren()) {
+                                MuappQuote q = s.getValue(MuappQuote.class);
+                                if (q != null) {
+                                    if (!usedQuotes.contains(s.getKey())) {
+                                        q.setKey(s.getKey());
+                                        quoteList.add(q);
+                                    }
+                                }
+                            }
+                            quotesAdapter.setQuotes(quoteList);
+                        } catch (Exception x) {
+                            x.printStackTrace();
                         }
                     }
-                    quotesAdapter.setQuotes(quoteList);
-                } catch (Exception x) {
-                    x.printStackTrace();
-                }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
             }
 
             @Override
@@ -70,6 +91,7 @@ public class AddQuoteActivity extends BaseActivity {
 
             }
         });
+
         pager_quotes.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -116,6 +138,7 @@ public class AddQuoteActivity extends BaseActivity {
 
     private void publishThisQuote() {
         if (!TextUtils.isEmpty(et_quote_comment.getText().toString())) {
+            showProgressDialog();
             UserContent thisContent = new UserContent();
             thisContent.setComment(et_quote_comment.getText().toString());
             thisContent.setCreatedAt(new Date().getTime());
@@ -127,6 +150,7 @@ public class AddQuoteActivity extends BaseActivity {
             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    hideProgressDialog();
                     setResult(RESULT_OK);
                     finish();
                 }
