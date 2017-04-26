@@ -100,7 +100,9 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         if (getContext() instanceof MainActivity) {
             this.fab_add_content = ((MainActivity) getContext()).getFab_add_content();
         }
-        recycler_my_content.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setStackFromEnd(true);
+        recycler_my_content.setLayoutManager(llm);
         recycler_my_content.setNestedScrollingEnabled(false);
         recycler_my_content.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -174,7 +176,6 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         UserContent c = dataSnapshot.getValue(UserContent.class);
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
-            recycler_my_content.scrollToPosition(0);
             adapter.addContent(c);
         }
     }

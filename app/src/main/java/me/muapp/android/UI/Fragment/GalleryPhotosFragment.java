@@ -90,6 +90,15 @@ public class GalleryPhotosFragment extends Fragment {
         return rootView;
     }
 
+    public void fistImageLoad() {
+        try {
+            recycler_add_device.findViewHolderForAdapterPosition(0).itemView.performClick();
+        } catch (Exception x) {
+            Log.wtf("setFirstPhoto", x.getMessage());
+            x.printStackTrace();
+        }
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -111,6 +120,7 @@ public class GalleryPhotosFragment extends Fragment {
     class getUserMediaTask extends AsyncTask<Context, Void, List<UserMedia>> {
         CursorLoader cursorLoader;
         String selection;
+
         @Override
         protected void onPreExecute() {
             selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="

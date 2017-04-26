@@ -129,7 +129,7 @@ public class AddInstagramPhotosAdapter extends RecyclerView.Adapter<AddInstagram
         @Override
         public void onClick(View v) {
             if (onImageSelectedListener != null) {
-                onImageSelectedListener.onImageSelected(photoUrl, null, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+                onImageSelectedListener.onImageSelected(photoUrl, null, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE, img_photo_fb_item);
             }
         }
     }

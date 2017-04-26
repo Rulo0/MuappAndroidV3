@@ -112,7 +112,7 @@ public class AddDevicePhotosAdapter extends RecyclerView.Adapter<AddDevicePhotos
         @Override
         public void onClick(View v) {
             if (onImageSelectedListener != null) {
-                onImageSelectedListener.onImageSelected(currentPhoto.getPath(), currentPhoto.getUri(), currentPhoto.getMediaType());
+                onImageSelectedListener.onImageSelected(currentPhoto.getPath(), currentPhoto.getUri(), currentPhoto.getMediaType(),img_photo_fb_item);
             }
         }
     }

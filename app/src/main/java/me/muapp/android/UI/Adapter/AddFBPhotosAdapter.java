@@ -122,7 +122,7 @@ public class AddFBPhotosAdapter extends RecyclerView.Adapter<AddFBPhotosAdapter.
             Glide.with(mContext).load(photoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
             itemView.setOnClickListener(this);
             if (!hasSelectedMedia) {
-                onImageSelectedListener.onImageSelected(photoUrl, null, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+                onImageSelectedListener.onImageSelected(photoUrl, null, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE, img_photo_fb_item);
                 hasSelectedMedia = true;
             }
         }
@@ -130,7 +130,7 @@ public class AddFBPhotosAdapter extends RecyclerView.Adapter<AddFBPhotosAdapter.
         @Override
         public void onClick(View v) {
             if (onImageSelectedListener != null) {
-                onImageSelectedListener.onImageSelected(photoUrl, null, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+                onImageSelectedListener.onImageSelected(photoUrl, null, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE, img_photo_fb_item);
             }
         }
     }

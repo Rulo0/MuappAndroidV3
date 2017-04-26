@@ -68,6 +68,15 @@ public class InstagramPhotosFragment extends Fragment implements ValueEventListe
         return fragment;
     }
 
+    public void fistImageLoad() {
+        try {
+            recycler_add_instagram.findViewHolderForAdapterPosition(0).itemView.performClick();
+        } catch (Exception x) {
+            Log.wtf("setFirstPhoto", x.getMessage());
+            x.printStackTrace();
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

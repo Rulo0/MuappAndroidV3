@@ -80,6 +80,15 @@ public class FacebookPhotosFragment extends Fragment {
         return rootView;
     }
 
+    public void fistImageLoad() {
+        try {
+            recycler_photo_add.findViewHolderForAdapterPosition(0).itemView.performClick();
+        } catch (Exception x) {
+            Log.wtf("setFirstPhoto", x.getMessage());
+            x.printStackTrace();
+        }
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -102,7 +111,6 @@ public class FacebookPhotosFragment extends Fragment {
                                 List<FacebookImage> photos = FacebookAlbum.imagesAsAlbumList(array);
                                 for (FacebookImage i : photos) {
                                     ada.addPhoto(i);
-                                    recycler_photo_add.scrollToPosition(0);
                                 }
                             }
                         } catch (Exception x) {

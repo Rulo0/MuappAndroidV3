@@ -2,8 +2,10 @@ package me.muapp.android.UI.Activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -45,6 +47,7 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     Fragment[] fragments;
+    ImageView lastSelectedContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +96,20 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
     }
 
 
-    private void setFirstPhoto(Fragment fragment) {
-        Log.wtf("setFitsgPhotho", "Entered");
+    private void setFirstPhoto(final Fragment fragment) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (fragment instanceof FacebookPhotosFragment) {
+                    ((FacebookPhotosFragment) fragment).fistImageLoad();
+                } else if (fragment instanceof GalleryPhotosFragment) {
+                    ((GalleryPhotosFragment) fragment).fistImageLoad();
+                } else if (fragment instanceof InstagramPhotosFragment) {
+                    ((InstagramPhotosFragment) fragment).fistImageLoad();
+                }
+            }
+        }, 100);
+
     }
 
     private void setupTabIcons(int pos) {
@@ -152,7 +167,12 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
     }
 
     @Override
-    public void onImageSelected(String url, Uri uri, int mediaType) {
+    public void onImageSelected(String url, Uri uri, int mediaType, ImageView container) {
+        if (lastSelectedContainer != null)
+            lastSelectedContainer.clearColorFilter();
+        lastSelectedContainer = container;
+        //Alpha 0.6 - (255 * 0.6)
+        container.setColorFilter(Color.argb(153, 255, 255, 255));
         switchViews(mediaType);
         if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
             if (url != null) {
