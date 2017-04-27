@@ -48,6 +48,7 @@
                     android:id="@+id/txt_spotify_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/color_muapp_dark"
                     android:text="Content" />
 
                 <com.github.curioustechizen.ago.RelativeTimeTextView

@@ -16,8 +16,10 @@ import java.util.concurrent.TimeUnit;
 import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
 import me.muapp.android.Classes.API.Handlers.MuappUserInfoHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
+import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappUser;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
@@ -463,6 +465,48 @@ public class APIService {
         } else {
             if (handler != null)
                 handler.onFailure(false, "User not logged");
+        }
+    }
+
+    public void getUserQualifications(int userId, final UserQualificationsHandler handler) {
+        try {
+            String url = BASE_URL + String.format("qualification/get_qualifications/%s", userId);
+            PreferenceHelper helper = new PreferenceHelper(mContext);
+            if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+                Request request = new Request.Builder()
+                        .url(url)
+                        .get()
+                        .build();
+                Log.i("getUserQualifications", url);
+                client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        if (handler != null)
+                            handler.onFailure(false, e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String responseString = response.body().string();
+                        Log.wtf("getUserQualifications", responseString.toString());
+                        UserQualifications qualifications = new Gson().fromJson(responseString, UserQualifications.class);
+                        if (qualifications != null) {
+                            if (handler != null) {
+                                handler.onSuccess(response.code(), qualifications);
+                            } else {
+                                handler.onFailure(true, responseString);
+                            }
+                        }
+                    }
+                });
+            } else {
+                if (handler != null)
+                    handler.onFailure(false, "User not logged");
+            }
+        } catch (Exception x) {
+            Log.wtf("getUserQualifications", x.getMessage());
+            x.printStackTrace();
         }
     }
 

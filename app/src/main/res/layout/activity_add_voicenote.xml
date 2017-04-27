@@ -58,7 +58,7 @@
 
         <RelativeLayout
             android:id="@+id/voice_record_button_container"
-            android:layout_width="200dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_centerVertical="true"
@@ -86,8 +86,8 @@
 
         <ImageButton
             android:id="@+id/imb_record_voice"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_centerInParent="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="12dp"
@@ -96,11 +96,12 @@
 
         <com.eralp.circleprogressview.CircleProgressView
             android:id="@+id/circle_progress_view"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
             android:layout_centerInParent="true"
             app:cpv_circle_color="@color/color_muap_green"
-            app:cpv_circle_width="5dp"
+            app:cpv_circle_width="8dp"
+
             app:cpv_text_size="0" />
 
     </RelativeLayout>

@@ -1,43 +1,62 @@
 package me.muapp.android.UI.Activity;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 
-import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerView;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 
-public class YoutubeViewActivity extends YouTubeBaseActivity implements
-        YouTubePlayer.OnInitializedListener {
-    private YouTubePlayerView youtube_player;
+public class YoutubeViewActivity extends BaseActivity implements YouTubePlayer.OnInitializedListener {
+    YouTubePlayerFragment youtube_fragment_view;
     UserContent thisContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube_view);
-        youtube_player = (YouTubePlayerView) findViewById(R.id.youtube_player);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        youtube_fragment_view = (YouTubePlayerFragment) getFragmentManager()
+                .findFragmentById(R.id.youtube_fragment_view);
         thisContent = getIntent().getParcelableExtra("itemContent");
+        youtube_fragment_view.initialize(getYoutubeApiKey(), this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        youtube_player.initialize(getYoutubeApiKey(), this);
     }
 
     @Override
-    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-        youTubePlayer.loadVideo(thisContent.getVideoId());
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored) {
+        YouTubePlayer.PlayerStyle style = YouTubePlayer.PlayerStyle.MINIMAL;
+        youTubePlayer.setPlayerStyle(style);
+        if (!wasRestored) {
+            youTubePlayer.loadVideo(thisContent.getVideoId());
+        }
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
 
     }
+
+
 }

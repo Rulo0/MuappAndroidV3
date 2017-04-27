@@ -96,9 +96,8 @@ public class MainActivity extends BaseActivity implements
         fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
         if (checkPlayServices()) {
             final String token = FirebaseInstanceId.getInstance().getToken();
-            if (!TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token)) {
+            if (!TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token) || !loggedUser.getPushToken().equals(token)) {
                 FirebaseMessaging.getInstance().subscribeToTopic("android");
-                Log.d(TAG, "InstanceID token: " + token);
                 JSONObject tokenUser = new JSONObject();
                 try {
                     tokenUser.put("push_token", token);

@@ -150,7 +150,6 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-
     <string name="matches_fragment_list_empty">You have no matches yet</string>
     <string name="crushes_fragment_list_empty">You have no crushes yet</string>
     <string name="lbl_placeholder_spotify">Find a song on Spotify to add it to your content</string>
@@ -162,12 +161,14 @@
     <string name="section_format">Hello World from section: %s</string>
     <string name="title_activity_add_photos">AddPhotosActivity</string>
     <string name="lbl_add_videos">Add videos to your profile</string>
-
     <string name="format_user_years">%d years </string>
-    <string name="format_user_hometown">, i was born on </string>
+    <string name="format_user_hometown">, i was born on</string>
+    <string name="format_user_studies">, i studied in</string>
+    <string name="format_user_work">, i work in</string>
     <string name="lbl_no_results_found">Sorry, we could not find any results</string>
-
     <string name="hint_white_your_answer_here">Write your answer here</string>
-
     <string name="lbl_delete_content">Delete</string>
+    <string name="lbl_statistics_visits">Visits</string>
+    <string name="lbl_statistics_muapps">Muapps</string>
+    <string name="lbl_statistics_matches">Matches</string>
 </resources>

@@ -69,7 +69,7 @@ public class AddGiphyDetailActivity extends BaseActivity {
         thisContent.setComment(et_giphy_comment.getText().toString());
         thisContent.setCreatedAt(new Date().getTime());
         thisContent.setLikes(0);
-        thisContent.setContentUrl(currentGiphy.getImages().getOriginal().getUrl());
+        thisContent.setContentUrl(currentGiphy.getImages().getOriginal().getUrl().replace("http://", "https://"));
         thisContent.setCatContent("contentGif");
         GiphyMeasureData giphyMeasureData = new GiphyMeasureData();
         giphyMeasureData.setWidth(Integer.parseInt(currentGiphy.getImages().getOriginal().getWidth()));

@@ -1,13 +1,16 @@
 package me.muapp.android.UI.Adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rd.PageIndicatorView;
@@ -30,20 +33,16 @@ public class SectionedProfileAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     private boolean mValid = true;
     private int mSectionResourceId;
-    private int mTextResourceId;
-    private int mImageResourceId;
     private LayoutInflater mLayoutInflater;
     private RecyclerView.Adapter mBaseAdapter;
     private SparseArray<Section> mSections = new SparseArray<>();
 
 
-    public SectionedProfileAdapter(Context context, int sectionResourceId, int textResourceId, int imageResourceId,
+    public SectionedProfileAdapter(Context context, int sectionResourceId,
                                    RecyclerView.Adapter baseAdapter) {
 
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mSectionResourceId = sectionResourceId;
-        mTextResourceId = textResourceId;
-        mImageResourceId = imageResourceId;
         mBaseAdapter = baseAdapter;
         mContext = context;
 
@@ -79,24 +78,57 @@ public class SectionedProfileAdapter extends RecyclerView.Adapter<RecyclerView.V
         PageIndicatorView indicator_profile_pictures;
         ViewPager pager_profile_pictures;
         public TextView title;
-        public ImageView icon;
 
-        public SectionViewHolder(View view, int mTextResourceid, int mImageResourceId) {
+        public SectionViewHolder(View view) {
             super(view);
             pager_profile_pictures = (ViewPager) view.findViewById(R.id.pager_profile_pictures);
             indicator_profile_pictures = (PageIndicatorView) view.findViewById(R.id.indicator_profile_pictures);
-            title = (TextView) view.findViewById(mTextResourceid);
-            icon = (ImageView) view.findViewById(mImageResourceId);
+            title = (TextView) view.findViewById(R.id.pillbox_section_text);
             indicator_profile_pictures.setViewPager(pager_profile_pictures);
         }
 
         public void bindHeader(Section section) {
-            title.setText(section.getTitle());
+            title.setText("");
             profilePicturesAdapter = new ProfilePicturesAdapter(mContext, section.user.getAlbum());
             pager_profile_pictures.setAdapter(profilePicturesAdapter);
             indicator_profile_pictures.setAnimationType(AnimationType.SWAP);
             indicator_profile_pictures.setCount(section.user.getAlbum().size());
             indicator_profile_pictures.setRadius(5);
+            createHeader(section.user, title);
+        }
+    }
+
+    private void createHeader(User user, TextView nameView) {
+        String userAge = String.format(mContext.getString(R.string.format_user_years), user.getAge());
+        SpannableString ssAge = new SpannableString(userAge);
+        ssAge.setSpan(new StyleSpan(Typeface.BOLD), 0, ssAge.length(), 0);
+        nameView.append(ssAge);
+        user.setHometown("Chicken Town");
+        user.setEducation("Some Place University (SPU)");
+        user.setWork("MUAPP");
+        if (!TextUtils.isEmpty(user.getHometown())) {
+            nameView.append(mContext.getString(R.string.format_user_hometown));
+            nameView.append(" ");
+            String userHomeTown = user.getHometown();
+            SpannableString ssHomeTown = new SpannableString(userHomeTown);
+            ssHomeTown.setSpan(new StyleSpan(Typeface.BOLD), 0, ssHomeTown.length(), 0);
+            nameView.append(ssHomeTown);
+        }
+        if (user.getVisibleEducation() && !TextUtils.isEmpty(user.getEducation())) {
+            nameView.append(mContext.getString(R.string.format_user_studies));
+            nameView.append(" ");
+            String userStudies = user.getEducation();
+            SpannableString ssStudies = new SpannableString(userStudies);
+            ssStudies.setSpan(new StyleSpan(Typeface.BOLD), 0, ssStudies.length(), 0);
+            nameView.append(ssStudies);
+        }
+        if (user.getVisibleWork() && !TextUtils.isEmpty(user.getWork())) {
+            nameView.append(mContext.getString(R.string.format_user_work));
+            nameView.append(" ");
+            String userWork = user.getWork();
+            SpannableString ssWork = new SpannableString(userWork);
+            ssWork.setSpan(new StyleSpan(Typeface.BOLD), 0, userWork.length(), 0);
+            nameView.append(ssWork);
         }
     }
 
@@ -104,7 +136,7 @@ public class SectionedProfileAdapter extends RecyclerView.Adapter<RecyclerView.V
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int typeView) {
         if (typeView == SECTION_TYPE) {
             final View view = LayoutInflater.from(mContext).inflate(mSectionResourceId, parent, false);
-            return new SectionViewHolder(view, mTextResourceId, mImageResourceId);
+            return new SectionViewHolder(view);
         } else {
             return mBaseAdapter.onCreateViewHolder(parent, typeView - 1);
         }

@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.muapp.android.Classes.API.APIService;
+import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
+import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
+import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
@@ -64,7 +69,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         sections.add(new SectionedProfileAdapter.Section(0, user));
         SectionedProfileAdapter.Section[] dummy = new SectionedProfileAdapter.Section[sections.size()];
         mSectionedAdapter = new
-                SectionedProfileAdapter(getContext(), R.layout.profile_header_layout, R.id.pillbox_section_text, R.id.pillbox_divider_icon, adapter);
+                SectionedProfileAdapter(getContext(), R.layout.profile_header_layout, adapter);
         mSectionedAdapter.setSections(sections.toArray(dummy));
         myUserReference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(user.getId()));
         FirebaseDatabase.getInstance().getReference().child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -87,6 +92,20 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        new APIService(getContext()).getUserQualifications(user.getId(), new UserQualificationsHandler() {
+            @Override
+            public void onSuccess(int responseCode, UserQualifications qualifications) {
+                for (Qualification q : qualifications.getQualifications()) {
+                    Log.wtf("Qualification", q.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(boolean isSuccessful, String responseString) {
 
             }
         });

@@ -278,6 +278,15 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void exitFromApp() {
+
+        try {
+            JSONObject tokenUser = new JSONObject();
+            tokenUser.put("push_token", "");
+            new APIService(this).patchUser(tokenUser, null);
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+
         new PreferenceHelper(SettingsActivity.this).clear();
         LoginManager.getInstance().logOut();
         hideProgressDialog();
