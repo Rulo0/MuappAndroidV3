@@ -4,14 +4,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -21,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +39,8 @@ import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.rd.PageIndicatorView;
+import com.rd.animation.AnimationType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,8 +50,10 @@ import java.util.Locale;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
+import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.SpotifyData;
+import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
@@ -73,16 +82,25 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     MediaPlayer mediaPlayer;
     String currentPlaying = "";
     ImageButton previewPlayedButton;
+
+    public void setQualifications(List<Qualification> qualifications) {
+        this.qualifications = qualifications;
+    }
+
+    List<Qualification> qualifications;
     int screenWidth;
     List<MuappQuote> quoteList;
     String lang;
     FragmentManager fragmentManager;
+    User user;
 
     public void setFragmentManager(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
     }
 
-    public UserContentAdapter(Context context) {
+    public UserContentAdapter(Context context, User user) {
+        this.qualifications = new ArrayList<>();
+        this.user = user;
         this.mInflater = LayoutInflater.from(context);
         this.userContentList = new SortedList<>(UserContent.class, new SortedList.Callback<UserContent>() {
             @Override
@@ -135,6 +153,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         userContentList.add(c);
     }
 
+
     public void setQuoteList(List<MuappQuote> quoteList) {
         this.quoteList = quoteList;
         notifyDataSetChanged();
@@ -151,7 +170,12 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     @Override
     public int getItemViewType(int position) {
-        return viewTypeMap.get(userContentList.get(position).getCatContent());
+        if (position == 0)
+            return -1;
+        else if (position == 1)
+            return -2;
+        else
+            return viewTypeMap.get(userContentList.get(position).getCatContent());
     }
 
     @Override
@@ -159,6 +183,14 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         Log.wtf("ViewType", viewType + "");
         UserContentHolder holder;
         switch (viewType) {
+            case -1:
+                View headerView = mInflater.inflate(R.layout.profile_header_layout, parent, false);
+                holder = new HeaderContentHolder(headerView);
+                break;
+            case -2:
+                View qualificationsView = mInflater.inflate(R.layout.layout_qualifications_profile, parent, false);
+                holder = new QualificationsContentHolder(qualificationsView);
+                break;
             case 1:
                 View voiceView = mInflater.inflate(R.layout.user_content_audio_item_layout, parent, false);
                 holder = new AudioContentHolder(voiceView);
@@ -193,16 +225,26 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     @Override
     public void onBindViewHolder(UserContentHolder holder, int position) {
-        holder.bind(userContentList.get(position));
+        if (position == 0)
+            holder.bind(user);
+        else if (position == 1)
+            holder.bind(qualifications);
+        else
+            holder.bind(userContentList.get(position));
+
     }
 
     @Override
     public int getItemCount() {
-        return userContentList.size();
+        return userContentList.size() + 2;
     }
 
     interface UserContentInterface {
         void bind(UserContent c);
+
+        void bind(User u);
+
+        void bind(List<Qualification> qualifications);
     }
 
     class UserContentHolder extends RecyclerView.ViewHolder implements UserContentInterface, View.OnClickListener {
@@ -237,6 +279,16 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         }
 
         @Override
+        public void bind(User u) {
+
+        }
+
+        @Override
+        public void bind(List<Qualification> qualifications) {
+
+        }
+
+        @Override
         public void onClick(View v) {
             if (v.getId() == btnMenu.getId()) {
                 // menu.show();
@@ -263,6 +315,93 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             if (!TextUtils.isEmpty(itemContent.getVideoThumbStorage())) {
                 FirebaseStorage.getInstance().getReference().child(itemContent.getVideoThumbStorage()).delete();
             }
+        }
+    }
+
+    class HeaderContentHolder extends UserContentHolder {
+        ProfilePicturesAdapter profilePicturesAdapter;
+        PageIndicatorView indicator_profile_pictures;
+        ViewPager pager_profile_pictures, pager_qualifications;
+        TextView title;
+        TextView txt_statistics_visits, txt_statistics_muapps, txt_statistics_matches;
+        LinearLayout profile_qualifications_container;
+
+        public HeaderContentHolder(View itemView) {
+            super(itemView);
+            pager_profile_pictures = (ViewPager) itemView.findViewById(R.id.pager_profile_pictures);
+            indicator_profile_pictures = (PageIndicatorView) itemView.findViewById(R.id.indicator_profile_pictures);
+            title = (TextView) itemView.findViewById(R.id.pillbox_section_text);
+            indicator_profile_pictures.setViewPager(pager_profile_pictures);
+            indicator_profile_pictures.setRadius(5);
+            indicator_profile_pictures.setAnimationType(AnimationType.SWAP);
+            txt_statistics_visits = (TextView) itemView.findViewById(R.id.txt_statistics_visits);
+            txt_statistics_muapps = (TextView) itemView.findViewById(R.id.txt_statistics_muapps);
+            txt_statistics_matches = (TextView) itemView.findViewById(R.id.txt_statistics_matches);
+            profile_qualifications_container = (LinearLayout) itemView.findViewById(R.id.profile_qualifications_container);
+        }
+
+        @Override
+        public void bind(User u) {
+            super.bind(u);
+            title.setText("");
+            profile_qualifications_container.removeAllViews();
+            if (qualifications != null) {
+                for (Qualification q : qualifications) {
+                    profile_qualifications_container.addView(mInflater.inflate(R.layout.user_qualification_item, null));
+                }
+            }
+            profilePicturesAdapter = new ProfilePicturesAdapter(context, u.getAlbum());
+            pager_profile_pictures.setAdapter(profilePicturesAdapter);
+            indicator_profile_pictures.setCount(u.getAlbum().size());
+            createHeader(u, title);
+            txt_statistics_visits.setText(String.valueOf(u.getVisits()));
+            txt_statistics_matches.setText(String.valueOf(u.getMatches()));
+        }
+
+
+        private void createHeader(User user, TextView nameView) {
+            String userAge = String.format(context.getString(R.string.format_user_years), user.getAge());
+            SpannableString ssAge = new SpannableString(userAge);
+            ssAge.setSpan(new StyleSpan(Typeface.BOLD), 0, ssAge.length(), 0);
+            nameView.append(ssAge);
+            user.setHometown("Chicken Town");
+            user.setEducation("Some Place University (SPU)");
+            user.setWork("MUAPP");
+            if (!TextUtils.isEmpty(user.getHometown())) {
+                nameView.append(context.getString(R.string.format_user_hometown));
+                nameView.append(" ");
+                String userHomeTown = user.getHometown();
+                SpannableString ssHomeTown = new SpannableString(userHomeTown);
+                ssHomeTown.setSpan(new StyleSpan(Typeface.BOLD), 0, ssHomeTown.length(), 0);
+                nameView.append(ssHomeTown);
+            }
+            if (user.getVisibleEducation() && !TextUtils.isEmpty(user.getEducation())) {
+                nameView.append(context.getString(R.string.format_user_studies));
+                nameView.append(" ");
+                String userStudies = user.getEducation();
+                SpannableString ssStudies = new SpannableString(userStudies);
+                ssStudies.setSpan(new StyleSpan(Typeface.BOLD), 0, ssStudies.length(), 0);
+                nameView.append(ssStudies);
+            }
+            if (user.getVisibleWork() && !TextUtils.isEmpty(user.getWork())) {
+                nameView.append(context.getString(R.string.format_user_work));
+                nameView.append(" ");
+                String userWork = user.getWork();
+                SpannableString ssWork = new SpannableString(userWork);
+                ssWork.setSpan(new StyleSpan(Typeface.BOLD), 0, userWork.length(), 0);
+                nameView.append(ssWork);
+            }
+        }
+    }
+
+    class QualificationsContentHolder extends UserContentHolder {
+        public QualificationsContentHolder(View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        public void bind(User u) {
+            super.bind(u);
         }
     }
 

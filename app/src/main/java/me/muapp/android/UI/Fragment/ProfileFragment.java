@@ -29,13 +29,11 @@ import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.MainActivity;
-import me.muapp.android.UI.Adapter.SectionedProfileAdapter;
 import me.muapp.android.UI.Adapter.UserContentAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
-
-
 public class ProfileFragment extends Fragment implements OnFragmentInteractionListener, ChildEventListener {
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
     User user;
@@ -43,7 +41,6 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     DatabaseReference myUserReference;
     UserContentAdapter adapter;
     RecyclerView recycler_my_content;
-    SectionedProfileAdapter mSectionedAdapter;
     FloatingActionButton fab_add_content;
 
     public ProfileFragment() {
@@ -63,14 +60,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         if (getArguments() != null) {
             user = getArguments().getParcelable(ARG_CURRENT_USER);
         }
-        adapter = new UserContentAdapter(getContext());
+        adapter = new UserContentAdapter(getContext(), new UserHelper(getContext()).getLoggedUser());
         adapter.setFragmentManager(getChildFragmentManager());
-        List<SectionedProfileAdapter.Section> sections = new ArrayList<>();
-        sections.add(new SectionedProfileAdapter.Section(0, user));
-        SectionedProfileAdapter.Section[] dummy = new SectionedProfileAdapter.Section[sections.size()];
-        mSectionedAdapter = new
-                SectionedProfileAdapter(getContext(), R.layout.profile_header_layout, adapter);
-        mSectionedAdapter.setSections(sections.toArray(dummy));
         myUserReference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(user.getId()));
         FirebaseDatabase.getInstance().getReference().child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -122,7 +113,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setStackFromEnd(true);
         recycler_my_content.setLayoutManager(llm);
-        recycler_my_content.setNestedScrollingEnabled(false);
+        recycler_my_content.setHasFixedSize(true);
         recycler_my_content.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -144,7 +135,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recycler_my_content.setAdapter(mSectionedAdapter);
+        recycler_my_content.setAdapter(adapter);
     }
 
 
@@ -196,6 +187,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
             adapter.addContent(c);
+            recycler_my_content.scrollToPosition(0);
         }
     }
 
