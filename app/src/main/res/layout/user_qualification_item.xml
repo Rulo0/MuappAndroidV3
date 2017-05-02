@@ -47,11 +47,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/stars_container"
         android:layout_centerHorizontal="true"
-        android:layout_gravity="center"
         android:layout_marginBottom="8dp"
         android:ellipsize="marquee"
         android:lines="1"
-        android:text="Rulo fb Rulo fb Rulo fb Rulo fb Rulo fb Rulo fb"
+        android:text="Rulo fb"
+        android:textAlignment="center"
         android:textColor="@color/color_muapp_dark"
         android:textStyle="italic" />
 </RelativeLayout>

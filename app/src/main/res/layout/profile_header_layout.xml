@@ -48,5 +48,4 @@
 
     <include layout="@layout/layout_statistics_profile" />
 
-    <include layout="@layout/layout_qualifications_profile" />
 </LinearLayout>

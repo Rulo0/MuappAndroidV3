@@ -22,4 +22,6 @@
     <color name="color_placeholder_grey">#a4a4a4</color>
     <color name="color_active_tab">#3e4c5c</color>
     <color name="color_inactive_tab">#cfd2d6</color>
+    <color name="color_score_active">#ffee00</color>
+    <color name="color_score_inactive">#d8d8d8</color>
 </resources>

@@ -30,11 +30,6 @@ public class UserPhotoTouchHelper extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-        //   userPictureAdapter.swap(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-        if (viewHolder.getItemViewType() != target.getItemViewType()) {
-            return false;
-        }
-        // Notify the adapter of the move
         userPictureAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
         return true;
     }

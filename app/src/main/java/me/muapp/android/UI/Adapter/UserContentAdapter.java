@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.util.SortedList;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -82,12 +83,13 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     MediaPlayer mediaPlayer;
     String currentPlaying = "";
     ImageButton previewPlayedButton;
+    UserQualificationsAdapter userQualificationsAdapter;
 
     public void setQualifications(List<Qualification> qualifications) {
-        this.qualifications = qualifications;
+        userQualificationsAdapter = new UserQualificationsAdapter(context, qualifications);
+        notifyItemChanged(1);
     }
 
-    List<Qualification> qualifications;
     int screenWidth;
     List<MuappQuote> quoteList;
     String lang;
@@ -99,7 +101,6 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     }
 
     public UserContentAdapter(Context context, User user) {
-        this.qualifications = new ArrayList<>();
         this.user = user;
         this.mInflater = LayoutInflater.from(context);
         this.userContentList = new SortedList<>(UserContent.class, new SortedList.Callback<UserContent>() {
@@ -170,12 +171,15 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0)
-            return -1;
-        else if (position == 1)
-            return -2;
-        else
-            return viewTypeMap.get(userContentList.get(position).getCatContent());
+
+        switch (position) {
+            case 0:
+                return -1;
+            case 1:
+                return -2;
+            default:
+                return viewTypeMap.get(userContentList.get(position - 2).getCatContent());
+        }
     }
 
     @Override
@@ -228,10 +232,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         if (position == 0)
             holder.bind(user);
         else if (position == 1)
-            holder.bind(qualifications);
-        else
-            holder.bind(userContentList.get(position));
-
+            holder.bind(userQualificationsAdapter);
+        else {
+            holder.bind(userContentList.get(position - 2));
+        }
     }
 
     @Override
@@ -244,7 +248,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
         void bind(User u);
 
-        void bind(List<Qualification> qualifications);
+        void bind(UserQualificationsAdapter userQualificationsAdapter);
     }
 
     class UserContentHolder extends RecyclerView.ViewHolder implements UserContentInterface, View.OnClickListener {
@@ -284,7 +288,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         }
 
         @Override
-        public void bind(List<Qualification> qualifications) {
+        public void bind(UserQualificationsAdapter adapter) {
 
         }
 
@@ -324,7 +328,6 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         ViewPager pager_profile_pictures, pager_qualifications;
         TextView title;
         TextView txt_statistics_visits, txt_statistics_muapps, txt_statistics_matches;
-        LinearLayout profile_qualifications_container;
 
         public HeaderContentHolder(View itemView) {
             super(itemView);
@@ -337,19 +340,12 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             txt_statistics_visits = (TextView) itemView.findViewById(R.id.txt_statistics_visits);
             txt_statistics_muapps = (TextView) itemView.findViewById(R.id.txt_statistics_muapps);
             txt_statistics_matches = (TextView) itemView.findViewById(R.id.txt_statistics_matches);
-            profile_qualifications_container = (LinearLayout) itemView.findViewById(R.id.profile_qualifications_container);
         }
 
         @Override
         public void bind(User u) {
             super.bind(u);
             title.setText("");
-            profile_qualifications_container.removeAllViews();
-            if (qualifications != null) {
-                for (Qualification q : qualifications) {
-                    profile_qualifications_container.addView(mInflater.inflate(R.layout.user_qualification_item, null));
-                }
-            }
             profilePicturesAdapter = new ProfilePicturesAdapter(context, u.getAlbum());
             pager_profile_pictures.setAdapter(profilePicturesAdapter);
             indicator_profile_pictures.setCount(u.getAlbum().size());
@@ -395,13 +391,35 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     }
 
     class QualificationsContentHolder extends UserContentHolder {
+        RecyclerView recycler_profile_qualifications;
+        TextView txt_profile_qualification;
+        View containerView;
+
         public QualificationsContentHolder(View itemView) {
             super(itemView);
+            containerView = itemView;
+            txt_profile_qualification = (TextView) itemView.findViewById(R.id.txt_profile_qualification);
+            recycler_profile_qualifications = (RecyclerView) itemView.findViewById(R.id.recycler_profile_qualifications);
+            LinearLayoutManager llm = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+            recycler_profile_qualifications.setLayoutManager(llm);
         }
 
         @Override
-        public void bind(User u) {
-            super.bind(u);
+        public void bind(UserQualificationsAdapter qualificationsAdapter) {
+            super.bind(qualificationsAdapter);
+            RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) itemView.getLayoutParams();
+            if (qualificationsAdapter != null) {
+                recycler_profile_qualifications.setAdapter(qualificationsAdapter);
+                param.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                param.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                itemView.setVisibility(View.VISIBLE);
+                txt_profile_qualification.setText(String.format(context.getString(R.string.lbl_average_score), user.getAverage(), user.getQualificationsCount()));
+            } else {
+                itemView.setVisibility(View.GONE);
+                param.height = 0;
+                param.width = 0;
+            }
+            itemView.setLayoutParams(param);
         }
     }
 
@@ -495,22 +513,27 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         @Override
         public void bind(UserContent c) {
             super.bind(c);
-            if (!TextUtils.isEmpty(c.getComment())) {
-                txt_gif_comment.setText(c.getComment());
-                txt_gif_comment.setVisibility(View.VISIBLE);
-            } else {
-                txt_gif_comment.setVisibility(View.GONE);
-            }
-            txt_gif_date.setReferenceTime(c.getCreatedAt());
+            try {
+                if (!TextUtils.isEmpty(c.getComment())) {
+                    txt_gif_comment.setText(c.getComment());
+                    txt_gif_comment.setVisibility(View.VISIBLE);
+                } else {
+                    txt_gif_comment.setVisibility(View.GONE);
+                }
+                txt_gif_date.setReferenceTime(c.getCreatedAt());
 
-            GiphyMeasureData giphyMeasureData = c.getGiphyMeasureData();
-            float aspectRatio;
-            if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
-                aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
-                Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_content);
-            } else {
-                aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
-                Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
+                GiphyMeasureData giphyMeasureData = c.getGiphyMeasureData();
+                float aspectRatio;
+                if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
+                    aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_content);
+                } else {
+                    aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
+                }
+            } catch (Exception x) {
+                Log.wtf("Binding Error", x.getMessage());
+                x.printStackTrace();
             }
         }
     }

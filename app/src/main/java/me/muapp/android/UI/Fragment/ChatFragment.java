@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.quickblox.auth.session.QBSession;
 import com.quickblox.chat.QBIncomingMessagesManager;
 import com.quickblox.chat.model.QBChatDialog;
 
@@ -23,8 +22,6 @@ import io.realm.RealmResults;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatDialogsListener;
 import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatHelper;
-import me.muapp.android.Classes.Quickblox.Login.QuickBloxLoginHelper;
-import me.muapp.android.Classes.Quickblox.Login.QuickBloxLoginListener;
 import me.muapp.android.Classes.Quickblox.cache.CacheUtils;
 import me.muapp.android.Classes.Quickblox.cache.DialogCacheHelper;
 import me.muapp.android.Classes.Quickblox.cache.DialogCacheObject;
@@ -96,7 +93,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         super.onActivityCreated(savedInstanceState);
         realm = CacheUtils.getInstance(user);
         Log.wtf(TAG, QuickBloxChatHelper.getInstance().isSessionActive() + "");
-        if (!QuickBloxChatHelper.getInstance().isSessionActive()) {
+       /* if (!QuickBloxChatHelper.getInstance().isSessionActive()) {
             QuickBloxLoginHelper.login(getContext(), savedInstanceState, new QuickBloxLoginListener() {
                 @Override
                 public void onSessionCreated(QBSession session) {
@@ -105,7 +102,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
             });
         } else {
             QuickBloxChatHelper.getInstance().getDialogs(this);
-        }
+        }*/
 
     }
 

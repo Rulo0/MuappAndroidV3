@@ -384,10 +384,11 @@ public class APIService {
 
                             @Override
                             public void onResponse(Call call, Response response) throws IOException {
+                                String responseString = response.body().string();
                                 if (handler != null)
-                                    handler.onSuccess(response.code(), response.body().string());
+                                    handler.onSuccess(response.code(), responseString);
                                 try {
-                                    JSONObject serverResponse = new JSONObject(response.body().string());
+                                    JSONObject serverResponse = new JSONObject(responseString);
                                     if (serverResponse.has("user")) {
                                         Gson gson = new Gson();
                                         User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);

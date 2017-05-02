@@ -7,7 +7,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import java.util.List;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
-import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.User;
@@ -34,6 +32,7 @@ import me.muapp.android.R;
 import me.muapp.android.UI.Activity.MainActivity;
 import me.muapp.android.UI.Adapter.UserContentAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
+
 public class ProfileFragment extends Fragment implements OnFragmentInteractionListener, ChildEventListener {
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
     User user;
@@ -90,9 +89,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         new APIService(getContext()).getUserQualifications(user.getId(), new UserQualificationsHandler() {
             @Override
             public void onSuccess(int responseCode, UserQualifications qualifications) {
-                for (Qualification q : qualifications.getQualifications()) {
-                    Log.wtf("Qualification", q.toString());
-                }
+                adapter.setQualifications(qualifications.getQualifications());
             }
 
             @Override

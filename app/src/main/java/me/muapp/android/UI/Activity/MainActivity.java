@@ -1,7 +1,5 @@
 package me.muapp.android.UI.Activity;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -146,6 +144,7 @@ public class MainActivity extends BaseActivity implements
         btn_add_giphy.setOnClickListener(this);
         btn_add_spotify.setOnClickListener(this);
         btn_add_youtube.setOnClickListener(this);
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -180,10 +179,10 @@ public class MainActivity extends BaseActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile_menu, menu);
-        SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+      /*  SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
         search.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
-        search.setOnQueryTextListener(this);
+        search.setOnQueryTextListener(this);*/
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -207,8 +206,11 @@ public class MainActivity extends BaseActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            case R.id.action_settings_profile:
                 startActivity(new Intent(this, SettingsActivity.class));
+                break;
+            case R.id.action_edit_profile:
+                startActivity(new Intent(this, ProfileSettingsActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -251,6 +253,7 @@ public class MainActivity extends BaseActivity implements
                 }
             });
             navigationElement = new CurrentNavigationElement(item, frag);
+            invalidateOptionsMenu();
         } catch (Exception x) {
             x.printStackTrace();
         }
