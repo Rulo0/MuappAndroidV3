@@ -31,6 +31,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_margin="8dp"
+                android:layout_marginBottom="8dp"
                 app:srcCompat="@drawable/ic_quote_right"
                 tools:layout_editor_absoluteX="280dp" />
 
@@ -60,15 +61,15 @@
                     android:text="Content"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
             </LinearLayout>
-
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/quotes_container_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <View
-                android:id="@+id/img_video_icon"
+                android:id="@+id/img_quote_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentLeft="true"
@@ -91,7 +92,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_toLeftOf="@id/btn_gif_menu"
-                android:layout_toRightOf="@+id/img_video_icon"
+                android:layout_toRightOf="@+id/img_quote_icon"
                 android:orientation="vertical">
 
                 <com.github.curioustechizen.ago.RelativeTimeTextView

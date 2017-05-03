@@ -125,7 +125,7 @@ public class MainActivity extends BaseActivity implements
         navigation.setOnNavigationItemSelectedListener(this);
         fragmentHashMap.put(R.id.navigation_home, ChatFragment.newInstance(loggedUser));
         fragmentHashMap.put(R.id.navigation_dashboard, BasicFragment.newInstance(loggedUser));
-        fragmentHashMap.put(R.id.navigation_notifications, ProfileFragment.newInstance(loggedUser));
+        fragmentHashMap.put(R.id.navigation_profile, ProfileFragment.newInstance(loggedUser));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
         ft.replace(R.id.content_main_male, fragmentHashMap.get(R.id.navigation_home));
@@ -269,7 +269,10 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        getSupportActionBar().setTitle(item.getTitle());
+        if (item.getItemId() == R.id.navigation_profile)
+            getSupportActionBar().setTitle(loggedUser.getFullName());
+        else
+            getSupportActionBar().setTitle(item.getTitle());
         if (!navigationElement.getItm().equals(item)) {
             selectFragment(item);
         }

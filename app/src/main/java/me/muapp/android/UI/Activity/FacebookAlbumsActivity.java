@@ -23,6 +23,7 @@ import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.UserFBAlbumsAdapter;
 
 import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
+import static me.muapp.android.UI.Activity.ProfileSettingsActivity.ADAPTER_POSITION;
 
 public class FacebookAlbumsActivity extends BaseActivity {
     List<FacebookAlbum> albums;
@@ -30,12 +31,15 @@ public class FacebookAlbumsActivity extends BaseActivity {
     public static final int FACEBOOK_PHOTOS_REQUEST_CODE = 754;
     RecyclerView data_container;
     UserFBAlbumsAdapter ada;
+    //used only by profile settings activity
+    int adapterPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_album);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        adapterPosition = getIntent().getIntExtra(ADAPTER_POSITION, 5);
         ada = new UserFBAlbumsAdapter(this);
         data_container = (RecyclerView) findViewById(R.id.data_container);
         data_container.setLayoutManager(new LinearLayoutManager(this));
@@ -99,6 +103,7 @@ public class FacebookAlbumsActivity extends BaseActivity {
                     if (data.hasExtra(PHOTO_URL))
                         setResult(data.hasExtra(PHOTO_URL) ? RESULT_OK : RESULT_CANCELED, returnIntent);
                     returnIntent.putExtra(PHOTO_URL, data.getStringExtra(PHOTO_URL));
+                    returnIntent.putExtra(ADAPTER_POSITION, adapterPosition);
                     finish();
                     break;
             }

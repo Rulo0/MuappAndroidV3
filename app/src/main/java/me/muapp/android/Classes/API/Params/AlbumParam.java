@@ -1,5 +1,7 @@
 package me.muapp.android.Classes.API.Params;
 
+import java.util.Arrays;
+
 /**
  * Created by rulo on 29/03/17.
  */
@@ -39,6 +41,16 @@ public class AlbumParam {
 
     public void setFileBytes(byte[] fileBytes) {
         this.fileBytes = fileBytes;
+    }
+
+    @Override
+    public String toString() {
+        return "AlbumParam{" +
+                "name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", filePath='" + filePath + '\'' +
+                ", fileBytes=" + Arrays.toString(fileBytes) +
+                '}';
     }
 }
 

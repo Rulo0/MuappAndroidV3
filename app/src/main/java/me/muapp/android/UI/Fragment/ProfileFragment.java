@@ -99,6 +99,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         });
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -139,6 +140,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     @Override
     public void onStart() {
         super.onStart();
+        adapter.removeAllDescriptions();
+        adapter.setUser(new UserHelper(getContext()).getLoggedUser());
         myUserReference.addChildEventListener(this);
     }
 

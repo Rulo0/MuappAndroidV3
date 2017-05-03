@@ -598,6 +598,10 @@ public class User implements Parcelable {
         dest.writeValue(visibleWork);
     }
 
+    public String getFullName() {
+    return String.format("%s %s",getFirstName(),getLastName());
+    }
+
     public int describeContents() {
         return 0;
     }

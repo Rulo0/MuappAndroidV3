@@ -7,7 +7,9 @@ import android.widget.ImageView;
  */
 
 public interface OnProfileImageSelectedListener {
-    void onCameraSelected(ImageView container);
+    void onCameraSelected(ImageView container, int adapterPosition);
 
-    void onGalletySelected(ImageView container);
+    void onGallerySelected(ImageView container, int adapterPosition);
+
+    void onPictureDeleted(ImageView container, int adapterPosition);
 }

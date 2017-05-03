@@ -22,12 +22,17 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import me.muapp.android.Classes.API.APIService;
+import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.API.Params.AlbumParam;
+import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.FacebookAlbumsActivity;
 import me.muapp.android.UI.Activity.ProfileSettingsActivity;
 import me.muapp.android.UI.Fragment.Interface.OnProfileImageSelectedListener;
 
 import static android.content.Context.VIBRATOR_SERVICE;
+import static me.muapp.android.UI.Activity.ProfileSettingsActivity.ADAPTER_POSITION;
 import static me.muapp.android.UI.Activity.ProfileSettingsActivity.REQUEST_FACEBOOK_ALBUMS;
 
 /**
@@ -76,6 +81,16 @@ public class UserPictureAdapter extends RecyclerView.Adapter<UserPictureAdapter.
         return picturesData.size();
     }
 
+
+    public void setUserPictures(final List<String> picturesData) {
+        mContext.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UserPictureAdapter.this.picturesData = picturesData;
+                notifyDataSetChanged();
+            }
+        });
+    }
 
     public void swap(int firstPosition, int secondPosition) {
         Collections.swap(picturesData, firstPosition, secondPosition);
@@ -139,14 +154,36 @@ public class UserPictureAdapter extends RecyclerView.Adapter<UserPictureAdapter.
         }
         notifyDataSetChanged();*/
 
-        for (int z = 0; z < 6; z++)
-            Log.wtf("Pos ", z + " - " + picturesData.get(z));
-        for (int y = 0; y < picturesData.size(); y++) {
-            if (TextUtils.isEmpty(picturesData.get(y))) {
-                Log.wtf("Im empty", "Pos " + y + " - Must change position to " + 6);
-                swap(y, picturesData.size() - 1);
+       /* for (int i = 0; i < picturesData.size() - 1; i++) {
+
+        }
+*/
+
+        List<AlbumParam> prms = new ArrayList<>();
+        for (String image : picturesData) {
+            if (image != null && !TextUtils.isEmpty(image)) {
+                AlbumParam albumParam = new AlbumParam();
+                albumParam.setUrl(image);
+                prms.add(albumParam);
             }
         }
+
+        new APIService(mContext).uploadPhotos(prms, new UserInfoHandler() {
+            @Override
+            public void onSuccess(int responseCode, String userResponse) {
+
+            }
+
+            @Override
+            public void onSuccess(int responseCode, User user) {
+                Log.wtf("Arrange", user.toString());
+            }
+
+            @Override
+            public void onFailure(boolean isSuccessful, String responseString) {
+
+            }
+        });
     }
 
     @Override
@@ -201,16 +238,24 @@ public class UserPictureAdapter extends RecyclerView.Adapter<UserPictureAdapter.
                     switch (optionsMap.get(options[which])) {
                         case ACTION_TAKE_PHOTO:
                             if (onProfileImageSelectedListener != null)
-                                onProfileImageSelectedListener.onCameraSelected(img_photo_item);
+                                onProfileImageSelectedListener.onCameraSelected(img_photo_item, getAdapterPosition());
                             break;
                         case ACTION_SELECT_PHOTO:
                             if (onProfileImageSelectedListener != null)
-                                onProfileImageSelectedListener.onGalletySelected(img_photo_item);
+                                onProfileImageSelectedListener.onGallerySelected(img_photo_item, getAdapterPosition());
                             break;
                         case ACTION_GET_PHOTO_FB:
-                            mContext.startActivityForResult(new Intent(mContext, FacebookAlbumsActivity.class), REQUEST_FACEBOOK_ALBUMS);
+                            Intent requestFB = new Intent(mContext, FacebookAlbumsActivity.class);
+                            requestFB.putExtra(ADAPTER_POSITION, getAdapterPosition());
+                            mContext.startActivityForResult(requestFB, REQUEST_FACEBOOK_ALBUMS);
                             break;
                         case ACTION_DELETE_PHOTO:
+                            picturesData.remove(getAdapterPosition());
+                            notifyItemRemoved(getAdapterPosition());
+                            picturesData.add(5, "");
+                            notifyItemInserted(5);
+                            if (onProfileImageSelectedListener != null)
+                                onProfileImageSelectedListener.onPictureDeleted(img_photo_item, getAdapterPosition());
                             break;
                         case ACTION_CANCEL:
                             break;

@@ -10,18 +10,28 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
 
@@ -38,10 +48,13 @@ import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.UserPhotos.UserPhotoTouchHelper;
 import me.muapp.android.UI.Adapter.UserPhotos.UserPictureAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnProfileImageSelectedListener;
+
+import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
 
 public class ProfileSettingsActivity extends BaseActivity implements OnProfileImageSelectedListener {
     private static final int PIC_CROP = 724;
@@ -50,6 +63,7 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     EditText et_user_biography;
     public static final int REQUEST_FACEBOOK_ALBUMS = 451;
     private int REQUEST_MEDIA = 377;
+    public static final String ADAPTER_POSITION = "ADAPTER_POSITION";
     private File photoFile;
     private Uri photoURI;
     private final int REQUEST_CAMERA = 911;
@@ -106,7 +120,8 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     }
 
     private void attempSaveSettings() {
-        String newDescription = et_user_biography.getText().toString();
+
+        final String newDescription = et_user_biography.getText().toString();
         if (!newDescription.equals(loggedUser.getDescription())) {
             try {
                 loggedUser.setDescription(newDescription);
@@ -114,9 +129,37 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
                 JSONObject descriptionObj = new JSONObject();
                 descriptionObj.put("description", newDescription);
                 new APIService(this).patchUser(descriptionObj, null);
+
+                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(loggedUser.getId()));
+
+                reference.orderByChild("catContent").equalTo("contentDesc").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            snapshot.getRef().removeValue();
+                        }
+                        UserContent content = new UserContent();
+                        content.setCreatedAt(32535237599000L);
+                        content.setCatContent("contentDesc");
+                        content.setComment(newDescription);
+                        content.setLikes(0);
+                        reference.child(reference.push().getKey()).setValue(content).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                finish();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             } catch (Exception x) {
                 x.printStackTrace();
             }
+        } else {
             finish();
         }
     }
@@ -191,18 +234,31 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
 
 
     @Override
-    public void onCameraSelected(ImageView container) {
+    public void onCameraSelected(ImageView container, int position) {
         if (checkAndRequestPermissions()) {
             cameraIntent();
         }
     }
 
     @Override
-    public void onGalletySelected(ImageView container) {
+    public void onGallerySelected(ImageView container, int position) {
         if (checkAndRequestPermissions()) {
             galleryIntent();
         }
 
+    }
+
+    @Override
+    public void onPictureDeleted(ImageView container, int adapterPosition) {
+        List<AlbumParam> prms = new ArrayList<>();
+        for (String image : UserPictureAdapter.picturesData) {
+            if (image != null && !TextUtils.isEmpty(image)) {
+                AlbumParam albumParam = new AlbumParam();
+                albumParam.setUrl(image);
+                prms.add(albumParam);
+            }
+        }
+        uploadPhotos(prms);
     }
 
     @Override
@@ -219,6 +275,20 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
                 case PIC_CROP:
                     onPicCropResult(data);
                     break;
+                case REQUEST_FACEBOOK_ALBUMS:
+                    Log.wtf("imageSelected", data.getStringExtra(PHOTO_URL));
+                    Log.wtf("position", "" + data.getIntExtra(ADAPTER_POSITION, 5));
+                    UserPictureAdapter.picturesData.set(data.getIntExtra(ADAPTER_POSITION, 5), data.getStringExtra(PHOTO_URL));
+                    List<AlbumParam> prms = new ArrayList<>();
+                    for (String image : UserPictureAdapter.picturesData) {
+                        if (image != null && !TextUtils.isEmpty(image)) {
+                            AlbumParam albumParam = new AlbumParam();
+                            albumParam.setUrl(image);
+                            prms.add(albumParam);
+                        }
+                    }
+                    uploadPhotos(prms);
+                    break;
             }
         }
     }
@@ -226,6 +296,32 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     private void onCaptureImageResult(Intent data) {
         Log.v("photoURI", photoURI.toString());
         cropImage(Uri.fromFile(photoFile));
+    }
+
+    private void uploadPhotos(List<AlbumParam> albumParams) {
+        showProgressDialog();
+        new APIService(this).uploadPhotos(albumParams, new UserInfoHandler() {
+            @Override
+            public void onSuccess(int responseCode, String userResponse) {
+            }
+
+            @Override
+            public void onSuccess(int responseCode, User user) {
+                hideProgressDialog();
+                Log.wtf("Upload Completed", user.getAlbum().toString());
+                saveUser(user);
+                if (user.getAlbum().size() < 6)
+                    for (int i = user.getAlbum().size(); i < 6; i++) {
+                        user.getAlbum().add("");
+                    }
+                adapter.setUserPictures(user.getAlbum());
+            }
+
+            @Override
+            public void onFailure(boolean isSuccessful, String responseString) {
+                hideProgressDialog();
+            }
+        });
     }
 
     private void onPicCropResult(Intent data) {
@@ -249,22 +345,7 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
             AlbumParam imageParam = new AlbumParam();
             imageParam.setFileBytes(bytes);
             albumParams.add(imageParam);
-            new APIService(this).uploadPhotos(albumParams, new UserInfoHandler() {
-                @Override
-                public void onSuccess(int responseCode, String userResponse) {
-                    Log.wtf("Succes", userResponse);
-                }
-
-                @Override
-                public void onSuccess(int responseCode, User user) {
-                    Log.wtf("Succes", user.toString());
-                }
-
-                @Override
-                public void onFailure(boolean isSuccessful, String responseString) {
-                    Log.wtf("Succes", responseString);
-                }
-            });
+            uploadPhotos(albumParams);
         } catch (Exception x) {
 
         }
@@ -332,4 +413,22 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
         }
         return result;
     }
+
+    public boolean albumsAreDifferent(ArrayList<String> originalAlbum, ArrayList<String> newUserAlbum) {
+        if (originalAlbum == null && newUserAlbum == null)
+            return true;
+        if ((originalAlbum == null && newUserAlbum != null) || (originalAlbum != null && newUserAlbum == null))
+            return false;
+
+        if (originalAlbum.size() != newUserAlbum.size())
+            return false;
+        for (String itemList1 : originalAlbum) {
+            if (!newUserAlbum.contains(itemList1))
+                return false;
+        }
+
+        return true;
+    }
+
+
 }

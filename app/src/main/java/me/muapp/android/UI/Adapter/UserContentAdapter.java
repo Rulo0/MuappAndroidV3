@@ -27,6 +27,7 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,6 +78,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         put("contentSpt", 6);
         put("contentVid", 7);
         put("contentYtv", 8);
+        put("contentDesc", 9);
     }};
     Context context;
     LayoutInflater mInflater;
@@ -84,6 +86,13 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     String currentPlaying = "";
     ImageButton previewPlayedButton;
     UserQualificationsAdapter userQualificationsAdapter;
+
+    public void removeAllDescriptions() {
+        for (int i = 0; i < userContentList.size(); i++) {
+            if (userContentList.get(i).getCatContent().equals("contentDesc"))
+                userContentList.removeItemAt(i);
+        }
+    }
 
     public void setQualifications(List<Qualification> qualifications) {
         userQualificationsAdapter = new UserQualificationsAdapter(context, qualifications);
@@ -182,6 +191,13 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         }
     }
 
+    public void setUser(User user) {
+        if (!user.getAlbum().equals(this.user.getAlbum())) {
+            this.user = user;
+            notifyItemChanged(0);
+        }
+    }
+
     @Override
     public UserContentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.wtf("ViewType", viewType + "");
@@ -219,6 +235,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 View youtubeView = mInflater.inflate(R.layout.user_content_youtube_item_layout, parent, false);
                 holder = new YoutubeContentHolder(youtubeView);
                 break;
+            case 9:
+                View descriptionView = mInflater.inflate(R.layout.user_content_quote_item_layout, parent, false);
+                holder = new DescriptionContentHolder(descriptionView);
+                break;
             default:
                 View picView = mInflater.inflate(R.layout.user_content_picture_item_layout, parent, false);
                 holder = new PictureContentHolder(picView);
@@ -235,6 +255,9 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             holder.bind(userQualificationsAdapter);
         else {
             holder.bind(userContentList.get(position - 2));
+
+            Log.wtf("Binding", (position - 2) + " of " + (getItemCount() - 2));
+            Log.wtf("Binding", userContentList.get(position - 2).toString());
         }
     }
 
@@ -788,6 +811,33 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 } catch (Exception x) {
                     x.printStackTrace();
                 }
+        }
+    }
+
+    class DescriptionContentHolder extends UserContentHolder {
+        TextView txt_quote_comment;
+        TextView txt_quote_prefix;
+        RelativeTimeTextView txt_quote_date;
+        ImageButton btn_quote_menu;
+        RelativeLayout quotes_container_footer;
+
+        public DescriptionContentHolder(View itemView) {
+            super(itemView);
+            this.quotes_container_footer = (RelativeLayout) itemView.findViewById(R.id.quotes_container_footer);
+            this.txt_quote_comment = (TextView) itemView.findViewById(R.id.txt_quote_comment);
+            this.txt_quote_prefix = (TextView) itemView.findViewById(R.id.txt_quote_prefix);
+            this.txt_quote_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_quote_date);
+            this.btn_quote_menu = (ImageButton) itemView.findViewById(R.id.btn_quote_menu);
+            setBtnMenu(btn_quote_menu);
+        }
+
+        @Override
+        public void bind(UserContent c) {
+            super.bind(c);
+            quotes_container_footer.setVisibility(View.GONE);
+            txt_quote_prefix.setText(context.getString(R.string.lbl_about_me));
+            txt_quote_comment.setText(c.getComment());
+            txt_quote_date.setReferenceTime(c.getCreatedAt());
         }
     }
 
