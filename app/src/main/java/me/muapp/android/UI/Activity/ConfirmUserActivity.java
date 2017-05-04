@@ -18,6 +18,7 @@ import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.LoginHelper;
 import me.muapp.android.Classes.Util.UserHelper;
+import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
@@ -121,7 +122,7 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
                                 if (loggedUser.getGender() == User.Gender.Male.getValue())
                                     startActivity(new Intent(ConfirmUserActivity.this, ManGateActivity.class));
                                 else
-                                    startActivity(new Intent(ConfirmUserActivity.this, MainActivity.class));
+                                    startActivity(new Intent(ConfirmUserActivity.this, Utils.hasLocationPermissions(ConfirmUserActivity.this) ? MainActivity.class : LocationCheckerActivity.class));
                                 finish();
                             } else {
                                 validateUser();

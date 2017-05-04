@@ -21,9 +21,9 @@ public class YoutubeViewActivity extends BaseActivity implements YouTubePlayer.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube_view);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        thisContent = getIntent().getParcelableExtra("itemContent");
         youtube_fragment_view = (YouTubePlayerFragment) getFragmentManager()
                 .findFragmentById(R.id.youtube_fragment_view);
-        thisContent = getIntent().getParcelableExtra("itemContent");
         youtube_fragment_view.initialize(getYoutubeApiKey(), this);
     }
 

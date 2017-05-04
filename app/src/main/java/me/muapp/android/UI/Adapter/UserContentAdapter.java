@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -59,8 +61,8 @@ import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
+import me.muapp.android.UI.Activity.VideoViewActivity;
 import me.muapp.android.UI.Activity.YoutubeViewActivity;
-import me.muapp.android.UI.Fragment.VideoViewDialogFragment;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 
@@ -86,6 +88,12 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     String currentPlaying = "";
     ImageButton previewPlayedButton;
     UserQualificationsAdapter userQualificationsAdapter;
+    Boolean showMenuButton = true;
+
+
+    public void setShowMenuButton(Boolean showMenuButton) {
+        this.showMenuButton = showMenuButton;
+    }
 
     public void removeAllDescriptions() {
         for (int i = 0; i < userContentList.size(); i++) {
@@ -96,7 +104,15 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     public void setQualifications(List<Qualification> qualifications) {
         userQualificationsAdapter = new UserQualificationsAdapter(context, qualifications);
-        notifyItemChanged(1);
+        Handler handler = new Handler(Looper.getMainLooper());
+        final Runnable r = new Runnable() {
+            public void run() {
+                notifyItemChanged(1);
+            }
+        };
+        handler.post(r);
+
+
     }
 
     int screenWidth;
@@ -285,7 +301,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
         public void setBtnMenu(ImageButton btnMenu) {
             this.btnMenu = btnMenu;
-            btnMenu.setOnClickListener(this);
+            if (showMenuButton)
+                btnMenu.setOnClickListener(this);
+            else
+                this.btnMenu.setVisibility(View.GONE);
         }
 
         @Override
@@ -348,7 +367,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     class HeaderContentHolder extends UserContentHolder {
         ProfilePicturesAdapter profilePicturesAdapter;
         PageIndicatorView indicator_profile_pictures;
-        ViewPager pager_profile_pictures, pager_qualifications;
+        ViewPager pager_profile_pictures;
         TextView title;
         TextView txt_statistics_visits, txt_statistics_muapps, txt_statistics_matches;
 
@@ -431,7 +450,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         public void bind(UserQualificationsAdapter qualificationsAdapter) {
             super.bind(qualificationsAdapter);
             RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) itemView.getLayoutParams();
-            if (qualificationsAdapter != null) {
+            if (qualificationsAdapter != null && qualificationsAdapter.getItemCount() > 0) {
                 recycler_profile_qualifications.setAdapter(qualificationsAdapter);
                 param.height = LinearLayout.LayoutParams.WRAP_CONTENT;
                 param.width = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -439,6 +458,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 txt_profile_qualification.setText(String.format(context.getString(R.string.lbl_average_score), user.getAverage(), user.getQualificationsCount()));
             } else {
                 itemView.setVisibility(View.GONE);
+                param.setMargins(0, 0, 0, 0);
                 param.height = 0;
                 param.width = 0;
             }
@@ -507,11 +527,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         @Override
         public void onClick(View v) {
             super.onClick(v);
-            try {
-                VideoViewDialogFragment videoViewDialogFragment = VideoViewDialogFragment.newInstance(itemContent);
-                videoViewDialogFragment.show(fragmentManager.beginTransaction(), "VideoViewDialogFragment");
-            } catch (Exception x) {
-                x.printStackTrace();
+            if (v.getId() == img_video_content.getId()) {
+                Intent videoIntent = new Intent(context, VideoViewActivity.class);
+                videoIntent.putExtra("itemContent", itemContent);
+                context.startActivity(videoIntent);
             }
         }
     }
@@ -699,12 +718,6 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 Intent youtubeIntent = new Intent(context, YoutubeViewActivity.class);
                 youtubeIntent.putExtra("itemContent", itemContent);
                 context.startActivity(youtubeIntent);
-             /*   try {
-                    YoutubeViewDialogFragment editNameDialogFragment = YoutubeViewDialogFragment.newInstance(itemContent);
-                    editNameDialogFragment.show(fragmentManager.beginTransaction(), "YoutubeViewDialogFragment");
-                } catch (Exception x) {
-                    x.printStackTrace();
-                }*/
             }
         }
     }

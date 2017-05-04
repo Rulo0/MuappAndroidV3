@@ -39,8 +39,10 @@ import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.UserHelper;
+import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.FacebookAlbumsActivity;
+import me.muapp.android.UI.Activity.LocationCheckerActivity;
 import me.muapp.android.UI.Activity.MainActivity;
 import me.muapp.android.UI.Activity.ManGateInfoActivity;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
@@ -178,7 +180,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
                                 });
                             } catch (Exception x) {
                             }
-                            Intent i = new Intent(getContext(), MainActivity.class);
+                            Intent i = new Intent(getContext(), Utils.hasLocationPermissions(getContext()) ? MainActivity.class : LocationCheckerActivity.class);
                             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(i);
                             getActivity().finish();

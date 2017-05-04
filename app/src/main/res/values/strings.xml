@@ -174,4 +174,8 @@
     <string name="lbl_statistics_matches">Matches</string>
     <string name="lbl_average_score" formatted="false">Average score %s/%d</string>
     <string name="lbl_about_me">About me</string>
+
+    <string name="title_activity_youtube_video_view">YoutubeVideoViewActivity</string>
+    <string name="lbl_location_checker_title">In order to show you better results, we need to know where you are. Please access to Settings and enable Location Services for Muapp. </string>
+    <string name="lbl_enable_location_services">ENABLE LOCATION SERVICES</string>
 </resources>

@@ -21,6 +21,7 @@ import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.LoginHelper;
+import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
@@ -178,11 +179,11 @@ public class SplashActivity extends BaseActivity {
                     animateToActivity(ManGateActivity.class);
                 } else {
                     //Usuario no aceptado
-                    animateToActivity(MainActivity.class);
+                    animateToActivity(Utils.hasLocationPermissions(this) ? MainActivity.class : LocationCheckerActivity.class);
                 }
             } else {
                 //Usuario mujer
-                animateToActivity(MainActivity.class);
+                animateToActivity(Utils.hasLocationPermissions(this) ? MainActivity.class : LocationCheckerActivity.class);
             }
         } else {
             //Usuario sin confirmar datos

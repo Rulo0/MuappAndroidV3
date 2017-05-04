@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -97,6 +98,11 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
         new SpotifySearchTask().execute(query);
     }
 
+    private void showPlaceholder() {
+        ((TextView) findViewById(R.id.txt_placeholder_spotify)).setText(getString(R.string.lbl_no_results_found));
+        Utils.animView(placeholder_spotify, true);
+    }
+
     private class SpotifySearchTask extends AsyncTask<String, Void, List<Song>> {
         @Override
         protected void onPreExecute() {
@@ -110,12 +116,17 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
             super.onPostExecute(songs);
             progressUtil.showProgress(false);
             if (songs.size() > 0) {
+                boolean mustShowPlaceholder = true;
                 for (Song s : songs) {
-                    ada.addSong(s);
+                    if (!TextUtils.isEmpty(s.getAlbum().getHigherImage())) {
+                        ada.addSong(s);
+                        mustShowPlaceholder = false;
+                    }
                 }
+                if (mustShowPlaceholder)
+                    showPlaceholder();
             } else {
-                ((TextView) findViewById(R.id.txt_placeholder_spotify)).setText(getString(R.string.lbl_no_results_found));
-                Utils.animView(placeholder_spotify, true);
+                showPlaceholder();
             }
         }
 

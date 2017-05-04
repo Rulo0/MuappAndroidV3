@@ -53,7 +53,7 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
         progressUtil = new ProgressUtil(this, recycler_add_giphy, progress_giphy);
         recycler_add_giphy.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         recycler_add_giphy.setAdapter(ada);
-        placeholder_giphy = (LinearLayout) findViewById(R.id.placeholder_giphy);
+        placeholder_giphy = (LinearLayout) findViewById(R.id.include_placeholder_giphy);
         new GetGyphyTask().execute();
     }
 

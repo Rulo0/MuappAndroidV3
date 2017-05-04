@@ -24,4 +24,5 @@
     <color name="color_inactive_tab">#cfd2d6</color>
     <color name="color_score_active">#ffee00</color>
     <color name="color_score_inactive">#d8d8d8</color>
+    <color name="color_add_content_disabled">#dddcdc</color>
 </resources>

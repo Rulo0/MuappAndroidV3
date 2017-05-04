@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/add_item_layout"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryAlpha"
-    android:clickable="true"
-    android:orientation="vertical"
-    app:behavior_hideable="true"
-    app:behavior_peekHeight="0dp"
-    app:layout_behavior="@string/bottom_sheet_behavior">
-
+    android:paddingBottom="@dimen/list_item_spacing_half"
+    android:paddingTop="@dimen/list_item_spacing_half"
+    tools:context="me.muapp.android.UI.Fragment.AddContentDialogFragment">
     <TableLayout
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginBottom="24dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:shrinkColumns="*"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -36,7 +32,7 @@
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_add_quotes" />
+                app:srcCompat="@drawable/ic_add_quotes" />
 
             <ImageButton
                 android:id="@+id/btn_add_voice"
@@ -45,7 +41,7 @@
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_add_mic" />
+                app:srcCompat="@drawable/ic_add_mic" />
         </TableRow>
 
         <TableRow
@@ -60,7 +56,7 @@
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_add_photo" />
+                app:srcCompat="@drawable/ic_add_photo" />
 
             <ImageButton
                 android:id="@+id/btn_add_giphy"
@@ -69,7 +65,7 @@
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_add_giphy" />
+                app:srcCompat="@drawable/ic_add_giphy" />
         </TableRow>
 
         <TableRow
@@ -84,7 +80,7 @@
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_add_spotify" />
+                app:srcCompat="@drawable/ic_add_spotify" />
 
             <ImageButton
                 android:id="@+id/btn_add_youtube"
@@ -94,9 +90,7 @@
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_add_youtube" />
+                app:srcCompat="@drawable/ic_add_youtube" />
         </TableRow>
-
     </TableLayout>
-
 </android.support.constraint.ConstraintLayout>

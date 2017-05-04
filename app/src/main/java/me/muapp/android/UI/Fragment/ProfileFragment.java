@@ -30,6 +30,7 @@ import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.MainActivity;
+import me.muapp.android.UI.Activity.ManGateActivity;
 import me.muapp.android.UI.Adapter.UserContentAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
@@ -107,6 +108,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         recycler_my_content = (RecyclerView) v.findViewById(R.id.recycler_my_content);
         if (getContext() instanceof MainActivity) {
             this.fab_add_content = ((MainActivity) getContext()).getFab_add_content();
+        } else if (getContext() instanceof ManGateActivity) {
+            this.fab_add_content = ((ManGateActivity) getContext()).getFab_add_content();
         }
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setStackFromEnd(true);
@@ -187,7 +190,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
             adapter.addContent(c);
-            recycler_my_content.scrollToPosition(0);
+            recycler_my_content.scrollToPosition(2);
         }
     }
 

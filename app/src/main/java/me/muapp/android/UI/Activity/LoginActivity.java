@@ -34,6 +34,7 @@ import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.LoginHelper;
 import me.muapp.android.Classes.Util.PreferenceHelper;
+import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
@@ -216,11 +217,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     startActivity(new Intent(this, ManGateActivity.class));
                 } else {
                     //Usuario no aceptado
-                    startActivity(new Intent(this, MainActivity.class));
+                    startActivity(new Intent(this, Utils.hasLocationPermissions(this) ? MainActivity.class : LocationCheckerActivity.class));
                 }
             } else {
                 //Usuario mujer
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, Utils.hasLocationPermissions(this) ? MainActivity.class : LocationCheckerActivity.class));
             }
         } else {
             //Usuario sin confirmar datos

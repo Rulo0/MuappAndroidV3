@@ -1,15 +1,23 @@
 package me.muapp.android.UI.Activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -17,7 +25,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -27,12 +34,30 @@ import com.facebook.accountkit.AccountKitLoginResult;
 import com.facebook.accountkit.ui.AccountKitActivity;
 import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import io.realm.Realm;
 import me.muapp.android.Classes.API.APIService;
@@ -40,16 +65,21 @@ import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.CurrentNavigationElement;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Quickblox.cache.CacheUtils;
+import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+import me.muapp.android.Services.FetchAddressIntentService;
+import me.muapp.android.UI.Fragment.AddContentDialogFragment;
 import me.muapp.android.UI.Fragment.BasicFragment;
 import me.muapp.android.UI.Fragment.ChatFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import me.muapp.android.UI.Fragment.ProfileFragment;
 
+import static me.muapp.android.R.id.btn_add_youtube;
+
 public class MainActivity extends BaseActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
-        OnFragmentInteractionListener, SearchView.OnQueryTextListener, View.OnClickListener {
+        OnFragmentInteractionListener, SearchView.OnQueryTextListener, AddContentDialogFragment.Listener {
     private static final int PHONE_REQUEST_CODE = 79;
     public static final String TAG = "MainActivity";
     private CurrentNavigationElement navigationElement;
@@ -59,9 +89,17 @@ public class MainActivity extends BaseActivity implements
     BottomNavigationView navigation;
     FloatingActionButton fab_add_content;
     ConstraintLayout add_item_layout;
-    BottomSheetBehavior bsb;
-    ImageButton btn_add_quote, btn_add_voice, btn_add_photo, btn_add_giphy, btn_add_spotify, btn_add_youtube;
     Toolbar toolbar;
+    private static final int REQUEST_CHECK_SETTINGS = 399;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mCurrentLocation;
+    private LocationRequest mLocationRequest;
+    private LocationListener mLocationListener;
+    private String mLastUpdateTime;
+    private static final int REQUEST_LOCATION = 426;
+    private AddressResultReceiver mResultReceiver;
+    private static final String LOCATION_KEY = "LOCATION";
+    private static final String LAST_UPDATED_TIME_STRING_KEY = "LAST_TIME_UPDATED";
 
     public FloatingActionButton getFab_add_content() {
         return fab_add_content;
@@ -89,7 +127,6 @@ public class MainActivity extends BaseActivity implements
         realm = CacheUtils.getInstance(loggedUser);
         add_item_layout = (ConstraintLayout) findViewById(R.id.add_item_layout);
         add_item_layout.bringToFront();
-        bsb = BottomSheetBehavior.from(add_item_layout);
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
         if (checkPlayServices()) {
@@ -132,19 +169,51 @@ public class MainActivity extends BaseActivity implements
         ft.commit();
         fab_add_content.hide();
         navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
-        btn_add_quote = (ImageButton) findViewById(R.id.btn_add_quote);
-        btn_add_voice = (ImageButton) findViewById(R.id.btn_add_voice);
-        btn_add_photo = (ImageButton) findViewById(R.id.btn_add_photo);
-        btn_add_giphy = (ImageButton) findViewById(R.id.btn_add_giphy);
-        btn_add_spotify = (ImageButton) findViewById(R.id.btn_add_spotify);
-        btn_add_youtube = (ImageButton) findViewById(R.id.btn_add_youtube);
-        btn_add_quote.setOnClickListener(this);
-        btn_add_voice.setOnClickListener(this);
-        btn_add_photo.setOnClickListener(this);
-        btn_add_giphy.setOnClickListener(this);
-        btn_add_spotify.setOnClickListener(this);
-        btn_add_youtube.setOnClickListener(this);
         invalidateOptionsMenu();
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                        @Override
+                        public void onConnected(@Nullable Bundle bundle) {
+                            if (checkAndRequestPermissions()) {
+                                getLocation();
+                            }
+                        }
+
+                        @Override
+                        public void onConnectionSuspended(int i) {
+
+                        }
+                    })
+                    .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                        @Override
+                        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                        }
+                    })
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        updateValuesFromBundle(savedInstanceState);
+    }
+
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            // Update the value of mCurrentLocation from the Bundle and update the
+            // UI to show the correct latitude and longitude.
+            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
+                // Since LOCATION_KEY was found in the Bundle, we can be sure that
+                // mCurrentLocationis not null.
+                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
+            }
+
+            // Update the value of mLastUpdateTime from the Bundle and update the UI.
+            if (savedInstanceState.keySet().contains(LAST_UPDATED_TIME_STRING_KEY)) {
+                mLastUpdateTime = savedInstanceState.getString(
+                        LAST_UPDATED_TIME_STRING_KEY);
+            }
+        }
     }
 
     @Override
@@ -246,10 +315,7 @@ public class MainActivity extends BaseActivity implements
             fab_add_content.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    bsb.setState(BottomSheetBehavior.STATE_EXPANDED);
-                 /*   FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    OauthInstagramDialog frag = new OauthInstagramDialog();
-                    frag.show(ft, "ADD_CONTENT");*/
+                    AddContentDialogFragment.newInstance(false).show(getSupportFragmentManager(), "dialog");
                 }
             });
             navigationElement = new CurrentNavigationElement(item, frag);
@@ -257,14 +323,6 @@ public class MainActivity extends BaseActivity implements
         } catch (Exception x) {
             x.printStackTrace();
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (bsb.getState() == BottomSheetBehavior.STATE_EXPANDED)
-            bsb.setState(BottomSheetBehavior.STATE_HIDDEN);
-        else
-            super.onBackPressed();
     }
 
     @Override
@@ -290,8 +348,8 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public void onClick(final View v) {
-        switch (v.getId()) {
+    public void onAddContentClicked(int buttonId) {
+        switch (buttonId) {
             case R.id.btn_add_quote:
                 startActivity(new Intent(MainActivity.this, AddQuoteActivity.class));
                 break;
@@ -307,15 +365,146 @@ public class MainActivity extends BaseActivity implements
             case R.id.btn_add_spotify:
                 startActivity(new Intent(MainActivity.this, AddSpotifyActivity.class));
                 break;
-            case R.id.btn_add_youtube:
+            case btn_add_youtube:
                 startActivity(new Intent(MainActivity.this, AddYoutubeActivity.class));
                 break;
         }
     }
 
+    private boolean checkAndRequestPermissions() {
+        int permissionFine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (permissionFine != PackageManager.PERMISSION_GRANTED) {
+            Log.v("checkPermissions", "Camera Needed");
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_LOCATION);
+            return false;
+        }
+        return true;
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5 * 60 * 1000);
+        mLocationRequest.setFastestInterval(5 * 60 * 500);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
+                        builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                final Status status = locationSettingsResult.getStatus();
+                final LocationSettingsStates states = locationSettingsResult.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can
+                        // initialize location requests here.
+                        break;
+
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied, but this can be fixed
+                        // by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    MainActivity.this,
+                                    REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way
+                        // to fix the settings so we won't show the dialog.
+                        break;
+                }
+            }
+        });
+    }
+
+    protected void startIntentService(AddressResultReceiver rec, Location location) {
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(Constants.Location.RECEIVER, rec);
+        intent.putExtra(Constants.Location.LOCATION_DATA_EXTRA, location);
+        Log.v(TAG, location.toString());
+        startService(intent);
+    }
+
+
+    private void getLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+           /* Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            double lat = lastLocation.getLatitude(), lon = lastLocation.getLongitude();
+            Log.v(TAG, lat + " - " + lon);*/
+            createLocationRequest();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Nearby");
+            mResultReceiver = new AddressResultReceiver(new android.os.Handler());
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    startIntentService(mResultReceiver, location);
+                    mCurrentLocation = location;
+                    mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+                    Log.wtf(TAG, location.getLatitude() + " - " + location.getLongitude() + " @ " + mLastUpdateTime);
+                }
+            });
+        }
+    }
+
+
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            // Display the address string
+            // or an error message sent from the intent service.
+            String mAddressOutput = resultData.getString(Constants.Location.RESULT_DATA_KEY);
+            Log.v(TAG, mAddressOutput);
+
+            // Show a toast message if an address was found.
+            if (resultCode == Constants.Location.SUCCESS_RESULT) {
+                Log.v(TAG, "Address Found!");
+            }
+
+        }
+    }
+
+    protected void stopLocationUpdates() {
+        if (mGoogleApiClient.isConnected() && mLocationListener != null)
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, mLocationListener);
+    }
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
     @Override
-    protected void onStop() {
-        super.onStop();
-        bsb.setState(BottomSheetBehavior.STATE_HIDDEN);
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected()) {
+            getLocation();
+        }
     }
 }
