@@ -14,6 +14,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -54,6 +55,31 @@ public class Utils {
         }
         Log.v("serializeUser", user.toString());
         return user.toString();
+    }
+
+    public static String serializeMatchingUsers(String matchingString) {
+        try {
+            JSONObject matchingUsers = new JSONObject(matchingString);
+            JSONArray matchingUserArray = matchingUsers.getJSONArray("users");
+            for (int i = 0; i < matchingUserArray.length(); i++) {
+                JSONObject user = matchingUserArray.getJSONObject(i);
+                try {
+                    int has_use_invitation = user.getInt(jsonUseInvitation);
+                    if (has_use_invitation > 0)
+                        user.put(jsonUseInvitation, true);
+                    else
+                        user.put(jsonUseInvitation, false);
+                    matchingUserArray.put(i, user);
+                } catch (Exception ex) {
+
+                }
+            }
+            matchingUsers.put("users", matchingUserArray);
+            return matchingUsers.toString();
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+        return null;
     }
 
     public static int getDiffYears(Date first, Date last) {

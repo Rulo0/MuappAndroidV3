@@ -10,10 +10,8 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -54,10 +52,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import io.realm.Realm;
 import me.muapp.android.Classes.API.APIService;
@@ -67,12 +63,13 @@ import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Quickblox.cache.CacheUtils;
 import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.PreferenceHelper;
+import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.Services.FetchAddressIntentService;
 import me.muapp.android.UI.Fragment.AddContentDialogFragment;
-import me.muapp.android.UI.Fragment.BasicFragment;
 import me.muapp.android.UI.Fragment.ChatFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
+import me.muapp.android.UI.Fragment.MatchingFragment;
 import me.muapp.android.UI.Fragment.ProfileFragment;
 
 import static me.muapp.android.R.id.btn_add_youtube;
@@ -88,7 +85,6 @@ public class MainActivity extends BaseActivity implements
     private Realm realm;
     BottomNavigationView navigation;
     FloatingActionButton fab_add_content;
-    ConstraintLayout add_item_layout;
     Toolbar toolbar;
     private static final int REQUEST_CHECK_SETTINGS = 399;
     private GoogleApiClient mGoogleApiClient;
@@ -96,10 +92,13 @@ public class MainActivity extends BaseActivity implements
     private LocationRequest mLocationRequest;
     private LocationListener mLocationListener;
     private String mLastUpdateTime;
-    private static final int REQUEST_LOCATION = 426;
     private AddressResultReceiver mResultReceiver;
     private static final String LOCATION_KEY = "LOCATION";
     private static final String LAST_UPDATED_TIME_STRING_KEY = "LAST_TIME_UPDATED";
+
+    public Location getCurrentLocation() {
+        return mCurrentLocation;
+    }
 
     public FloatingActionButton getFab_add_content() {
         return fab_add_content;
@@ -124,78 +123,86 @@ public class MainActivity extends BaseActivity implements
         setContentView(R.layout.activity_main_male);
     /*    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);*/
-        realm = CacheUtils.getInstance(loggedUser);
-        add_item_layout = (ConstraintLayout) findViewById(R.id.add_item_layout);
-        add_item_layout.bringToFront();
-        navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
-        if (checkPlayServices()) {
-            final String token = FirebaseInstanceId.getInstance().getToken();
-            if (!TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token) || !loggedUser.getPushToken().equals(token)) {
-                FirebaseMessaging.getInstance().subscribeToTopic("android");
-                JSONObject tokenUser = new JSONObject();
-                try {
-                    tokenUser.put("push_token", token);
-                    new APIService(this).patchUser(tokenUser, new UserInfoHandler() {
-                        @Override
-                        public void onSuccess(int responseCode, String userResponse) {
-                        }
+        if (Utils.hasLocationPermissions(this)) {
+            if (mGoogleApiClient == null) {
+                mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                            @Override
+                            public void onConnected(@Nullable Bundle bundle) {
+                                if (Utils.hasLocationPermissions(MainActivity.this)) {
+                                    getLocation();
+                                } else {
+                                    requestPermissions();
+                                }
+                            }
 
-                        @Override
-                        public void onSuccess(int responseCode, User user) {
-                            new PreferenceHelper(MainActivity.this).putGCMToken(token);
-                            saveUser(user);
-                        }
+                            @Override
+                            public void onConnectionSuspended(int i) {
 
-                        @Override
-                        public void onFailure(boolean isSuccessful, String responseString) {
+                            }
+                        })
+                        .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                            @Override
+                            public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-                        }
-                    });
-                } catch (Exception x) {
-                    x.printStackTrace();
+                            }
+                        })
+                        .addApi(LocationServices.API)
+                        .build();
+            }
+            updateValuesFromBundle(savedInstanceState);
+            realm = CacheUtils.getInstance(loggedUser);
+            navigation = (BottomNavigationView) findViewById(R.id.navigation);
+            fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
+            if (checkPlayServices()) {
+                final String token = FirebaseInstanceId.getInstance().getToken();
+                if (!TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token) || !loggedUser.getPushToken().equals(token)) {
+                    FirebaseMessaging.getInstance().subscribeToTopic("android");
+                    JSONObject tokenUser = new JSONObject();
+                    try {
+                        tokenUser.put("push_token", token);
+                        new APIService(this).patchUser(tokenUser, new UserInfoHandler() {
+                            @Override
+                            public void onSuccess(int responseCode, String userResponse) {
+                            }
+
+                            @Override
+                            public void onSuccess(int responseCode, User user) {
+                                new PreferenceHelper(MainActivity.this).putGCMToken(token);
+                                saveUser(user);
+                            }
+
+                            @Override
+                            public void onFailure(boolean isSuccessful, String responseString) {
+
+                            }
+                        });
+                    } catch (Exception x) {
+                        x.printStackTrace();
+                    }
                 }
             }
+            if (preferenceHelper.getFirstLogin() && !loggedUser.getFakeAccount())
+                phoneValidation();
+            navigation.setOnNavigationItemSelectedListener(this);
+            fragmentHashMap.put(R.id.navigation_home, MatchingFragment.newInstance(loggedUser));
+            fragmentHashMap.put(R.id.navigation_dashboard, ChatFragment.newInstance(loggedUser));
+            fragmentHashMap.put(R.id.navigation_profile, ProfileFragment.newInstance(loggedUser));
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+            ft.replace(R.id.content_main_male, fragmentHashMap.get(R.id.navigation_home));
+            ft.commit();
+            fab_add_content.hide();
+            navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
+            invalidateOptionsMenu();
+        } else {
+            requestPermissions();
         }
-        if (preferenceHelper.getFirstLogin() && !loggedUser.getFakeAccount())
-            phoneValidation();
-        navigation.setOnNavigationItemSelectedListener(this);
-        fragmentHashMap.put(R.id.navigation_home, ChatFragment.newInstance(loggedUser));
-        fragmentHashMap.put(R.id.navigation_dashboard, BasicFragment.newInstance(loggedUser));
-        fragmentHashMap.put(R.id.navigation_profile, ProfileFragment.newInstance(loggedUser));
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-        ft.replace(R.id.content_main_male, fragmentHashMap.get(R.id.navigation_home));
-        ft.commit();
-        fab_add_content.hide();
-        navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
-        invalidateOptionsMenu();
+    }
 
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                        @Override
-                        public void onConnected(@Nullable Bundle bundle) {
-                            if (checkAndRequestPermissions()) {
-                                getLocation();
-                            }
-                        }
-
-                        @Override
-                        public void onConnectionSuspended(int i) {
-
-                        }
-                    })
-                    .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                        @Override
-                        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-                        }
-                    })
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-        updateValuesFromBundle(savedInstanceState);
+    private void requestPermissions() {
+        startActivity(new Intent(this, LocationCheckerActivity.class));
+        finish();
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -371,20 +378,6 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    private boolean checkAndRequestPermissions() {
-        int permissionFine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        List<String> listPermissionsNeeded = new ArrayList<>();
-        if (permissionFine != PackageManager.PERMISSION_GRANTED) {
-            Log.v("checkPermissions", "Camera Needed");
-            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_LOCATION);
-            return false;
-        }
-        return true;
-    }
-
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5 * 60 * 1000);
@@ -458,6 +451,8 @@ public class MainActivity extends BaseActivity implements
                     Log.wtf(TAG, location.getLatitude() + " - " + location.getLongitude() + " @ " + mLastUpdateTime);
                 }
             });
+        } else {
+            requestPermissions();
         }
     }
 

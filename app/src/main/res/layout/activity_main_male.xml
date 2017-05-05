@@ -43,6 +43,4 @@
             app:itemTextColor="@drawable/bnv_selector"
             app:menu="@menu/navigation_menu" />
     </LinearLayout>
-    <!-- Bottom Sheet -->
-    <include layout="@layout/add_item_dialog_layout" />
 </android.support.design.widget.CoordinatorLayout>

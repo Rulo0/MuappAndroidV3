@@ -138,8 +138,13 @@
         <activity
             android:name=".UI.Activity.YoutubeViewActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".UI.Activity.VideoViewActivity" />
-        <activity android:name=".UI.Activity.LocationCheckerActivity"></activity>
+        <activity
+            android:name=".UI.Activity.VideoViewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.Activity.LocationCheckerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

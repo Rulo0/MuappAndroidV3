@@ -1,6 +1,7 @@
 package me.muapp.android.Classes.API;
 
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -14,11 +15,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
+import me.muapp.android.Classes.API.Handlers.MatchingUsersHandler;
 import me.muapp.android.Classes.API.Handlers.MuappUserInfoHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
+import me.muapp.android.Classes.Internal.MatchingResult;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappUser;
 import me.muapp.android.Classes.Internal.User;
@@ -33,6 +36,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static me.muapp.android.Classes.Internal.User.getNullUser;
+import static me.muapp.android.Classes.Util.Utils.serializeMatchingUsers;
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
 
 /**
@@ -495,8 +499,6 @@ public class APIService {
                         if (qualifications != null) {
                             if (handler != null) {
                                 handler.onSuccess(response.code(), qualifications);
-                            } else {
-                                handler.onFailure(true, responseString);
                             }
                         }
                     }
@@ -510,6 +512,57 @@ public class APIService {
             x.printStackTrace();
         }
     }
+
+    public void getMatchingUsers(int page, Location userLocation, final MatchingUsersHandler handler) {
+        try {
+            String url = BASE_URL + String.format("user/search?page=%s", page);
+            MediaType mediaType = MediaType.parse("application/json");
+            PreferenceHelper helper = new PreferenceHelper(mContext);
+            if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+                JSONObject sendObject = new JSONObject();
+                try {
+                    JSONObject location = new JSONObject();
+                    location.put("latitude", userLocation != null ? userLocation.getLatitude() : 0);
+                    location.put("longitude", userLocation != null ? userLocation.getLongitude() : 0);
+                    sendObject.put("user", location);
+                } catch (Exception x) {
+                    Log.d("getMatchingUsers", x.getMessage());
+                }
+                Log.d("getMatchingUsers", sendObject.toString());
+                RequestBody body = RequestBody.create(mediaType, sendObject.toString());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        if (handler != null)
+                            handler.onFailure(false, e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String responseString = response.body().string();
+                        MatchingResult matchingResult = new Gson().fromJson(serializeMatchingUsers(responseString), MatchingResult.class);
+                        if (matchingResult != null) {
+                            if (handler != null) {
+                                handler.onSuccess(response.code(), matchingResult);
+                            }
+                        }
+                    }
+                });
+            } else {
+                if (handler != null)
+                    handler.onFailure(false, "User not logged");
+            }
+        } catch (Exception x) {
+            Log.d("getMatchingUsers", x.getMessage());
+            x.printStackTrace();
+        }
+    }
+
 
     private Request addAuthHeaders(Request mainRequest) {
         PreferenceHelper helper = new PreferenceHelper(mContext);
