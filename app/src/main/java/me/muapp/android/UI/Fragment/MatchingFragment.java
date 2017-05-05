@@ -160,7 +160,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onAllUsersLoaded() {
         Log.wtf("AllUsersLoaded", "triggered");
-
         Runnable changeFragments = new Runnable() {
             @Override
             public void run() {
