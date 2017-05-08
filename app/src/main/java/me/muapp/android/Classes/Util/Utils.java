@@ -131,6 +131,23 @@ public class Utils {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    public static void animView(final View v, final boolean show, float alpha) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            if (show)
+                v.setVisibility(show ? View.VISIBLE : View.GONE);
+            v.animate().setDuration(200).alpha(
+                    !show ? 0 : alpha).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    v.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            v.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
     public static boolean hasLocationPermissions(Context context) {
         int permissionFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
         int permissionCoarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION);

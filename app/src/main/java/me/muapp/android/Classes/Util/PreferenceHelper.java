@@ -2,6 +2,7 @@ package me.muapp.android.Classes.Util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 
 /**
  * Created by rulo on 22/03/17.
@@ -16,6 +17,8 @@ public class PreferenceHelper {
     private final String FIRST_LOGIN = "first_login";
     private final String FIRST_TIME_CHAT = "fist_time_chat";
     private final String LAST_SENT_MESSAGE_TIMESTAMP = "last_sent";
+    private final String LATITUDE = "latitude";
+    private final String LONGITUDE = "longitude";
     Context context;
 
     public PreferenceHelper(Context context) {
@@ -99,4 +102,20 @@ public class PreferenceHelper {
     public Long getFacebookTokenExpiration() {
         return preferences.getLong(FB_EXPIRATION, -1);
     }
+
+
+    public void putLocation(Location location) {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putLong(LATITUDE, Double.doubleToLongBits(location.getLatitude()));
+        edit.putLong(LONGITUDE, Double.doubleToLongBits(location.getLongitude()));
+        edit.apply();
+    }
+
+    public Location getLocation() {
+        Location l = new Location("LAST_LOCATION");
+        l.setLatitude(Double.longBitsToDouble(preferences.getLong(LATITUDE, 0)));
+        l.setLongitude(Double.longBitsToDouble(preferences.getLong(LONGITUDE, 0)));
+        return l;
+    }
+
 }

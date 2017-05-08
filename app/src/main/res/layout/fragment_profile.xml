@@ -4,38 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="me.muapp.android.UI.Fragment.ProfileFragment">
-
-    <!-- <LinearLayout
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:orientation="vertical">
-
-         <me.muapp.android.UI.View.SquareRelativeLayout
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
-
-             <include
-                 layout="@layout/profile_header_layout"
-                 android:layout_width="match_parent"
-                 android:layout_height="match_parent" />
-
-             <com.rd.PageIndicatorView
-                 android:id="@+id/indicator_profile_pictures"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_alignParentTop="true"
-                 android:layout_centerHorizontal="true"
-                 android:layout_marginTop="@dimen/activity_vertical_margin" />
-         </me.muapp.android.UI.View.SquareRelativeLayout>
-
-         <TextView
-             android:id="@+id/txt_profile_info"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:layout_margin="@dimen/activity_horizontal_margin"
-             android:gravity="center" />
-              </LinearLayout>
- -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_my_content"
         android:layout_width="match_parent"

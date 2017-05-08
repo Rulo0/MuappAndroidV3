@@ -7,7 +7,11 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+
+import me.muapp.android.Classes.Util.Utils;
 
 public class MatchingUser implements Parcelable {
 
@@ -89,6 +93,8 @@ public class MatchingUser implements Parcelable {
     @SerializedName("is_fb_friend")
     @Expose
     private Boolean isFbFriend;
+
+    private static final String HIDDEN_STRING = "__hiddenField__";
     public final static Parcelable.Creator<MatchingUser> CREATOR = new Creator<MatchingUser>() {
 
 
@@ -197,7 +203,7 @@ public class MatchingUser implements Parcelable {
     }
 
     public String getLastName() {
-        return lastName;
+        return !lastName.equals(HIDDEN_STRING) ? this.lastName : "";
     }
 
     public void setLastName(String lastName) {
@@ -316,6 +322,17 @@ public class MatchingUser implements Parcelable {
         this.lastSeen = lastSeen;
     }
 
+    public Date getLastSeenDate() {
+        Date result = null;
+        if (birthday != null) {
+            try {
+                result = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(getLastSeen());
+            } catch (Exception x) {
+            }
+        }
+        return result;
+    }
+
     public String getBirthday() {
         return birthday;
     }
@@ -338,6 +355,40 @@ public class MatchingUser implements Parcelable {
 
     public void setIsFbFriend(Boolean isFbFriend) {
         this.isFbFriend = isFbFriend;
+    }
+
+    public int getAge() {
+        if (getBirthdayDate() == null) return 0;
+        return Utils.getDiffYears(getBirthdayDate(), new Date());
+    }
+
+    public Date getBirthdayDate() {
+        Date result = null;
+        if (birthday != null) {
+            try {
+                result = new SimpleDateFormat("yyyy-MM-dd").parse(birthday);
+            } catch (Exception x) {
+            }
+        }
+        return result;
+    }
+
+    public boolean getVisibleEducation() {
+        if (getEducation() != null && !getEducation().equals("null") && !getEducation().equals(HIDDEN_STRING)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getVisibleWork() {
+        if (getWork() != null && !getWork().equals("null") && !getWork().equals(HIDDEN_STRING)) {
+            return true;
+        }
+        return false;
+    }
+
+    public String getFullName() {
+        return String.format("%s %s", getFirstName(), getLastName());
     }
 
     public void writeToParcel(Parcel dest, int flags) {

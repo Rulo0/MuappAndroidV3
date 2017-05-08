@@ -447,6 +447,7 @@ public class MainActivity extends BaseActivity implements
                 public void onLocationChanged(Location location) {
                     startIntentService(mResultReceiver, location);
                     mCurrentLocation = location;
+                    new PreferenceHelper(MainActivity.this).putLocation(location);
                     mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
                     Log.wtf(TAG, location.getLatitude() + " - " + location.getLongitude() + " @ " + mLastUpdateTime);
                 }

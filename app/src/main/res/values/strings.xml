@@ -178,4 +178,6 @@
     <string name="title_activity_youtube_video_view">YoutubeVideoViewActivity</string>
     <string name="lbl_location_checker_title">In order to show you better results, we need to know where you are. Please access to Settings and enable Location Services for Muapp. </string>
     <string name="lbl_enable_location_services">ENABLE LOCATION SERVICES</string>
+    <string name="lbl_looking_for_people">Looking for people according to your preferences…</string>
+
 </resources>

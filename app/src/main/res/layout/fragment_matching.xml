@@ -5,26 +5,49 @@
     android:layout_height="match_parent"
     tools:context="me.muapp.android.UI.Fragment.ManGateFragment">
 
-    <RelativeLayout
+    <me.muapp.android.UI.View.SquareRelativeLayout
+        android:id="@+id/srl_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"></me.muapp.android.UI.View.SquareRelativeLayout>
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Basic fragment"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <FrameLayout
+        android:id="@+id/content_matching_profiles"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-        <FrameLayout
-            android:id="@+id/content_matching_profiles"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/textView2" />
+    <RelativeLayout
+        android:id="@+id/container_actions_matching"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_anchor="@id/srl_container"
+        app:layout_anchorGravity="bottom">
+
+        <ImageButton
+            android:id="@+id/btn_muapp_matching"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="-20dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_muapp" />
+
+        <ImageButton
+            android:id="@+id/btn_no_muapp_matching"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="-20dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_no_muapp" />
+
+        <ImageButton
+            android:id="@+id/btn_crush_matching"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_crush" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
