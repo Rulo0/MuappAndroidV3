@@ -29,7 +29,6 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="60dp"
-                android:text="X es tu amigo en facebook"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                 android:textColor="@color/color_muapp_dark"
@@ -44,7 +43,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="8dp"
-                android:text="¡Ayúdalo a que tenga más éxito dándole una puntuación!"
+                android:text="@string/lbl_help_your_friend"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 android:textColor="@color/color_muapp_dark"
@@ -174,7 +173,7 @@
         app:srcCompat="@drawable/ic_profile" />
 
     <ImageButton
-        android:id="@+id/imageView7"
+        android:id="@+id/btn_dismiss_dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"

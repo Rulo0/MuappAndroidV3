@@ -18,12 +18,14 @@ import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
 import me.muapp.android.Classes.API.Handlers.MatchingUsersHandler;
 import me.muapp.android.Classes.API.Handlers.MuappUserInfoHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.API.Handlers.UserQualificationHandler;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
 import me.muapp.android.Classes.Internal.MatchingResult;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappUser;
+import me.muapp.android.Classes.Internal.QualificationResult;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import okhttp3.Call;
@@ -363,6 +365,47 @@ public class APIService {
                 } catch (Exception x) {
                     Log.wtf("setUserFakeAccount", x.getMessage());
                     x.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void setUserQualification(int targetUserId, int stars, final UserQualificationHandler handler) {
+        String url = BASE_URL + "qualification/set_qualification";
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject sendObject = new JSONObject();
+        try {
+            JSONObject qualificationaram = new JSONObject();
+            qualificationaram.put("stars", stars);
+            qualificationaram.put("qualificationed_id", targetUserId);
+            sendObject.put("qualification", qualificationaram);
+        } catch (Exception x) {
+        }
+        RequestBody body = RequestBody.create(mediaType, sendObject.toString());
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Log.i("setUserQualification", url);
+        Log.i("setUserQualification", sendObject.toString());
+        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (handler != null)
+                    handler.onFailure(false, e.getMessage());
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseString = response.body().string();
+                Log.i("setUserQualification", responseString);
+                try {
+                    if (handler != null)
+                        handler.onSuccess(response.code(), new Gson().fromJson(responseString, QualificationResult.class));
+                } catch (Exception x) {
+                    if (handler != null)
+                        handler.onFailure(true, x.getMessage());
                 }
             }
         });

@@ -26,6 +26,9 @@ public class Qualification implements Parcelable {
     private Date creationDate;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
+    public Qualification() {
+    }
+
     public Integer getStars() {
         return stars;
     }

@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
@@ -20,10 +21,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
 import me.muapp.android.Classes.Internal.MatchingUser;
+import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.UserContent;
@@ -42,6 +45,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     DatabaseReference userReference;
     Toolbar toolbar_matching;
     TextView toolbar_matching_name;
+    ImageButton btn_matching_rate;
 
     public MatchingUser getMatchingUser() {
         return matchingUser;
@@ -104,6 +108,15 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         new APIService(getContext()).getUserQualifications(matchingUser.getId(), new UserQualificationsHandler() {
             @Override
             public void onSuccess(int responseCode, UserQualifications qualifications) {
+                //TODO Remove this block
+                if (qualifications.getQualifications().size() == 0) {
+                    for (int i = 0; i < 25; i++) {
+                        Qualification q = new Qualification();
+                        q.setStars(new Random().nextInt(5));
+                        q.setUserName("Random User");
+                        qualifications.getQualifications().add(q);
+                    }
+                }
                 adapter.setQualifications(qualifications.getQualifications());
             }
 
@@ -119,6 +132,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_matching_user_profile, container, false);
         toolbar_matching = (Toolbar) v.findViewById(R.id.toolbar_matching);
+        btn_matching_rate = (ImageButton) v.findViewById(R.id.btn_matching_rate);
         toolbar_matching_name = (TextView) v.findViewById(R.id.toolbar_matching_name);
         recycler_user_content = (RecyclerView) v.findViewById(R.id.recycler_user_content);
         final LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -148,6 +162,16 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         if (matchingUser.getFakeAccount())
             toolbar_matching_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_profile, 0, 0, 0);
         recycler_user_content.setAdapter(adapter);
+       /* if (matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()) {*/
+            btn_matching_rate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RatingFriendDialogFragment.newInstance(matchingUser).show(getChildFragmentManager(), "");
+                }
+            });
+      /*  } else {
+            btn_matching_rate.setVisibility(View.GONE);
+        }*/
     }
 
     @Override
@@ -156,8 +180,6 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         adapter.removeAllDescriptions();
         adapter.setUser(matchingUser);
         userReference.addChildEventListener(this);
-        new RatingFriendDialog().show(getChildFragmentManager(), "");
-
     }
 
     @Override

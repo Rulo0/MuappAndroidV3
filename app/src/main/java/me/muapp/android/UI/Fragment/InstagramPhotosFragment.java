@@ -116,7 +116,7 @@ public class InstagramPhotosFragment extends Fragment implements ValueEventListe
             btn_connect_instagram.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    OauthInstagramDialog instagramDialog = new OauthInstagramDialog();
+                    OauthInstagramDialogFragment instagramDialog = new OauthInstagramDialogFragment();
                     instagramDialog.setUserId(loggedUser.getId());
                     FragmentTransaction ft = getChildFragmentManager().beginTransaction();
                     ft.addToBackStack(null);

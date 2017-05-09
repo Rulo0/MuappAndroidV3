@@ -180,4 +180,7 @@
     <string name="lbl_enable_location_services">ENABLE LOCATION SERVICES</string>
     <string name="lbl_looking_for_people">Looking for people according to your preferences…</string>
 
+    <string name="format_is_your_fb_friend">%s is your friend in facebook</string>
+    <string name="lbl_help_your_friend">Help to be more successful by giving a score!</string>
+
 </resources>
