@@ -164,6 +164,106 @@ public class APIService {
         });
     }
 
+    public void likeUser(int userId, String qbDialogId, final UserInfoHandler handler) {
+        String url = BASE_URL + String.format("users/%s/like", userId);
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject sendObject = new JSONObject();
+        try {
+            JSONObject qbParams = new JSONObject();
+            qbParams.put("dialog_id", qbDialogId != null ? qbDialogId : "");
+            sendObject.put("quickblox", qbParams);
+        } catch (Exception x) {
+        }
+        RequestBody body = RequestBody.create(mediaType, sendObject.toString());
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Log.i("likeUser", url);
+        Log.i("likeUser", sendObject.toString());
+        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (handler != null)
+                    handler.onFailure(false, e.getMessage());
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseString = response.body().string();
+                Log.i("likeUser", responseString);
+                if (handler != null)
+                    handler.onSuccess(response.code(), responseString);
+                try {
+                    JSONObject serverResponse = new JSONObject(responseString);
+                    if (serverResponse.has("user")) {
+                        Gson gson = new Gson();
+                        User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
+                        if (u != null) {
+                            Log.wtf("likeUser", u.toString());
+                            if (handler != null)
+                                handler.onSuccess(response.code(), u);
+                        } else {
+                            Log.wtf("likeUser", "user is null");
+                        }
+                    }
+                } catch (Exception x) {
+                    Log.wtf("likeUser", x.getMessage());
+                    x.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void dislikeUser(int userId, final UserInfoHandler handler) {
+        String url = BASE_URL + String.format("users/%s/dislike", userId);
+        OkHttpClient client = new OkHttpClient();
+        JSONObject sendObject = new JSONObject();
+        RequestBody emptyBody = RequestBody.create(null, new byte[0]);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(emptyBody)
+                .build();
+        Log.i("dislikeUser", url);
+        Log.i("dislikeUser", sendObject.toString());
+        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (handler != null)
+                    handler.onFailure(false, e.getMessage());
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseString = response.body().string();
+                Log.i("dislikeUser", responseString);
+                if (handler != null)
+                    handler.onSuccess(response.code(), responseString);
+                try {
+                    JSONObject serverResponse = new JSONObject(responseString);
+                    if (serverResponse.has("user")) {
+                        Gson gson = new Gson();
+                        User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
+                        if (u != null) {
+                            Log.wtf("dislikeUser", u.toString());
+                            if (handler != null)
+                                handler.onSuccess(response.code(), u);
+                        } else {
+                            Log.wtf("dislikeUser", "user is null");
+                        }
+                    }
+                } catch (Exception x) {
+                    Log.wtf("dislikeUser", x.getMessage());
+                    x.printStackTrace();
+                }
+            }
+        });
+    }
+
+
     public void patchUser(JSONObject userData, final UserInfoHandler handler) {
         String url = BASE_URL + "user";
         MediaType mediaType = MediaType.parse("application/json");

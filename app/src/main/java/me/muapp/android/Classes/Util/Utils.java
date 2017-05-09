@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,12 +25,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import me.muapp.android.R;
+
 /**
  * Created by rulo on 22/03/17.
  */
 
 public class Utils {
     private static final String jsonUseInvitation = "has_use_invitation";
+    static boolean isAnimating = false;
 
     public static int getScreenWidth(Context ctx) {
         return getDisplayMetrics(ctx).widthPixels;
@@ -116,7 +121,7 @@ public class Utils {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public static void animView(final View v, final boolean show) {
+    public static void animViewFade(final View v, final boolean show) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             v.setVisibility(show ? View.VISIBLE : View.GONE);
             v.animate().setDuration(200).alpha(
@@ -132,7 +137,7 @@ public class Utils {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public static void animView(final View v, final boolean show, float alpha) {
+    public static void animViewFade(final View v, final boolean show, float alpha) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             if (show)
                 v.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -145,6 +150,40 @@ public class Utils {
             });
         } else {
             v.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    public static void animViewScale(Context context, final View v, final boolean show) {
+        if (((show && v.getVisibility() == View.GONE) || (!show && v.getVisibility() == View.VISIBLE)) && !isAnimating) {
+            isAnimating = true;
+            Animation scaleAnim = AnimationUtils.loadAnimation(context,
+                    show ? R.anim.scale_up : R.anim.scale_down);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                if (show)
+                    v.setVisibility(show ? View.VISIBLE : View.GONE);
+                scaleAnim.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        v.setVisibility(show ? View.VISIBLE : View.GONE);
+                        isAnimating = false;
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                v.startAnimation(scaleAnim);
+            } else {
+                v.setVisibility(show ? View.VISIBLE : View.GONE);
+                isAnimating = false;
+            }
         }
     }
 

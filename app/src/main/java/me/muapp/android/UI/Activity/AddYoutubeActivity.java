@@ -93,7 +93,7 @@ public class AddYoutubeActivity extends BaseActivity implements SearchView.OnQue
         protected void onPreExecute() {
             super.onPreExecute();
             ada.clearItems();
-            Utils.animView(placeholder_youtube, false);
+            Utils.animViewFade(placeholder_youtube, false);
             progressUtil.showProgress(true);
         }
 
@@ -107,7 +107,7 @@ public class AddYoutubeActivity extends BaseActivity implements SearchView.OnQue
                 }
             } else {
                 ((TextView) findViewById(R.id.txt_placeholder_youtube)).setText(getString(R.string.lbl_no_results_found));
-                Utils.animView(placeholder_youtube, true);
+                Utils.animViewFade(placeholder_youtube, true);
             }
         }
 

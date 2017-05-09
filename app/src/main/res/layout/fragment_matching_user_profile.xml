@@ -42,13 +42,26 @@
                 </LinearLayout>
 
                 <ImageButton
+                    android:id="@+id/btn_matching_report"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="12dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    app:srcCompat="@drawable/ic_settings" />
+                    app:srcCompat="@drawable/ic_report" />
+
+
+                <ImageButton
+                    android:id="@+id/btn_matching_rate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="12dp"
+                    android:layout_toLeftOf="@id/btn_matching_report"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/ic_rate" />
+
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
 

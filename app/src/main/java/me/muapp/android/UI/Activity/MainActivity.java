@@ -121,6 +121,10 @@ public class MainActivity extends BaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_male);
+        //noinspection RestrictedApi
+        getSupportActionBar().setShowHideAnimationEnabled(false);
+        getSupportActionBar().hide();
+
     /*    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);*/
         if (Utils.hasLocationPermissions(this)) {
@@ -296,8 +300,10 @@ public class MainActivity extends BaseActivity implements
         try {
             Log.wtf("selectFragment", item.getTitle().toString());
             Fragment frag = fragmentHashMap.get(item.getItemId());
-            if (frag instanceof ProfileFragment) {
-                Log.wtf("selectFragment", "Profile");
+            if (frag instanceof MatchingFragment) {
+                getSupportActionBar().hide();
+            } else {
+                getSupportActionBar().show();
             }
 
             mSelectedItem = item.getItemId();
@@ -318,7 +324,6 @@ public class MainActivity extends BaseActivity implements
             } else {
                 fab_add_content.hide();
             }
-
             fab_add_content.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

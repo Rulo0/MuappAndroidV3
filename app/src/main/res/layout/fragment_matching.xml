@@ -8,7 +8,8 @@
     <me.muapp.android.UI.View.SquareRelativeLayout
         android:id="@+id/srl_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></me.muapp.android.UI.View.SquareRelativeLayout>
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize" />
 
     <FrameLayout
         android:id="@+id/content_matching_profiles"

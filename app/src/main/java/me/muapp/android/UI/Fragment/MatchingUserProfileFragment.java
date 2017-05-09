@@ -30,19 +30,29 @@ import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MatchingUserContentAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnMatchingInteractionListener;
+import me.muapp.android.UI.Fragment.Interface.OnProfileScrollListener;
 
 public class MatchingUserProfileFragment extends Fragment implements ChildEventListener {
     private static final String ARG_MATCHING_USER = "MATCHING_USER";
     private MatchingUser matchingUser;
     private OnMatchingInteractionListener onMatchingInteractionListener;
+    private OnProfileScrollListener onProfileScrollListener;
     RecyclerView recycler_user_content;
     MatchingUserContentAdapter adapter;
     DatabaseReference userReference;
     Toolbar toolbar_matching;
     TextView toolbar_matching_name;
 
+    public MatchingUser getMatchingUser() {
+        return matchingUser;
+    }
+
     public void setOnMatchingInteractionListener(OnMatchingInteractionListener onMatchingInteractionListener) {
         this.onMatchingInteractionListener = onMatchingInteractionListener;
+    }
+
+    public void setOnProfileScrollListener(OnProfileScrollListener onProfileScrollListener) {
+        this.onProfileScrollListener = onProfileScrollListener;
     }
 
     public MatchingUserProfileFragment() {
@@ -64,6 +74,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
             matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);
         }
         adapter = new MatchingUserContentAdapter(getContext(), matchingUser);
+        adapter.setShowMenuButton(false);
         adapter.setFragmentManager(getChildFragmentManager());
         userReference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(matchingUser.getId()));
         FirebaseDatabase.getInstance().getReference().child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -110,20 +121,22 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         toolbar_matching = (Toolbar) v.findViewById(R.id.toolbar_matching);
         toolbar_matching_name = (TextView) v.findViewById(R.id.toolbar_matching_name);
         recycler_user_content = (RecyclerView) v.findViewById(R.id.recycler_user_content);
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        final LinearLayoutManager llm = new LinearLayoutManager(getContext());
         recycler_user_content.setLayoutManager(llm);
         recycler_user_content.setHasFixedSize(true);
         recycler_user_content.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-                    //scroll down
+                int pos = llm.findFirstVisibleItemPosition();
+                if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
+                    onProfileScrollListener.onScrollToTop();
                 } else {
-                    //scroll up
+                    onProfileScrollListener.onScroll();
                 }
             }
         });
+
         return v;
     }
 
@@ -143,6 +156,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         adapter.removeAllDescriptions();
         adapter.setUser(matchingUser);
         userReference.addChildEventListener(this);
+        new RatingFriendDialog().show(getChildFragmentManager(), "");
 
     }
 
@@ -172,7 +186,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
             adapter.addContent(c);
-            recycler_user_content.scrollToPosition(0);
+            ((LinearLayoutManager) recycler_user_content.getLayoutManager()).scrollToPositionWithOffset(0, 0);
         }
     }
 

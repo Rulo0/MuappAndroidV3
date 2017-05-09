@@ -94,13 +94,13 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
     }
 
     private void searchInSpotify(String query) {
-        Utils.animView(placeholder_spotify, false);
+        Utils.animViewFade(placeholder_spotify, false);
         new SpotifySearchTask().execute(query);
     }
 
     private void showPlaceholder() {
         ((TextView) findViewById(R.id.txt_placeholder_spotify)).setText(getString(R.string.lbl_no_results_found));
-        Utils.animView(placeholder_spotify, true);
+        Utils.animViewFade(placeholder_spotify, true);
     }
 
     private class SpotifySearchTask extends AsyncTask<String, Void, List<Song>> {

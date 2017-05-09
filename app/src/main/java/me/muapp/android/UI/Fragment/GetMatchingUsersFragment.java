@@ -111,19 +111,19 @@ public class GetMatchingUsersFragment extends Fragment implements OnFragmentInte
 
                         switch (animState) {
                             case 1:
-                                Utils.animView(img_matching_load_1, true, 1);
-                                Utils.animView(img_matching_load_2, false, .6f);
-                                Utils.animView(img_matching_load_3, false, .4f);
+                                Utils.animViewFade(img_matching_load_1, true, 1);
+                                Utils.animViewFade(img_matching_load_2, false, .6f);
+                                Utils.animViewFade(img_matching_load_3, false, .4f);
                                 break;
                             case 2:
-                                Utils.animView(img_matching_load_1, true, 1);
-                                Utils.animView(img_matching_load_2, true, .6f);
-                                Utils.animView(img_matching_load_3, false, .4f);
+                                Utils.animViewFade(img_matching_load_1, true, 1);
+                                Utils.animViewFade(img_matching_load_2, true, .6f);
+                                Utils.animViewFade(img_matching_load_3, false, .4f);
                                 break;
                             case 3:
-                                Utils.animView(img_matching_load_1, true, 1);
-                                Utils.animView(img_matching_load_2, true, .6f);
-                                Utils.animView(img_matching_load_3, true, .4f);
+                                Utils.animViewFade(img_matching_load_1, true, 1);
+                                Utils.animViewFade(img_matching_load_2, true, .6f);
+                                Utils.animViewFade(img_matching_load_3, true, .4f);
                                 break;
                         }
                     }

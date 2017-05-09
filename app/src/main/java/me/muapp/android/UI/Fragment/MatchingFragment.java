@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +21,16 @@ import me.muapp.android.Classes.API.Handlers.MatchingUsersHandler;
 import me.muapp.android.Classes.Internal.MatchingResult;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.MainActivity;
 import me.muapp.android.UI.Fragment.Interface.OnAllUsersLoadedListener;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import me.muapp.android.UI.Fragment.Interface.OnMatchingInteractionListener;
+import me.muapp.android.UI.Fragment.Interface.OnProfileScrollListener;
 
 
-public class MatchingFragment extends Fragment implements OnFragmentInteractionListener, MatchingUsersHandler, OnMatchingInteractionListener, OnAllUsersLoadedListener, View.OnClickListener {
+public class MatchingFragment extends Fragment implements OnFragmentInteractionListener, MatchingUsersHandler, OnMatchingInteractionListener, OnAllUsersLoadedListener, View.OnClickListener, OnProfileScrollListener {
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
     private User user;
     private OnFragmentInteractionListener mListener;
@@ -37,6 +40,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     List<MatchingUserProfileFragment> matchingFragmentList = new ArrayList<>();
     RelativeLayout container_actions_matching;
     ImageButton btn_muapp_matching, btn_crush_matching, btn_no_muapp_matching;
+    Boolean b = true;
 
     public MatchingFragment() {
 
@@ -135,6 +139,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             for (final MatchingUser user : result.getMatchingUsers()) {
                 MatchingUserProfileFragment fragment = MatchingUserProfileFragment.newInstance(user);
                 fragment.setOnMatchingInteractionListener(this);
+                fragment.setOnProfileScrollListener(this);
                 matchingFragmentList.add(fragment);
             }
             onAllUsersLoaded();
@@ -165,45 +170,63 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     }
 
     private void showControls(final Boolean show) {
-        getActivity().runOnUiThread(new Runnable() {
+        Handler mainHandler = new Handler(getContext().getMainLooper());
+        Runnable myRunnable = new Runnable() {
             @Override
             public void run() {
-                container_actions_matching.setVisibility(show ? View.VISIBLE : View.GONE);
+                Log.wtf("Scroll", show + "");
+                Utils.animViewScale(getContext(), container_actions_matching, show);
             }
-        });
+        };
+        mainHandler.post(myRunnable);
+
     }
 
     @Override
     public void onAllUsersLoaded() {
         replaceFragment(matchingFragmentList.get(0));
         showControls(true);
-        /*Log.wtf("AllUsersLoaded", "triggered");
-        Runnable changeFragments = new Runnable() {
-            @Override
-            public void run() {
-                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-                ft.replace(R.id.content_matching_profiles, matchingFragmentList.get(fragmentPos));
-                ft.commit();
-                fragmentPos++;
-                if (fragmentPos < matchingFragmentList.size())
-                    handler.postDelayed(this, waitTime * 150);
-
-            }
-        };
-        handler.postDelayed(changeFragments, waitTime);
-*/
     }
 
     @Override
     public void onClick(View v) {
-        matchingFragmentList.remove(0);
-        if (matchingFragmentList.size() > 0) {
-            replaceFragment(matchingFragmentList.get(0));
-        } else {
-            showControls(false);
-            replaceFragment(GetMatchingUsersFragment.newInstance(user));
-            getMatchingUsers();
+        try {
+            switch (v.getId()) {
+                case R.id.btn_muapp_matching:
+                    new APIService(getContext()).likeUser(matchingFragmentList.get(0).getMatchingUser().getId(), null, null);
+                    break;
+                case R.id.btn_no_muapp_matching:
+                    new APIService(getContext()).dislikeUser(matchingFragmentList.get(0).getMatchingUser().getId(), null);
+                    break;
+            }
+        } catch (Exception x) {
+            x.printStackTrace();
         }
+
+
+        try {
+            matchingFragmentList.remove(0);
+            if (matchingFragmentList.size() > 0) {
+                replaceFragment(matchingFragmentList.get(0));
+            } else {
+                showControls(false);
+                replaceFragment(GetMatchingUsersFragment.newInstance(user));
+                getMatchingUsers();
+            }
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onScrollToTop() {
+        Log.wtf("Scroll", "top");
+        showControls(true);
+    }
+
+    @Override
+    public void onScroll() {
+        Log.wtf("Scroll", "other");
+        showControls(false);
     }
 }

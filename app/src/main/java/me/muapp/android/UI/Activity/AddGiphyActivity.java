@@ -108,7 +108,7 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
         protected void onPreExecute() {
             super.onPreExecute();
             progressUtil.showProgress(true);
-            Utils.animView(placeholder_giphy, false);
+            Utils.animViewFade(placeholder_giphy, false);
         }
 
         @Override
@@ -117,10 +117,10 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
             progressUtil.showProgress(false);
             if (result.size() > 0) {
                 ada.addPhotos(result);
-                Utils.animView(recycler_add_giphy, true);
+                Utils.animViewFade(recycler_add_giphy, true);
             } else {
-                Utils.animView(placeholder_giphy, true);
-                Utils.animView(recycler_add_giphy, false);
+                Utils.animViewFade(placeholder_giphy, true);
+                Utils.animViewFade(recycler_add_giphy, false);
             }
         }
 
