@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -148,9 +149,8 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     public void onSuccess(int responseCode, MatchingResult result) {
         if (result.getMatchingUsers().size() > 0) {
             for (final MatchingUser user : result.getMatchingUsers()) {
-               /* user.setDescription("Description Demo");
-                if (!TextUtils.isEmpty(user.getDescription()))*/
-                uploadDescriptionToFirebase(user.getId(), user.getDescription());
+                if (!TextUtils.isEmpty(user.getDescription()))
+                    uploadDescriptionToFirebase(user.getId(), user.getDescription());
                 MatchingUserProfileFragment fragment = MatchingUserProfileFragment.newInstance(user);
                 fragment.setOnMatchingInteractionListener(this);
                 fragment.setOnProfileScrollListener(this);
