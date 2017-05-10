@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -193,7 +192,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         Runnable myRunnable = new Runnable() {
             @Override
             public void run() {
-                Log.wtf("Scroll", show + "");
                 Utils.animViewScale(getContext(), container_actions_matching, show);
             }
         };
@@ -208,10 +206,8 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChildren()) {
                     boolean descriptionFound = false;
-                    Log.wtf("User", "has description in fb");
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         UserContent content = snapshot.getValue(UserContent.class);
-                        Log.wtf("User", content.toString());
                         if (!content.getComment().equals(description)) {
                             snapshot.getRef().removeValue();
                         } else {
@@ -227,7 +223,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                         reference.child(reference.push().getKey()).setValue(content);
                     }
                 } else {
-                    Log.wtf("User", "hasnt description in fb");
                     UserContent content = new UserContent();
                     content.setCreatedAt(32535237599000L);
                     content.setCatContent("contentDesc");
@@ -283,13 +278,11 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
 
     @Override
     public void onScrollToTop() {
-        Log.wtf("Scroll", "top");
         showControls(true);
     }
 
     @Override
     public void onScroll() {
-        Log.wtf("Scroll", "other");
         showControls(false);
     }
 }
