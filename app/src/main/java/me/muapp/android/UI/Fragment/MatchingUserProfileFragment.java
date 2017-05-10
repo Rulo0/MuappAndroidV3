@@ -21,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
@@ -81,6 +80,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         if (getArguments() != null) {
             matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);
         }
+
         adapter = new MatchingUserContentAdapter(getContext(), matchingUser);
         adapter.setShowMenuButton(false);
         adapter.setFragmentManager(getChildFragmentManager());
@@ -112,15 +112,6 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         new APIService(getContext()).getUserQualifications(matchingUser.getId(), new UserQualificationsHandler() {
             @Override
             public void onSuccess(int responseCode, UserQualifications qualifications) {
-                //TODO Remove this block
-                if (qualifications.getQualifications().size() == 0) {
-                    for (int i = 0; i < 25; i++) {
-                        Qualification q = new Qualification();
-                        q.setStars(new Random().nextInt(5));
-                        q.setUserName("Random User");
-                        qualifications.getQualifications().add(q);
-                    }
-                }
                 adapter.setQualifications(qualifications.getQualifications());
             }
 

@@ -13,6 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +27,7 @@ import me.muapp.android.Classes.API.Handlers.MatchingUsersHandler;
 import me.muapp.android.Classes.Internal.MatchingResult;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.MainActivity;
@@ -141,6 +148,9 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     public void onSuccess(int responseCode, MatchingResult result) {
         if (result.getMatchingUsers().size() > 0) {
             for (final MatchingUser user : result.getMatchingUsers()) {
+               /* user.setDescription("Description Demo");
+                if (!TextUtils.isEmpty(user.getDescription()))*/
+                uploadDescriptionToFirebase(user.getId(), user.getDescription());
                 MatchingUserProfileFragment fragment = MatchingUserProfileFragment.newInstance(user);
                 fragment.setOnMatchingInteractionListener(this);
                 fragment.setOnProfileScrollListener(this);
@@ -188,6 +198,50 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             }
         };
         mainHandler.post(myRunnable);
+
+    }
+
+    private void uploadDescriptionToFirebase(int matchingUserId, final String description) {
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(matchingUserId));
+        reference.orderByChild("catContent").equalTo("contentDesc").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChildren()) {
+                    boolean descriptionFound = false;
+                    Log.wtf("User", "has description in fb");
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        UserContent content = snapshot.getValue(UserContent.class);
+                        Log.wtf("User", content.toString());
+                        if (!content.getComment().equals(description)) {
+                            snapshot.getRef().removeValue();
+                        } else {
+                            descriptionFound = true;
+                        }
+                    }
+                    if (!descriptionFound) {
+                        UserContent content = new UserContent();
+                        content.setCreatedAt(32535237599000L);
+                        content.setCatContent("contentDesc");
+                        content.setComment(description);
+                        content.setLikes(0);
+                        reference.child(reference.push().getKey()).setValue(content);
+                    }
+                } else {
+                    Log.wtf("User", "hasnt description in fb");
+                    UserContent content = new UserContent();
+                    content.setCreatedAt(32535237599000L);
+                    content.setCatContent("contentDesc");
+                    content.setComment(description);
+                    content.setLikes(0);
+                    reference.child(reference.push().getKey()).setValue(content);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
