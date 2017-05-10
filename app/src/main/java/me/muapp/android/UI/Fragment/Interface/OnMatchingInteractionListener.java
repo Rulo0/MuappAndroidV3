@@ -12,4 +12,6 @@ public interface OnMatchingInteractionListener {
     void onUnlikeClicked(MatchingUser user);
 
     void onCrushCliched(MatchingUser user);
+
+    void onReportedUser();
 }

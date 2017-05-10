@@ -30,12 +30,15 @@ import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MatchingUserContentAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnMatchingInteractionListener;
 import me.muapp.android.UI.Fragment.Interface.OnProfileScrollListener;
+import me.muapp.android.UI.Fragment.Interface.OnUserRatedListener;
+import me.muapp.android.UI.Fragment.Interface.OnUserReportedListener;
 
-public class MatchingUserProfileFragment extends Fragment implements ChildEventListener {
+public class MatchingUserProfileFragment extends Fragment implements ChildEventListener, OnUserRatedListener, OnUserReportedListener {
     private static final String ARG_MATCHING_USER = "MATCHING_USER";
     private MatchingUser matchingUser;
     private OnMatchingInteractionListener onMatchingInteractionListener;
@@ -46,6 +49,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     Toolbar toolbar_matching;
     TextView toolbar_matching_name;
     ImageButton btn_matching_rate;
+    ImageButton btn_matching_report;
 
     public MatchingUser getMatchingUser() {
         return matchingUser;
@@ -133,6 +137,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         View v = inflater.inflate(R.layout.fragment_matching_user_profile, container, false);
         toolbar_matching = (Toolbar) v.findViewById(R.id.toolbar_matching);
         btn_matching_rate = (ImageButton) v.findViewById(R.id.btn_matching_rate);
+        btn_matching_report = (ImageButton) v.findViewById(R.id.btn_matching_report);
         toolbar_matching_name = (TextView) v.findViewById(R.id.toolbar_matching_name);
         recycler_user_content = (RecyclerView) v.findViewById(R.id.recycler_user_content);
         final LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -160,18 +165,28 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         super.onActivityCreated(savedInstanceState);
         toolbar_matching_name.setText(matchingUser.getFullName());
         if (matchingUser.getFakeAccount())
-            toolbar_matching_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_profile, 0, 0, 0);
+            toolbar_matching_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_verified_profile, 0, 0, 0);
         recycler_user_content.setAdapter(adapter);
-       /* if (matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()) {*/
+        if (matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()) {
             btn_matching_rate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    RatingFriendDialogFragment.newInstance(matchingUser).show(getChildFragmentManager(), "");
+                    RatingFriendDialogFragment ratingFriendDialogFragment = RatingFriendDialogFragment.newInstance(matchingUser);
+                    ratingFriendDialogFragment.setOnUserRatedListener(MatchingUserProfileFragment.this);
+                    ratingFriendDialogFragment.show(getChildFragmentManager(), "");
                 }
             });
-      /*  } else {
+        } else {
             btn_matching_rate.setVisibility(View.GONE);
-        }*/
+        }
+        btn_matching_report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ReportUserDialogFragment reportUserDialogFragment = ReportUserDialogFragment.newInstance(matchingUser);
+                reportUserDialogFragment.setOnUserReportedListener(MatchingUserProfileFragment.this);
+                reportUserDialogFragment.show(getChildFragmentManager(), "");
+            }
+        });
     }
 
     @Override
@@ -242,5 +257,24 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     @Override
     public void onCancelled(DatabaseError databaseError) {
 
+    }
+
+    @Override
+    public void onRate(int rating) {
+        List<Qualification> qualifications = adapter.getQualificationsList();
+        if (qualifications == null) {
+            qualifications = new ArrayList<>();
+        }
+        Qualification q = new Qualification();
+        q.setUserName(new UserHelper(getContext()).getLoggedUser().getFullName());
+        q.setStars(rating);
+        qualifications.add(0, q);
+        adapter.setQualifications(qualifications);
+        btn_matching_rate.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onReport() {
+        onMatchingInteractionListener.onReportedUser();
     }
 }

@@ -6,7 +6,7 @@
     android:background="@android:color/transparent">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/cardView2"
+        android:id="@+id/container_rating_dialog"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
@@ -72,18 +72,18 @@
             <LinearLayout
                 android:id="@+id/btn_dialog_button"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="0dp"
-                android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="@color/colorAccent"
                 android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rating_user">
+                app:layout_constraintTop_toBottomOf="@id/rating_user"
+                android:layout_marginLeft="0dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="12dp">
 
                 <TextView
                     android:id="@+id/txt_rating_action"
@@ -170,7 +170,7 @@
         app:layout_constraintRight_toRightOf="@+id/imb_dialog_base_white"
         app:layout_constraintTop_toTopOf="@+id/imb_dialog_base_white"
         app:layout_constraintVertical_bias="0.571"
-        app:srcCompat="@drawable/ic_profile" />
+        app:srcCompat="@drawable/ic_star_filled" />
 
     <ImageButton
         android:id="@+id/btn_dismiss_dialog"
@@ -185,7 +185,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView2"
+        app:layout_constraintTop_toBottomOf="@+id/container_rating_dialog"
         app:layout_constraintVertical_bias="0.511"
         app:srcCompat="@drawable/ic_dismiss_dialog" />
 

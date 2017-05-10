@@ -46,6 +46,10 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
 
     }
 
+    public void performUnlike() {
+        btn_no_muapp_matching.performClick();
+    }
+
     public static MatchingFragment newInstance(User user) {
         MatchingFragment fragment = new MatchingFragment();
         Bundle args = new Bundle();
@@ -160,6 +164,11 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onCrushCliched(MatchingUser user) {
 
+    }
+
+    @Override
+    public void onReportedUser() {
+        btn_no_muapp_matching.performClick();
     }
 
     private void replaceFragment(Fragment frag) {

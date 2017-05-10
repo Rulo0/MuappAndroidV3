@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -51,6 +52,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -121,8 +123,9 @@ public class MainActivity extends BaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_male);
-        //noinspection RestrictedApi
-        getSupportActionBar().setShowHideAnimationEnabled(false);
+/*        //noinspection RestrictedApi
+        getSupportActionBar().setShowHideAnimationEnabled(false);*/
+        disableABCShowHideAnimation(getSupportActionBar());
         getSupportActionBar().hide();
 
     /*    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -201,6 +204,27 @@ public class MainActivity extends BaseActivity implements
             invalidateOptionsMenu();
         } else {
             requestPermissions();
+        }
+    }
+
+    public static void disableABCShowHideAnimation(ActionBar actionBar) {
+        try {
+            actionBar.getClass().getDeclaredMethod("setShowHideAnimationEnabled", boolean.class).invoke(actionBar, false);
+        } catch (Exception exception) {
+            try {
+                Field mActionBarField = actionBar.getClass().getSuperclass().getDeclaredField("mActionBar");
+                mActionBarField.setAccessible(true);
+                Object icsActionBar = mActionBarField.get(actionBar);
+                Field mShowHideAnimationEnabledField = icsActionBar.getClass().getDeclaredField("mShowHideAnimationEnabled");
+                mShowHideAnimationEnabledField.setAccessible(true);
+                mShowHideAnimationEnabledField.set(icsActionBar, false);
+                Field mCurrentShowAnimField = icsActionBar.getClass().getDeclaredField("mCurrentShowAnim");
+                mCurrentShowAnimField.setAccessible(true);
+                mCurrentShowAnimField.set(icsActionBar, null);
+                //icsActionBar.getClass().getDeclaredMethod("setShowHideAnimationEnabled", boolean.class).invoke(icsActionBar, false);
+            } catch (Exception e) {
+                //....
+            }
         }
     }
 

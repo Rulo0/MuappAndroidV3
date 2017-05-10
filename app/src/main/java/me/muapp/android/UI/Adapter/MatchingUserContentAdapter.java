@@ -114,8 +114,12 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             }
         };
         handler.post(r);
+    }
 
-
+    public List<Qualification> getQualificationsList() {
+        if (userQualificationsAdapter != null) {
+            return userQualificationsAdapter.getQualifications();
+        } else return null;
     }
 
     int screenWidth;
@@ -512,7 +516,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                 param.height = LinearLayout.LayoutParams.WRAP_CONTENT;
                 param.width = LinearLayout.LayoutParams.MATCH_PARENT;
                 itemView.setVisibility(View.VISIBLE);
-                txt_profile_qualification.setText(String.format(context.getString(R.string.lbl_average_score), user.getAverage(), user.getQualificationsCount()));
+                txt_profile_qualification.setText(String.format(context.getString(R.string.lbl_average_score), String.format("%.1f", qualificationsAdapter.getAverage()), qualificationsAdapter.getItemCount()));
             } else {
                 itemView.setVisibility(View.GONE);
                 param.setMargins(0, 0, 0, 0);

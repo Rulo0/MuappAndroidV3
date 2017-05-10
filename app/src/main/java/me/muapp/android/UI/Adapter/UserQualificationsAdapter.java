@@ -31,6 +31,17 @@ public class UserQualificationsAdapter extends RecyclerView.Adapter<UserQualific
         this.mContext = context;
     }
 
+    public List<Qualification> getQualifications() {
+        return qualifications;
+    }
+
+    public float getAverage() {
+        float totalStars = 0;
+        for (Qualification qualification : qualifications)
+            totalStars = totalStars + qualification.getStars();
+        return totalStars / getItemCount();
+    }
+
     @Override
     public QualificationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View itemView = mInflater.inflate(R.layout.user_qualification_item, parent, false);
@@ -59,7 +70,7 @@ public class UserQualificationsAdapter extends RecyclerView.Adapter<UserQualific
 
         public void bind(final Qualification qualification) {
             stars_container.removeAllViews();
-            for (int i = 0; i < 5; i++) {
+            for (int i = 1; i <= 5; i++) {
                 ImageView star = new ImageView(mContext);
                 star.setImageResource(i <= qualification.getStars() ? R.drawable.ic_star_filled : R.drawable.ic_star_empty);
                 stars_container.addView(star);

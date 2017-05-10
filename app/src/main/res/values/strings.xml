@@ -182,5 +182,13 @@
 
     <string name="format_is_your_fb_friend">%s is your friend in facebook</string>
     <string name="lbl_help_your_friend">Help to be more successful by giving a score!</string>
+    <string name="lbl_report">Report</string>
+    <string name="lbl_what_did_he_do">What did he do?</string>
+
+    <string name="lbl_report_reason_photos">Inappropriate photos</string>
+    <string name="lbl_report_reason_comments">Unpleasant comments</string>
+    <string name="lbl_report_reason_fake">Fake profile</string>
+    <string name="lbl_report_reason_other">Other</string>
+
 
 </resources>

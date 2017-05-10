@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +14,9 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import me.muapp.android.Classes.API.APIService;
-import me.muapp.android.Classes.API.Handlers.UserQualificationHandler;
 import me.muapp.android.Classes.Internal.MatchingUser;
-import me.muapp.android.Classes.Internal.QualificationResult;
 import me.muapp.android.R;
+import me.muapp.android.UI.Fragment.Interface.OnUserRatedListener;
 
 /**
  * Created by rulo on 9/05/17.
@@ -31,6 +29,7 @@ public class RatingFriendDialogFragment extends DialogFragment {
     ImageButton btn_dismiss_dialog;
     MatchingUser matchingUser;
     static final String ARG_MATCHING_USER = "ARG_MATCHING_USER";
+    OnUserRatedListener onUserRatedListener;
 
     public RatingFriendDialogFragment() {
         // Required empty public constructor
@@ -42,6 +41,10 @@ public class RatingFriendDialogFragment extends DialogFragment {
         if (getArguments() != null) {
             matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);
         }
+    }
+
+    public void setOnUserRatedListener(OnUserRatedListener onUserRatedListener) {
+        this.onUserRatedListener = onUserRatedListener;
     }
 
     public static RatingFriendDialogFragment newInstance(MatchingUser user) {
@@ -76,26 +79,22 @@ public class RatingFriendDialogFragment extends DialogFragment {
         btn_dismiss_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDialog().dismiss();
+                dismissDialog();
             }
         });
-
         txt_rating_action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new APIService(getContext()).setUserQualification(matchingUser.getId(), (int) rating_user.getRating(), new UserQualificationHandler() {
-                    @Override
-                    public void onSuccess(int responseCode, QualificationResult result) {
-                        Log.wtf("Qualificated", result.toString());
-                    }
-
-                    @Override
-                    public void onFailure(boolean isSuccessful, String responseString) {
-                        Log.wtf("Qualificated", responseString);
-                    }
-                });
+                if (onUserRatedListener != null)
+                    onUserRatedListener.onRate((int) rating_user.getRating());
+                new APIService(getContext()).setUserQualification(matchingUser.getId(), (int) rating_user.getRating(), null);
+                dismissDialog();
             }
         });
+    }
+
+    private void dismissDialog() {
+        getDialog().dismiss();
     }
 
     @Override
