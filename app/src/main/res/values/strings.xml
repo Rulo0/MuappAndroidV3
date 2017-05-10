@@ -189,6 +189,8 @@
     <string name="lbl_report_reason_comments">Unpleasant comments</string>
     <string name="lbl_report_reason_fake">Fake profile</string>
     <string name="lbl_report_reason_other">Other</string>
+    <string name="lbl_invite">Invite your friends</string>
+    <string name="lbl_share_app">Comparte la aplicación</string>
 
 
 </resources>
