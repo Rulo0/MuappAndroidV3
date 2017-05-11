@@ -2,12 +2,15 @@ package me.muapp.android.UI.Fragment;
 
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
@@ -24,7 +27,7 @@ import me.muapp.android.UI.Fragment.Interface.OnUserRatedListener;
 
 public class RatingFriendDialogFragment extends DialogFragment {
     TextView txt_rating_title;
-    TextView txt_rating_action;
+    Button btn_rating_dialog;
     RatingBar rating_user;
     ImageButton btn_dismiss_dialog;
     MatchingUser matchingUser;
@@ -61,7 +64,7 @@ public class RatingFriendDialogFragment extends DialogFragment {
         txt_rating_title = (TextView) v.findViewById(R.id.txt_rating_title);
         rating_user = (RatingBar) v.findViewById(R.id.rating_user);
         btn_dismiss_dialog = (ImageButton) v.findViewById(R.id.btn_dismiss_dialog);
-        txt_rating_action = (TextView) v.findViewById(R.id.txt_rating_action);
+        btn_rating_dialog = (Button) v.findViewById(R.id.btn_rating_dialog);
         return v;
     }
 
@@ -74,15 +77,20 @@ public class RatingFriendDialogFragment extends DialogFragment {
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 if (rating == 0)
                     ratingBar.setRating(1);
+                if (!btn_rating_dialog.isEnabled())
+                    btn_rating_dialog.setEnabled(true);
+                btn_rating_dialog.getBackground().clearColorFilter();
             }
         });
+        btn_rating_dialog.setEnabled(false);
+        btn_rating_dialog.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.color_inactive_tab), PorterDuff.Mode.MULTIPLY);
         btn_dismiss_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismissDialog();
             }
         });
-        txt_rating_action.setOnClickListener(new View.OnClickListener() {
+        btn_rating_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (onUserRatedListener != null)

@@ -21,12 +21,15 @@ import me.muapp.android.R;
 
 public class LocationCheckerActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int REQUEST_LOCATION = 48;
-    boolean shouldSendToSettings = false;
+    boolean shouldSendToSettings;
+    boolean shouldRedirectToConfirm = false;
+    public static String SHOULD_REDIRECT_TO_CONFIRM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_checker);
+        shouldRedirectToConfirm = getIntent().getBooleanExtra(SHOULD_REDIRECT_TO_CONFIRM, false);
         findViewById(R.id.btn_request_location).setOnClickListener(this);
     }
 
@@ -34,12 +37,12 @@ public class LocationCheckerActivity extends AppCompatActivity implements View.O
     protected void onStart() {
         super.onStart();
         if (Utils.hasLocationPermissions(this)) {
-            reditectToMain();
+            redirectToNext();
         }
     }
 
-    private void reditectToMain() {
-        startActivity(new Intent(this, MainActivity.class));
+    private void redirectToNext() {
+        startActivity(new Intent(this, shouldRedirectToConfirm ? ConfirmUserActivity.class : MainActivity.class));
         finish();
     }
 
@@ -47,7 +50,7 @@ public class LocationCheckerActivity extends AppCompatActivity implements View.O
     public void onClick(View v) {
         if (!shouldSendToSettings) {
             if (checkAndRequestPermissions()) {
-                reditectToMain();
+                redirectToNext();
             }
         } else {
             Intent settingsIntent = new Intent();
@@ -93,7 +96,7 @@ public class LocationCheckerActivity extends AppCompatActivity implements View.O
                         }
                     }
                 }
-                reditectToMain();
+                redirectToNext();
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);

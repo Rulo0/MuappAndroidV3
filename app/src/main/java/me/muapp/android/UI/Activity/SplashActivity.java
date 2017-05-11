@@ -25,6 +25,7 @@ import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
+import static me.muapp.android.UI.Activity.LocationCheckerActivity.SHOULD_REDIRECT_TO_CONFIRM;
 
 public class SplashActivity extends BaseActivity {
     public static final String TAG = "SplashActivity";
@@ -82,6 +83,10 @@ public class SplashActivity extends BaseActivity {
                 img_kiss1.clearAnimation();
                 img_kiss2.clearAnimation();
                 Intent redirectIntent = new Intent(SplashActivity.this, target);
+                if (target == ConfirmUserActivity.class) {
+                    redirectIntent = new Intent(SplashActivity.this, LocationCheckerActivity.class);
+                    redirectIntent.putExtra(SHOULD_REDIRECT_TO_CONFIRM, true);
+                }
               /*  if (loggedUser != null) {
                     Log.wtf("ValidateLogin", loggedUser.toString());
                     if (loggedUser.getConfirmed() != null && loggedUser.getConfirmed())

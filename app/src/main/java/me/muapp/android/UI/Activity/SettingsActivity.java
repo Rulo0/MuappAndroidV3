@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
@@ -59,7 +60,10 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         chk_last_name.setOnCheckedChangeListener(this);
         chk_matches.setOnCheckedChangeListener(this);
         chk_messages.setOnCheckedChangeListener(this);
-
+        findViewById(R.id.txt_share_app).setOnClickListener(this);
+        if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female) {
+            ((TextView) findViewById(R.id.txt_share_app)).setText(getString(R.string.lbl_share_dialog_title));
+        }
         findViewById(R.id.txt_phone_validation).setOnClickListener(this);
         findViewById(R.id.txt_help).setOnClickListener(this);
         findViewById(R.id.txt_terms).setOnClickListener(this);
@@ -209,6 +213,9 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
             case R.id.txt_phone_validation:
                 phoneValidation();
                 break;
+            case R.id.txt_share_app:
+                shareApp();
+                break;
             case R.id.txt_help:
                 customTabsIntent.launchUrl(this, Uri.parse(Constants.URL.HELP));
                 break;
@@ -252,6 +259,41 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
             case R.id.btn_logout_settings:
                 exitFromApp();
                 break;
+        }
+    }
+
+    private void shareApp() {
+        if (User.Gender.getGender(loggedUser.getGender()) != User.Gender.Male) {
+            String shareBody = getString(R.string.lbl_share_app_body);
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.app_name));
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+            startActivity(Intent.createChooser(sharingIntent, getString(R.string.lbl_share_app)));
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.app_name))
+                    .setMessage(loggedUser.getCodeUser() + " " + getString(R.string.lbl_share_dialog_content_settings)).setPositiveButton(getString(R.string.lbl_share), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    String message = "";
+                    try {
+                        message = String.format(getString(R.string.lbl_use_my_code_settings), loggedUser.getCodeUser());
+                    } catch (Exception x) {
+                        message = x.getMessage();
+                        x.printStackTrace();
+                    }
+                    sharingIntent.putExtra(Intent.EXTRA_TEXT, message);
+                    startActivity(Intent.createChooser(sharingIntent, getString(R.string.lbl_share)));
+                }
+            }).setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).show();
         }
     }
 

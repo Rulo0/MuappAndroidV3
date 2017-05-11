@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import me.muapp.android.R;
 
@@ -60,20 +61,26 @@ public class AddContentDialogFragment extends BottomSheetDialogFragment implemen
 
     }
 
+    private void disableTextViews(int[] buttonIds) {
+        for (int i : buttonIds) {
+            ((TextView) getView().findViewById(i)).setTextColor(ContextCompat.getColor(getContext(), R.color.color_add_content_disabled));
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
         if (isFromManGate) {
-            btn_add_quote.setEnabled(false);
             btn_add_photo.setEnabled(false);
             btn_add_giphy.setEnabled(false);
             btn_add_spotify.setEnabled(false);
             btn_add_youtube.setEnabled(false);
-            btn_add_quote.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add_quotes_disabled));
             btn_add_photo.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add_photo_disabled));
             btn_add_giphy.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add_giphy_disabled));
             btn_add_spotify.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add_spotify_disabled));
             btn_add_youtube.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_add_youtube_disabled));
+            disableTextViews(new int[]{R.id.txt_add_content_gallery, R.id.txt_add_content_giphy, R.id.txt_add_content_music, R.id.txt_add_content_video});
+
         }
         btn_add_quote.setOnClickListener(this);
         btn_add_voice.setOnClickListener(this);

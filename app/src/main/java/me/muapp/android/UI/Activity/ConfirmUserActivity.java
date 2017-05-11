@@ -1,27 +1,56 @@
 package me.muapp.android.UI.Activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.LoginHelper;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
+import me.muapp.android.ResultReceivers.AddressResultReceiver;
+import me.muapp.android.Services.FetchAddressIntentService;
 
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
+import static me.muapp.android.UI.Activity.LocationCheckerActivity.SHOULD_REDIRECT_TO_CONFIRM;
 
 public class ConfirmUserActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "ConfirmUserActivity";
@@ -29,7 +58,15 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
     public static final String CONFIRMED_GENDER = "CONFIRMED_GENDER";
     TextView txt_gender, txt_age;
     Button btn_correct_info, btn_sync;
-
+    private static final int REQUEST_CHECK_SETTINGS = 791;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mCurrentLocation;
+    private LocationRequest mLocationRequest;
+    private LocationListener mLocationListener;
+    private String mLastUpdateTime;
+    private AddressResultReceiver mResultReceiver;
+    private static final String LOCATION_KEY = "LOCATION";
+    private static final String LAST_UPDATED_TIME_STRING_KEY = "LAST_TIME_UPDATED";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +92,138 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
             saveUser(loggedUser);
             // }
         }
+        if (Utils.hasLocationPermissions(this)) {
+            if (mGoogleApiClient == null) {
+                mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                            @Override
+                            public void onConnected(@Nullable Bundle bundle) {
+                                if (Utils.hasLocationPermissions(ConfirmUserActivity.this)) {
+                                    getLocation();
+                                } else {
+                                    requestPermissions();
+                                }
+                            }
+
+                            @Override
+                            public void onConnectionSuspended(int i) {
+
+                            }
+                        })
+                        .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                            @Override
+                            public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                            }
+                        })
+                        .addApi(LocationServices.API)
+                        .build();
+            }
+            updateValuesFromBundle(savedInstanceState);
+        }
+    }
+
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            // Update the value of mCurrentLocation from the Bundle and update the
+            // UI to show the correct latitude and longitude.
+            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
+                // Since LOCATION_KEY was found in the Bundle, we can be sure that
+                // mCurrentLocationis not null.
+                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
+            }
+
+            // Update the value of mLastUpdateTime from the Bundle and update the UI.
+            if (savedInstanceState.keySet().contains(LAST_UPDATED_TIME_STRING_KEY)) {
+                mLastUpdateTime = savedInstanceState.getString(
+                        LAST_UPDATED_TIME_STRING_KEY);
+            }
+        }
+    }
+
+    private void getLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+           /* Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            double lat = lastLocation.getLatitude(), lon = lastLocation.getLongitude();
+            Log.v(TAG, lat + " - " + lon);*/
+            createLocationRequest();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Nearby");
+            mResultReceiver = new AddressResultReceiver(new android.os.Handler());
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    startIntentService(mResultReceiver, location);
+                    mCurrentLocation = location;
+                    new PreferenceHelper(ConfirmUserActivity.this).putLocation(location);
+                    mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+                    Log.wtf(TAG, location.getLatitude() + " - " + location.getLongitude() + " @ " + mLastUpdateTime);
+                }
+            });
+        } else {
+            requestPermissions();
+        }
+    }
+
+    protected void startIntentService(AddressResultReceiver rec, Location location) {
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(Constants.Location.RECEIVER, rec);
+        intent.putExtra(Constants.Location.LOCATION_DATA_EXTRA, location);
+        Log.v(TAG, location.toString());
+        startService(intent);
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5 * 60 * 1000);
+        mLocationRequest.setFastestInterval(5 * 60 * 500);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
+                        builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                final Status status = locationSettingsResult.getStatus();
+                final LocationSettingsStates states = locationSettingsResult.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can
+                        // initialize location requests here.
+                        break;
+
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied, but this can be fixed
+                        // by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    ConfirmUserActivity.this,
+                                    REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way
+                        // to fix the settings so we won't show the dialog.
+                        break;
+                }
+            }
+        });
+    }
+
+    private void requestPermissions() {
+        Intent redirectIntent = new Intent(this, LocationCheckerActivity.class);
+        redirectIntent.putExtra(SHOULD_REDIRECT_TO_CONFIRM, true);
+        startActivity(redirectIntent);
+        finish();
     }
 
     private void validateUser() {
@@ -101,7 +270,7 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
 
     private void confirmUser() {
         showProgressDialog();
-        new APIService(this).confirmUser(loggedUser, new UserInfoHandler() {
+        new APIService(this).confirmUser(loggedUser, new PreferenceHelper(this).getLocation(), new UserInfoHandler() {
             @Override
             public void onSuccess(int responseCode, String userResponse) {
                 try {
@@ -199,5 +368,31 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
             }
         }
         validateUser();
+    }
+
+
+    protected void stopLocationUpdates() {
+        if (mGoogleApiClient.isConnected() && mLocationListener != null)
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, mLocationListener);
+    }
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected()) {
+            getLocation();
+        }
     }
 }

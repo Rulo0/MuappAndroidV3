@@ -242,8 +242,16 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
 
     @Override
     public void onAllUsersLoaded() {
-        replaceFragment(matchingFragmentList.get(0));
-        showControls(true);
+        Boolean hasException = true;
+        do {
+            try {
+                replaceFragment(matchingFragmentList.get(0));
+                showControls(true);
+                hasException = false;
+            } catch (Exception x) {
+
+            }
+        } while (hasException);
     }
 
     @Override

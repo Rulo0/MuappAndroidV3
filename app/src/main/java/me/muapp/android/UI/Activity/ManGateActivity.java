@@ -139,6 +139,9 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
             case R.id.btn_add_voice:
                 startActivity(new Intent(ManGateActivity.this, AddVoiceNoteActivity.class));
                 break;
+            case R.id.btn_add_quote:
+                startActivity(new Intent(ManGateActivity.this, AddQuoteActivity.class));
+                break;
             default:
                 break;
         }

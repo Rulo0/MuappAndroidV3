@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    android:background="@android:color/black">
 
     <android.support.v7.widget.CardView
         android:id="@+id/container_rating_dialog"
@@ -13,7 +13,6 @@
         android:layout_marginRight="24dp"
         android:layout_marginTop="50dp"
         android:elevation="5dp"
-        app:cardCornerRadius="22dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -62,41 +61,29 @@
                 android:numStars="5"
                 android:progressBackgroundTint="@color/color_score_inactive"
                 android:progressTint="@color/color_score_active"
-                android:rating="5"
+                android:rating="0"
                 android:secondaryProgressTint="@color/color_score_active"
                 android:stepSize="1"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_rating_subtitle" />
 
-            <LinearLayout
-                android:id="@+id/btn_dialog_button"
+
+            <Button
+                android:id="@+id/btn_rating_dialog"
+                style="@style/main_button_layout_style"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginRight="0dp"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:background="@color/colorAccent"
-                android:orientation="vertical"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rating_user"
-                android:layout_marginLeft="0dp"
-                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/lbl_rate"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="12dp">
-
-                <TextView
-                    android:id="@+id/txt_rating_action"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center"
-                    android:text="VALORAR"
-                    android:textAllCaps="true"
-                    android:textColor="@android:color/white" />
-
-            </LinearLayout>
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rating_user" />
         </android.support.constraint.ConstraintLayout>
 
 
@@ -170,7 +157,7 @@
         app:layout_constraintRight_toRightOf="@+id/imb_dialog_base_white"
         app:layout_constraintTop_toTopOf="@+id/imb_dialog_base_white"
         app:layout_constraintVertical_bias="0.571"
-        app:srcCompat="@drawable/ic_star_filled" />
+        app:srcCompat="@drawable/ic_star_filled_white" />
 
     <ImageButton
         android:id="@+id/btn_dismiss_dialog"

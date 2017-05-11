@@ -599,7 +599,7 @@ public class User implements Parcelable {
     }
 
     public String getFullName() {
-    return String.format("%s %s",getFirstName(),getLastName());
+        return String.format("%s %s", getFirstName(), getLastName().equals("__hiddenField__") ? "" : getLastName());
     }
 
     public int describeContents() {

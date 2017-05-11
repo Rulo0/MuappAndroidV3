@@ -6,8 +6,6 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -67,6 +65,7 @@ import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
+import me.muapp.android.ResultReceivers.AddressResultReceiver;
 import me.muapp.android.Services.FetchAddressIntentService;
 import me.muapp.android.UI.Fragment.AddContentDialogFragment;
 import me.muapp.android.UI.Fragment.ChatFragment;
@@ -483,28 +482,6 @@ public class MainActivity extends BaseActivity implements
             });
         } else {
             requestPermissions();
-        }
-    }
-
-
-    class AddressResultReceiver extends ResultReceiver {
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            // Display the address string
-            // or an error message sent from the intent service.
-            String mAddressOutput = resultData.getString(Constants.Location.RESULT_DATA_KEY);
-            Log.v(TAG, mAddressOutput);
-
-            // Show a toast message if an address was found.
-            if (resultCode == Constants.Location.SUCCESS_RESULT) {
-                Log.v(TAG, "Address Found!");
-            }
-
         }
     }
 

@@ -57,17 +57,18 @@
     <string name="txt_man_gate_title">NOW GIRLS WILL VOTE IF YOU CAN GET IN… GOOD LUCK!</string>
     <string name="txt_man_gate_youre_in">CONGRATULATIONS!! YOU\'RE IN.</string>
     <string name="lbl_man_gate_speed_up">Speed up your entrance.</string>
-    <string name="lbl_man_have_code"><u>¿Do you have a code?</u></string>
+    <string name="lbl_man_have_code"><u>Do you have a code?</u></string>
     <string name="lbl_invite_your_friends">Enter muapp getting 100%.\nGet more percentage inviting friends.</string>
     <string name="lbl_insert_code">Insert an invitation code</string>
     <string name="lbl_invalid_code">Invalid code</string>
     <string name="lbl_invalid_code_description">The code %s is invalid. Try again with a different code or verify that you have written it correctly.</string>
     <string name="lbl_use_my_code">Use my code</string>
     <string name="lbl_use_code_register">and get %d%% progress in your entrance.</string>
+    <string name="lbl_use_my_code_settings" formatted="false">Use my code %s in Muapp and earn 40%% in the input process. Start meeting people like you! http://app.muapp.me/download</string>
     <string name="lbl_share">Share</string>
     <string name="lbl_share_dialog_title">Share your personal code</string>
     <string name="lbl_share_dialog_content" formatted="false">Invite %d more people and get %d%% more with each code.</string>
-
+    <string name="lbl_share_dialog_content_settings">Share your code with your friends and help them get 40% more of the votes they need</string>
     <string name="lbl_click_on_start">Click on Start and enjoy your Muapp experience.</string>
     <string name="lbl_start">Start</string>
     <string name="lbl_save">Save</string>
@@ -82,11 +83,10 @@
 
     <!--Man gate info-->
     <string name="lbl_info_man_gate_title">Thank you for registering in Muapp.</string>
-    <string name="lbl_info_man_gate_content">Now girls will vote if you can get in. You need to receive a minimum number of "MUAPPS" to be accepted, this way you\'ll know how much you are being liked before you enter. you enter. Plenty of girls are waiting for you.\n\nIn order to be accepted faster you can change your photo. Some recommendations to be more successful:\n\n
+    <string name="lbl_info_man_gate_content">Now girls will vote if you can get in. You need to receive a minimum number of "MUAPPS" to be accepted, this way you\'ll know how much you are being liked before you enter. Plenty of girls are waiting for you.\n\nIn order to be accepted faster you can change your photo. Some recommendations to be more successful:\n\n
         • Select a recent photo that clearly shows your face.\n
         • Avoid photos with other people.\n
-        • Choose photos that show your hobbies or interests.\n
-        • Avoid photos with other people.\n\nYou can also invite your Friends and get 20% of the votes needed to enter.\n\nGood luck.
+        • Choose photos that show your hobbies or interests.\n\nYou can also invite your Friends and get 20% of the votes needed to enter.\n\nGood luck.
     </string>
     <string name="lbl_info_man_gate_remove_description">If you do not want to continue with the admission process you can delete your account and we will eliminate your data.</string>
     <string name="lbl_delete_account">Delete account</string>
@@ -190,7 +190,14 @@
     <string name="lbl_report_reason_fake">Fake profile</string>
     <string name="lbl_report_reason_other">Other</string>
     <string name="lbl_invite">Invite your friends</string>
-    <string name="lbl_share_app">Comparte la aplicación</string>
-
+    <string name="lbl_share_app">Share app</string>
+    <string name="lbl_share_app_body">I recommend you try Muapp! New app to meet people where girls play with advantage... http://www.muapp.me/download</string>
+    <string name="lbl_add_about_me">About me</string>
+    <string name="lbl_add_voice_note">Voice note</string>
+    <string name="lbl_add_gallery">Gallery</string>
+    <string name="lbl_add_giphy">Gifs</string>
+    <string name="lbl_add_music">Music</string>
+    <string name="lbl_add_video">Video</string>
+    <string name="lbl_rate">Rate</string>
 
 </resources>

@@ -28,6 +28,7 @@ import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
+import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
@@ -49,6 +50,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     TextView toolbar_matching_name;
     ImageButton btn_matching_rate;
     ImageButton btn_matching_report;
+    Boolean imFemale;
 
     public MatchingUser getMatchingUser() {
         return matchingUser;
@@ -80,7 +82,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         if (getArguments() != null) {
             matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);
         }
-
+        imFemale = (User.Gender.getGender(new UserHelper(getContext()).getLoggedUser().getGender()) == User.Gender.Female);
         adapter = new MatchingUserContentAdapter(getContext(), matchingUser);
         adapter.setShowMenuButton(false);
         adapter.setFragmentManager(getChildFragmentManager());
@@ -158,114 +160,115 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         if (matchingUser.getFakeAccount())
             toolbar_matching_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_verified_profile, 0, 0, 0);
         recycler_user_content.setAdapter(adapter);
-        if (matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()) {
-            btn_matching_rate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    RatingFriendDialogFragment ratingFriendDialogFragment = RatingFriendDialogFragment.newInstance(matchingUser);
-                    ratingFriendDialogFragment.setOnUserRatedListener(MatchingUserProfileFragment.this);
-                    ratingFriendDialogFragment.show(getChildFragmentManager(), "");
-                }
-            });
-        } else {
-            btn_matching_rate.setVisibility(View.GONE);
-        }
-        btn_matching_report.setOnClickListener(new View.OnClickListener() {
+       /* if (imFemale && matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()) {
+       */
+        btn_matching_rate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ReportUserDialogFragment reportUserDialogFragment = ReportUserDialogFragment.newInstance(matchingUser);
-                reportUserDialogFragment.setOnUserReportedListener(MatchingUserProfileFragment.this);
-                reportUserDialogFragment.show(getChildFragmentManager(), "");
+                RatingFriendDialogFragment ratingFriendDialogFragment = RatingFriendDialogFragment.newInstance(matchingUser);
+                ratingFriendDialogFragment.setOnUserRatedListener(MatchingUserProfileFragment.this);
+                ratingFriendDialogFragment.show(getChildFragmentManager(), "");
+                         }
+             });
+       /*  } else {
+            btn_matching_rate.setVisibility(View.GONE);
+        }*/
+                btn_matching_report.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ReportUserDialogFragment reportUserDialogFragment = ReportUserDialogFragment.newInstance(matchingUser);
+                        reportUserDialogFragment.setOnUserReportedListener(MatchingUserProfileFragment.this);
+                        reportUserDialogFragment.show(getChildFragmentManager(), "");
+                    }
+                });
             }
-        });
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        adapter.removeAllDescriptions();
-        adapter.setUser(matchingUser);
-        userReference.addChildEventListener(this);
-    }
+            @Override
+            public void onStart() {
+                super.onStart();
+                adapter.removeAllDescriptions();
+                adapter.setUser(matchingUser);
+                userReference.addChildEventListener(this);
+            }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        adapter.stopMediaPlayer();
-        userReference.removeEventListener(this);
-    }
+            @Override
+            public void onStop() {
+                super.onStop();
+                adapter.stopMediaPlayer();
+                userReference.removeEventListener(this);
+            }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        adapter.releaseMediaPlayer();
-    }
+            @Override
+            public void onDestroy() {
+                super.onDestroy();
+                adapter.releaseMediaPlayer();
+            }
 
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        this.onMatchingInteractionListener = null;
-    }
+            @Override
+            public void onDetach() {
+                super.onDetach();
+                this.onMatchingInteractionListener = null;
+            }
 
-    @Override
-    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-        UserContent c = dataSnapshot.getValue(UserContent.class);
-        if (c != null) {
-            c.setKey(dataSnapshot.getKey());
-            adapter.addContent(c);
-            ((LinearLayoutManager) recycler_user_content.getLayoutManager()).scrollToPositionWithOffset(0, 0);
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                UserContent c = dataSnapshot.getValue(UserContent.class);
+                if (c != null) {
+                    c.setKey(dataSnapshot.getKey());
+                    adapter.addContent(c);
+                    ((LinearLayoutManager) recycler_user_content.getLayoutManager()).scrollToPositionWithOffset(0, 0);
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                UserContent c = dataSnapshot.getValue(UserContent.class);
+                if (c != null) {
+                    c.setKey(dataSnapshot.getKey());
+                    adapter.removeContent(dataSnapshot.getKey());
+                    adapter.addContent(c);
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                UserContent c = dataSnapshot.getValue(UserContent.class);
+                if (c != null) {
+                    adapter.removeContent(dataSnapshot.getKey());
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                UserContent c = dataSnapshot.getValue(UserContent.class);
+                if (c != null) {
+                    c.setKey(dataSnapshot.getKey());
+                    adapter.addContent(c);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+            @Override
+            public void onRate(int rating) {
+                List<Qualification> qualifications = adapter.getQualificationsList();
+                if (qualifications == null) {
+                    qualifications = new ArrayList<>();
+                }
+                Qualification q = new Qualification();
+                q.setUserName(new UserHelper(getContext()).getLoggedUser().getFullName());
+                q.setStars(rating);
+                qualifications.add(0, q);
+                adapter.setQualifications(qualifications);
+                btn_matching_rate.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onReport() {
+                onMatchingInteractionListener.onReportedUser();
+            }
         }
-    }
-
-    @Override
-    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        UserContent c = dataSnapshot.getValue(UserContent.class);
-        if (c != null) {
-            c.setKey(dataSnapshot.getKey());
-            adapter.removeContent(dataSnapshot.getKey());
-            adapter.addContent(c);
-        }
-    }
-
-    @Override
-    public void onChildRemoved(DataSnapshot dataSnapshot) {
-        UserContent c = dataSnapshot.getValue(UserContent.class);
-        if (c != null) {
-            adapter.removeContent(dataSnapshot.getKey());
-        }
-    }
-
-    @Override
-    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-        UserContent c = dataSnapshot.getValue(UserContent.class);
-        if (c != null) {
-            c.setKey(dataSnapshot.getKey());
-            adapter.addContent(c);
-        }
-    }
-
-    @Override
-    public void onCancelled(DatabaseError databaseError) {
-
-    }
-
-    @Override
-    public void onRate(int rating) {
-        List<Qualification> qualifications = adapter.getQualificationsList();
-        if (qualifications == null) {
-            qualifications = new ArrayList<>();
-        }
-        Qualification q = new Qualification();
-        q.setUserName(new UserHelper(getContext()).getLoggedUser().getFullName());
-        q.setStars(rating);
-        qualifications.add(0, q);
-        adapter.setQualifications(qualifications);
-        btn_matching_rate.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onReport() {
-        onMatchingInteractionListener.onReportedUser();
-    }
-}

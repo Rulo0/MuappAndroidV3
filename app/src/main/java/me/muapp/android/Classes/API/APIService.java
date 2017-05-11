@@ -113,7 +113,7 @@ public class APIService {
         }
     }
 
-    public void confirmUser(User user, final UserInfoHandler handler) {
+    public void confirmUser(User user, Location location, final UserInfoHandler handler) {
         String url = BASE_URL + "user";
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject sendObject = new JSONObject();
@@ -123,6 +123,10 @@ public class APIService {
             jsonUser.put("birthday", user.getBirthday());
             jsonUser.put("gender", user.getGender());
             jsonUser.put("android", true);
+            if (location.getLatitude() != 0 && location.getLongitude() != 0) {
+                jsonUser.put("latitude", String.valueOf(location.getLatitude()));
+                jsonUser.put("longitude", String.valueOf(location.getLongitude()));
+            }
             sendObject.put("user", jsonUser);
         } catch (Exception x) {
         }

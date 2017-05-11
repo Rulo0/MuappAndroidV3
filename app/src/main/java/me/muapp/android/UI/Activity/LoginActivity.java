@@ -40,6 +40,7 @@ import me.muapp.android.R;
 import static me.muapp.android.Classes.Util.Utils.serializeUser;
 import static me.muapp.android.UI.Activity.ErrorActivity.ERROR_EXTRA;
 import static me.muapp.android.UI.Activity.ErrorActivity.ERROR_SHOW_EMAIL;
+import static me.muapp.android.UI.Activity.LocationCheckerActivity.SHOULD_REDIRECT_TO_CONFIRM;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
     CallbackManager callbackManager;
@@ -225,7 +226,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         } else {
             //Usuario sin confirmar datos
-            startActivity(new Intent(this, ConfirmUserActivity.class));
+            //startActivity(new Intent(this, ConfirmUserActivity.class));
+            Intent redirectIntent = new Intent(this, LocationCheckerActivity.class);
+            redirectIntent.putExtra(SHOULD_REDIRECT_TO_CONFIRM, true);
+            startActivity(redirectIntent);
         }
         finish();
 
