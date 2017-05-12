@@ -17,8 +17,9 @@
             android:layout_gravity="center"
             android:adjustViewBounds="true"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_content_play" />
+            app:srcCompat="@drawable/ic_content_play" />
 
         <RelativeLayout
             android:layout_width="match_parent"

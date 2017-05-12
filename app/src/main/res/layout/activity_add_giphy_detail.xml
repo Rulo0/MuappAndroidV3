@@ -15,7 +15,7 @@
         android:layout_marginTop="14dp"
         android:gravity="center"
         android:text="@string/lbl_write_comment"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
         android:textColor="@color/color_muapp_dark"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"

@@ -20,7 +20,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -64,6 +66,8 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
     ImageButton voicenote_drop;
     MediaPlayer mediaPlayer;
     EditText et_voicenote_comment;
+    TextView txt_hold_to_record;
+    LinearLayout container_write_comment_voicenote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +77,8 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
         mediaPlayer = new MediaPlayer();
         imb_record_voice = (ImageButton) findViewById(R.id.imb_record_voice);
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        txt_hold_to_record = (TextView) findViewById(R.id.txt_hold_to_record);
+        container_write_comment_voicenote = (LinearLayout) findViewById(R.id.container_write_comment_voicenote);
         et_voicenote_comment = (EditText) findViewById(R.id.et_voicenote_comment);
         mCircleProgressView = (CircleProgressView) findViewById(R.id.circle_progress_view);
         voice_record_button_container = (RelativeLayout) findViewById(R.id.voice_record_button_container);
@@ -152,6 +158,11 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
         }
     }
 
+    private void showCommentLayout(Boolean showComment) {
+        container_write_comment_voicenote.setVisibility(showComment ? View.VISIBLE : View.GONE);
+        txt_hold_to_record.setVisibility(showComment ? View.GONE : View.VISIBLE);
+    }
+
     private void stopRecording() {
         if (voiceCountdown != null)
             voiceCountdown.cancel();
@@ -164,6 +175,7 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                 recorder = null;
                 v.vibrate(100);
                 voice_record_button_container.setVisibility(View.VISIBLE);
+                showCommentLayout(true);
                 voicenote_play.setOnClickListener(getButtonListener());
                 voicenote_drop.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -173,6 +185,7 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                             thisFile = null;
                         }
                         voice_record_button_container.setVisibility(View.GONE);
+                        showCommentLayout(false);
                     }
                 });
 

@@ -361,6 +361,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             if (!TextUtils.isEmpty(itemContent.getVideoThumbStorage())) {
                 FirebaseStorage.getInstance().getReference().child(itemContent.getVideoThumbStorage()).delete();
             }
+            Toast.makeText(context, context.getString(R.string.lbl_content_removed), Toast.LENGTH_SHORT).show();
         }
     }
 

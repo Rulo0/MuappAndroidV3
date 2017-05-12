@@ -3,11 +3,16 @@ package me.muapp.android.UI.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +21,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.appyvet.rangebar.RangeBar;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
@@ -43,6 +49,10 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     CheckBox chk_studies, chk_job, chk_last_name, chk_matches, chk_messages;
     LinearLayout phone_verification_container;
     UserSettings userSettings, mainUserSetting;
+    RangeBar distance_seekbar, age_seekbar;
+    TextView txt_settings_distance_value;
+    TextView txt_settings_age_value;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +65,10 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         chk_last_name = (CheckBox) findViewById(R.id.chk_last_name);
         chk_matches = (CheckBox) findViewById(R.id.chk_matches);
         chk_messages = (CheckBox) findViewById(R.id.chk_messages);
+        age_seekbar = (RangeBar) findViewById(R.id.age_seekbar);
+        distance_seekbar = (RangeBar) findViewById(R.id.distance_seekbar);
+        txt_settings_distance_value = (TextView) findViewById(R.id.txt_settings_distance_value);
+        txt_settings_age_value = (TextView) findViewById(R.id.txt_settings_age_value);
         chk_studies.setOnCheckedChangeListener(this);
         chk_job.setOnCheckedChangeListener(this);
         chk_last_name.setOnCheckedChangeListener(this);
@@ -83,6 +97,19 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
             x.printStackTrace();
         }
         Log.wtf(TAG, "Initial " + mainUserSetting.toString());
+        distance_seekbar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
+            @Override
+            public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
+                // txt_settings_distance_value.setText((Integer.parseInt(rightPinValue) == 500 ? rightPinValue : rightPinValue + "+") + " km");
+            }
+        });
+
+        age_seekbar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
+            @Override
+            public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
+                //  txt_settings_age_value.setText(leftPinValue + " / " + (Integer.parseInt(rightPinValue) == 55 ? rightPinValue + "+" : rightPinValue) + " años");
+            }
+        });
     }
 
     @Override
@@ -92,6 +119,9 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void fillData() {
+        age_seekbar.setRangePinsByValue(loggedUser.getAgeRange().get1(), loggedUser.getAgeRange().get2());
+        distance_seekbar.setSeekPinByValue(10);
+
         if (loggedUser.getFakeAccount()) {
             phone_verification_container.setVisibility(View.GONE);
         }
@@ -263,7 +293,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void shareApp() {
-        if (User.Gender.getGender(loggedUser.getGender()) != User.Gender.Male) {
+        if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Male) {
             String shareBody = getString(R.string.lbl_share_app_body);
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
@@ -271,24 +301,30 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
             sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
             startActivity(Intent.createChooser(sharingIntent, getString(R.string.lbl_share_app)));
         } else {
+            final SpannableString s = new SpannableString(loggedUser.getCodeUser() + "\n\n" + getString(R.string.lbl_share_dialog_content_settings));
+            StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
+            s.setSpan(boldSpan, 0, loggedUser.getCodeUser().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            s.setSpan(new RelativeSizeSpan(1.6f), 0, loggedUser.getCodeUser().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             new AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.app_name))
-                    .setMessage(loggedUser.getCodeUser() + " " + getString(R.string.lbl_share_dialog_content_settings)).setPositiveButton(getString(R.string.lbl_share), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-                    sharingIntent.setType("text/plain");
-                    String message = "";
-                    try {
-                        message = String.format(getString(R.string.lbl_use_my_code_settings), loggedUser.getCodeUser());
-                    } catch (Exception x) {
-                        message = x.getMessage();
-                        x.printStackTrace();
-                    }
-                    sharingIntent.putExtra(Intent.EXTRA_TEXT, message);
-                    startActivity(Intent.createChooser(sharingIntent, getString(R.string.lbl_share)));
-                }
-            }).setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                    .setTitle(getString(R.string.lbl_send_your_personal_code))
+                    //.setMessage(loggedUser.getCodeUser() + " " + getString(R.string.lbl_share_dialog_content_settings))
+                    .setMessage(s)
+                    .setPositiveButton(getString(R.string.lbl_share), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                            sharingIntent.setType("text/plain");
+                            String message = "";
+                            try {
+                                message = String.format(getString(R.string.lbl_use_my_code_settings), loggedUser.getCodeUser());
+                            } catch (Exception x) {
+                                message = x.getMessage();
+                                x.printStackTrace();
+                            }
+                            sharingIntent.putExtra(Intent.EXTRA_TEXT, message);
+                            startActivity(Intent.createChooser(sharingIntent, getString(R.string.lbl_share)));
+                        }
+                    }).setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();

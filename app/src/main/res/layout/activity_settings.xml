@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -61,6 +62,134 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:text="@string/lbl_share_app"
             android:textColor="@color/color_muapp_dark" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:background="@color/color_muapp_divider"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="@string/lbl_settings_what_see"
+            android:textColor="@color/color_muapp_dark" />
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_settings_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/lbl_settings_distance"
+                android:textColor="@color/color_muapp_dark"
+                android:textSize="12dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txt_settings_distance_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                android:text="5 km"
+                android:textColor="@color/color_muapp_dark"
+                android:textSize="12dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.appyvet.rangebar.RangeBar
+                android:id="@+id/distance_seekbar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginTop="0dp"
+                android:layout_weight="1"
+                app:connectingLineColor="@color/colorAccent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_settings_distance"
+                app:pinColor="@color/color_muapp_divider"
+                app:pinRadius="0dp"
+                app:rangeBar="false"
+                app:rangeBarColor="@color/color_muapp_divider"
+                app:selectorColor="@color/colorAccent"
+                app:selectorSize="8dp"
+                app:tickEnd="500"
+                app:tickHeight="0dp"
+                app:tickInterval="1"
+                app:tickStart="1" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_muapp_divider"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/distance_seekbar" />
+
+            <TextView
+                android:id="@+id/txt_settings_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/lbl_settings_age"
+                android:textColor="@color/color_muapp_dark"
+                android:textSize="12dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view" />
+
+            <TextView
+                android:id="@+id/txt_settings_age_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                android:text="22 - 30 años"
+                android:textColor="@color/color_muapp_dark"
+                android:textSize="12dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view" />
+
+            <com.appyvet.rangebar.RangeBar
+                android:id="@+id/age_seekbar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginTop="0dp"
+                android:layout_weight="1"
+                app:connectingLineColor="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_settings_age"
+                app:pinColor="@color/color_muapp_divider"
+                app:pinRadius="0dp"
+                app:rangeBarColor="@color/color_muapp_divider"
+                app:selectorColor="@color/colorAccent"
+                app:selectorSize="8dp"
+                app:tickEnd="55"
+                app:tickHeight="0dp"
+                app:tickInterval="1"
+                app:tickStart="18" />
+
+
+        </android.support.constraint.ConstraintLayout>
 
         <TextView
             android:layout_width="match_parent"

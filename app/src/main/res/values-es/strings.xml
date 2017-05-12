@@ -40,7 +40,7 @@
     <string name="lbl_age">Edad</string>
     <string name="lbl_and">y</string>
     <string name="lbl_agree">Al continuar, aceptas nuestros</string>
-    <string name="lbl_average_score">Puntuación media</string>
+    <string name="lbl_average_score" formatted="false">Puntuación media %s/%d</string>
     <string name="lbl_cant_change_info">NO podrás cambiarlo. Si no es correcto, actualiza tus datos en Facebook y haz clic en Sincronizar</string>
     <string name="lbl_click_on_start">Haz clic en Inicio y disfruta de la experiencia Muapp.</string>
     <string name="lbl_confirm_gender">Selecciona tu género</string>
@@ -158,4 +158,10 @@
     <string name="lbl_add_giphy">Gifs</string>
     <string name="lbl_add_gallery">Galería</string>
     <string name="lbl_rate">Rate</string>
+    <string name="lbl_hold_to_record">Mantén presionado el microfono para grabar una nota de voz.</string>
+    <string name="lbl_content_removed">Contenido eliminado con exito</string>
+    <string name="lbl_send_your_personal_code">Envía tu codigo personal</string>
+    <string name="lbl_settings_what_see">¿A quién quieres ver?</string>
+    <string name="lbl_settings_distance">Distancia</string>
+    <string name="lbl_settings_age">Edad</string>
 </resources>

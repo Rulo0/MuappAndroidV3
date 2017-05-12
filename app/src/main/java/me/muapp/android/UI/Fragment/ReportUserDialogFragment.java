@@ -2,7 +2,6 @@ package me.muapp.android.UI.Fragment;
 
 
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -79,7 +78,6 @@ public class ReportUserDialogFragment extends DialogFragment implements View.OnC
                 getContext().getString(R.string.lbl_report_reason_other)
         };
         btn_report_user.setEnabled(false);
-        btn_report_user.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.color_inactive_tab), PorterDuff.Mode.MULTIPLY);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                 R.layout.report_item_layout, R.id.txt_report_reason, values);
         list_report_reasons.setAdapter(adapter);
@@ -94,7 +92,6 @@ public class ReportUserDialogFragment extends DialogFragment implements View.OnC
                 }
                 if (!btn_report_user.isEnabled()) {
                     btn_report_user.setEnabled(true);
-                    btn_report_user.getBackground().clearColorFilter();
                 }
             }
         });
@@ -107,7 +104,7 @@ public class ReportUserDialogFragment extends DialogFragment implements View.OnC
     @Override
     public void onStart() {
         super.onStart();
-        getDialog().getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        getDialog().getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getDialog().setCancelable(false);
     }

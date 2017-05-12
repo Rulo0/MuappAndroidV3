@@ -199,5 +199,11 @@
     <string name="lbl_add_music">Music</string>
     <string name="lbl_add_video">Video</string>
     <string name="lbl_rate">Rate</string>
+    <string name="lbl_hold_to_record">Press and hold the microphone to record a voice note.</string>
+    <string name="lbl_content_removed">Content removed successfully</string>
+    <string name="lbl_send_your_personal_code">Send your personal code</string>
+    <string name="lbl_settings_what_see">Who you want to see?</string>
+    <string name="lbl_settings_distance">Distance</string>
+    <string name="lbl_settings_age">Age</string>
 
 </resources>
