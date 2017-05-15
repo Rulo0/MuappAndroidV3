@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import java.util.Date;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
+import me.muapp.android.Application.MuappApplication;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Spotify.Data.Song;
@@ -120,7 +121,7 @@ public class AddSpotifyDetailActivity extends BaseActivity implements MediaPlaye
         spotifyData.setName(currentSong.getName());
         spotifyData.setThumb(currentSong.getAlbum().getHigherImage());
         thisContent.setSpotifyData(spotifyData);
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
         String key = ref.push().getKey();
         ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

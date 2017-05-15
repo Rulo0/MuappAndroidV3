@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,7 +83,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         btn_muapp_matching = (ImageButton) v.findViewById(R.id.btn_muapp_matching);
         btn_crush_matching = (ImageButton) v.findViewById(R.id.btn_crush_matching);
         btn_no_muapp_matching = (ImageButton) v.findViewById(R.id.btn_no_muapp_matching);
-
         return v;
     }
 
@@ -106,6 +106,16 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        btn_muapp_matching.setOnClickListener(this);
+        btn_crush_matching.setOnClickListener(this);
+        btn_no_muapp_matching.setOnClickListener(this);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        replaceFragment(GetMatchingUsersFragment.newInstance(user));
         handler = new Handler();
         Runnable runnable = new Runnable() {
             @Override
@@ -117,10 +127,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             }
         };
         handler.postDelayed(runnable, waitTime);
-        btn_muapp_matching.setOnClickListener(this);
-        btn_crush_matching.setOnClickListener(this);
-        btn_no_muapp_matching.setOnClickListener(this);
-        replaceFragment(GetMatchingUsersFragment.newInstance(user));
     }
 
     private void getMatchingUsers() {
@@ -177,6 +183,11 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
 
     @Override
     public void onReportedUser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.lbl_thank_you)
+                .setMessage(R.string.lbl_your_report_will_be_analized)
+                .setPositiveButton(android.R.string.ok, null);
+        builder.create().show();
         btn_no_muapp_matching.performClick();
     }
 
@@ -200,7 +211,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     }
 
     private void uploadDescriptionToFirebase(int matchingUserId, final String description) {
-        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(matchingUserId));
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(matchingUserId));
         reference.orderByChild("catContent").equalTo("contentDesc").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

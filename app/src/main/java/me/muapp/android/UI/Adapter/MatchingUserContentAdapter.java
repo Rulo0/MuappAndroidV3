@@ -17,6 +17,7 @@ import android.support.v7.util.SortedList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
@@ -66,6 +67,7 @@ import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.VideoViewActivity;
 import me.muapp.android.UI.Activity.YoutubeViewActivity;
+import me.muapp.android.UI.Fragment.Interface.OnProfileScrollListener;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 
@@ -92,7 +94,9 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     ImageButton previewPlayedButton;
     UserQualificationsAdapter userQualificationsAdapter;
     Boolean showMenuButton = true;
-
+    RecyclerView parentRecycler;
+    private OnProfileScrollListener onProfileScrollListener;
+    OnScrollListener matchingScrollListener;
 
     public void setShowMenuButton(Boolean showMenuButton) {
         this.showMenuButton = showMenuButton;
@@ -105,12 +109,38 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         }
     }
 
-    public void setQualifications(List<Qualification> qualifications) {
+    public void setOnProfileScrollListener(OnProfileScrollListener profileScrollListener) {
+        this.onProfileScrollListener = profileScrollListener;
+        matchingScrollListener = new OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager llm = (LinearLayoutManager) parentRecycler.getLayoutManager();
+                int pos = llm.findFirstVisibleItemPosition();
+                Log.wtf("Scrolled", recyclerView.getAdapter().getItemCount() + "");
+                if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
+                    onProfileScrollListener.onScrollToTop();
+                } else {
+                    onProfileScrollListener.onScroll();
+                }
+            }
+        };
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        parentRecycler = recyclerView;
+    }
+
+    public void setQualifications(List<Qualification> qualifications, final boolean mustScroll) {
         userQualificationsAdapter = new UserQualificationsAdapter(context, qualifications);
         Handler handler = new Handler(Looper.getMainLooper());
         final Runnable r = new Runnable() {
             public void run() {
                 notifyItemChanged(1);
+                if (mustScroll)
+                    parentRecycler.scrollToPosition(1);
             }
         };
         handler.post(r);
@@ -329,6 +359,8 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                     return true;
                 }
             });
+            parentRecycler.clearOnScrollListeners();
+            parentRecycler.addOnScrollListener(matchingScrollListener);
         }
 
         @Override
@@ -338,7 +370,8 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
 
         @Override
         public void bind(UserQualificationsAdapter adapter) {
-
+            parentRecycler.clearOnScrollListeners();
+            parentRecycler.addOnScrollListener(matchingScrollListener);
         }
 
         @Override
@@ -360,7 +393,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         }
 
         private void deleteContent() {
-            FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue();
+            FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue();
 
             if (!TextUtils.isEmpty(itemContent.getStorageName())) {
                 FirebaseStorage.getInstance().getReference().child(itemContent.getStorageName()).delete();

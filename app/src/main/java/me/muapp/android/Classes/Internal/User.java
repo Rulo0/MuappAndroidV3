@@ -190,9 +190,8 @@ public class User implements Parcelable {
     @SerializedName("visible_work")
     @Expose
     private Boolean visibleWork;
+    public static final String HIDDEN_STRING = "__hiddenField__";
     public final static Parcelable.Creator<User> CREATOR = new Creator<User>() {
-
-
         @SuppressWarnings({
                 "unchecked"
         })
@@ -599,7 +598,7 @@ public class User implements Parcelable {
     }
 
     public String getFullName() {
-        return String.format("%s %s", getFirstName(), getLastName().equals("__hiddenField__") ? "" : getLastName());
+        return String.format("%s %s", getFirstName(), getLastName().equals(HIDDEN_STRING) ? "" : getLastName());
     }
 
     public int describeContents() {

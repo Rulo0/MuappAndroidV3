@@ -27,6 +27,12 @@ public class UserSettings implements Parcelable, Cloneable {
     @SerializedName("notify_pokes")
     @Expose
     private Boolean notifyPokes;
+    @SerializedName("age_range")
+    @Expose
+    private AgeRange ageRange;
+    @SerializedName("distance")
+    @Expose
+    private Integer distance;
     public final static Parcelable.Creator<UserSettings> CREATOR = new Creator<UserSettings>() {
 
 
@@ -40,6 +46,8 @@ public class UserSettings implements Parcelable, Cloneable {
             instance.visibleLastName = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
             instance.notifyMatches = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
             instance.notifyPokes = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
+            instance.ageRange = ((AgeRange) in.readValue(AgeRange.class.getClassLoader()));
+            instance.distance = ((Integer) in.readValue(Integer.class.getClassLoader()));
             return instance;
         }
 
@@ -89,12 +97,30 @@ public class UserSettings implements Parcelable, Cloneable {
         this.notifyPokes = notifyPokes;
     }
 
+    public AgeRange getAgeRange() {
+        return ageRange;
+    }
+
+    public void setAgeRange(AgeRange ageRange) {
+        this.ageRange = ageRange;
+    }
+
+    public Integer getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Integer distance) {
+        this.distance = distance;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(visibleEducation);
         dest.writeValue(visibleWork);
         dest.writeValue(visibleLastName);
         dest.writeValue(notifyMatches);
         dest.writeValue(notifyPokes);
+        dest.writeValue(ageRange);
+        dest.writeValue(distance);
     }
 
     public int describeContents() {
@@ -109,6 +135,8 @@ public class UserSettings implements Parcelable, Cloneable {
                 ", visibleLastName=" + visibleLastName +
                 ", notifyMatches=" + notifyMatches +
                 ", notifyPokes=" + notifyPokes +
+                ", ageRange=" + ageRange.toString() +
+                ", distance=" + distance.toString() +
                 '}';
     }
 

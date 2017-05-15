@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.muapp.android.Application.MuappApplication;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 
@@ -324,7 +325,7 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                             @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
                             thisContent.setContentUrl(downloadUrl.toString());
                             thisContent.setStorageName(mainReference.getPath());
-                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
                             String key = ref.push().getKey();
                             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override

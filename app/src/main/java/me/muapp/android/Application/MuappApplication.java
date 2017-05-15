@@ -3,12 +3,14 @@ package me.muapp.android.Application;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.zplesac.connectionbuddy.ConnectionBuddy;
 import com.zplesac.connectionbuddy.ConnectionBuddyConfiguration;
 
 import io.realm.Realm;
+import me.muapp.android.BuildConfig;
 import me.muapp.android.Classes.Quickblox.QuickbloxHelper;
 
 /**
@@ -25,9 +27,17 @@ public class MuappApplication extends Application {
         return mixpanelAPI;
     }
 
+    public static String DATABASE_REFERENCE = "devDB";
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (!BuildConfig.DEBUG) {
+            DATABASE_REFERENCE = "prodDB";
+        }
+        Log.wtf("DATABASE_REFERENCE", DATABASE_REFERENCE);
+
         //MIXPANEL TOKEN
         Realm.init(this);
         QuickbloxHelper.init(getApplicationContext());

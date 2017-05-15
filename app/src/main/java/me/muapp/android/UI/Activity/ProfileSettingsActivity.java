@@ -130,7 +130,7 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
                 descriptionObj.put("description", newDescription);
                 new APIService(this).patchUser(descriptionObj, null);
 
-                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(loggedUser.getId()));
+                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
 
                 reference.orderByChild("catContent").equalTo("contentDesc").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

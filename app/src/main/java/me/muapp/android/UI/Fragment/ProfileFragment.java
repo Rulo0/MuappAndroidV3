@@ -34,6 +34,8 @@ import me.muapp.android.UI.Activity.ManGateActivity;
 import me.muapp.android.UI.Adapter.UserContentAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
+
 public class ProfileFragment extends Fragment implements OnFragmentInteractionListener, ChildEventListener {
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
     User user;
@@ -62,8 +64,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         }
         adapter = new UserContentAdapter(getContext(), new UserHelper(getContext()).getLoggedUser());
         adapter.setFragmentManager(getChildFragmentManager());
-        myUserReference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(user.getId()));
-        FirebaseDatabase.getInstance().getReference().child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
+        myUserReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(user.getId()));
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<MuappQuote> quoteList = new ArrayList<>();

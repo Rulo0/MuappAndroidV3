@@ -336,6 +336,7 @@ public class APIService {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseString = response.body().string();
+                Log.i("patchUser response", responseString);
                 if (handler != null)
                     handler.onSuccess(response.code(), responseString);
                 try {

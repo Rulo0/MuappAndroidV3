@@ -60,4 +60,12 @@ public class AgeRange implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "AgeRange{" +
+                "_1=" + _1 +
+                ", _2=" + _2 +
+                '}';
+    }
 }

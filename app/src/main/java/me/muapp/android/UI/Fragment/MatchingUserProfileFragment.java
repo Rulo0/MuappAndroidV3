@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -86,8 +87,9 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         adapter = new MatchingUserContentAdapter(getContext(), matchingUser);
         adapter.setShowMenuButton(false);
         adapter.setFragmentManager(getChildFragmentManager());
-        userReference = FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(matchingUser.getId()));
-        FirebaseDatabase.getInstance().getReference().child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
+        adapter.setOnProfileScrollListener(onProfileScrollListener);
+        userReference = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(matchingUser.getId()));
+        FirebaseDatabase.getInstance().getReference("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<MuappQuote> quoteList = new ArrayList<>();
@@ -114,7 +116,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         new APIService(getContext()).getUserQualifications(matchingUser.getId(), new UserQualificationsHandler() {
             @Override
             public void onSuccess(int responseCode, UserQualifications qualifications) {
-                adapter.setQualifications(qualifications.getQualifications());
+                adapter.setQualifications(qualifications.getQualifications(), false);
             }
 
             @Override
@@ -136,19 +138,6 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         final LinearLayoutManager llm = new LinearLayoutManager(getContext());
         recycler_user_content.setLayoutManager(llm);
         recycler_user_content.setHasFixedSize(true);
-        recycler_user_content.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int pos = llm.findFirstVisibleItemPosition();
-                if (recycler_user_content.getChildCount() > 2)
-                    if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
-                        onProfileScrollListener.onScrollToTop();
-                    } else {
-                        onProfileScrollListener.onScroll();
-                    }
-            }
-        });
 
         return v;
     }
@@ -263,8 +252,10 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         q.setUserName(new UserHelper(getContext()).getLoggedUser().getFullName());
         q.setStars(rating);
         qualifications.add(0, q);
-        adapter.setQualifications(qualifications);
+        adapter.setQualifications(qualifications, true);
         btn_matching_rate.setVisibility(View.GONE);
+        recycler_user_content.scrollToPosition(1);
+        Toast.makeText(getContext(), getString(R.string.lbl_rating_sent), Toast.LENGTH_LONG).show();
     }
 
     @Override

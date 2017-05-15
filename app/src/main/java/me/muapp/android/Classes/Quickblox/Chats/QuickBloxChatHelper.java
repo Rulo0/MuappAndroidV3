@@ -530,7 +530,7 @@ public class QuickBloxChatHelper {
 
 
     /**
-     * Check if Quickblox Chat service seession is active
+     * Check if Quickblox Message service seession is active
      *
      * @return True if active. False otherwise
      */

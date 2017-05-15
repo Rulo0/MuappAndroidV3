@@ -66,7 +66,7 @@ public class LastMessageTimestampUpdater {
     }
 
     /**
-     * Chat activity is stopped
+     * Message activity is stopped
      */
     public void onStop() {
         cancelTimer();

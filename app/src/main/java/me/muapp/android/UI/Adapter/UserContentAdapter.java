@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Locale;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
+import me.muapp.android.Application.MuappApplication;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQuote;
@@ -353,7 +354,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         }
 
         private void deleteContent() {
-            FirebaseDatabase.getInstance().getReference().child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue();
+            FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue();
 
             if (!TextUtils.isEmpty(itemContent.getStorageName())) {
                 FirebaseStorage.getInstance().getReference().child(itemContent.getStorageName()).delete();
@@ -403,9 +404,6 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             SpannableString ssAge = new SpannableString(userAge);
             ssAge.setSpan(new StyleSpan(Typeface.BOLD), 0, ssAge.length(), 0);
             nameView.append(ssAge);
-            user.setHometown("Chicken Town");
-            user.setEducation("Some Place University (SPU)");
-            user.setWork("MUAPP");
             if (!TextUtils.isEmpty(user.getHometown())) {
                 nameView.append(context.getString(R.string.format_user_hometown));
                 nameView.append(" ");
@@ -414,7 +412,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 ssHomeTown.setSpan(new StyleSpan(Typeface.BOLD), 0, ssHomeTown.length(), 0);
                 nameView.append(ssHomeTown);
             }
-            if (user.getVisibleEducation() && !TextUtils.isEmpty(user.getEducation())) {
+            if (user.getVisibleEducation() && !TextUtils.isEmpty(user.getEducation()) && !user.getEducation().equals(User.HIDDEN_STRING)) {
                 nameView.append(context.getString(R.string.format_user_studies));
                 nameView.append(" ");
                 String userStudies = user.getEducation();
@@ -422,7 +420,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 ssStudies.setSpan(new StyleSpan(Typeface.BOLD), 0, ssStudies.length(), 0);
                 nameView.append(ssStudies);
             }
-            if (user.getVisibleWork() && !TextUtils.isEmpty(user.getWork())) {
+            if (user.getVisibleWork() && !TextUtils.isEmpty(user.getWork()) && !user.getWork().equals(User.HIDDEN_STRING)) {
                 nameView.append(context.getString(R.string.format_user_work));
                 nameView.append(" ");
                 String userWork = user.getWork();

@@ -82,7 +82,7 @@ public class InstagramPhotosFragment extends Fragment implements ValueEventListe
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         loggedUser = args.getParcelable(ARG_LOGGED_USER);
-        userInstagramReference = FirebaseDatabase.getInstance().getReference().child("users").child(String.valueOf(loggedUser.getId()));
+        userInstagramReference = FirebaseDatabase.getInstance().getReference("users").child(String.valueOf(loggedUser.getId()));
         ada = new AddInstagramPhotosAdapter(getContext());
         ada.setOnImageSelectedListener(onImageSelectedListener);
     }

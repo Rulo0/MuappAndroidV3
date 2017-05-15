@@ -40,6 +40,7 @@ import me.muapp.android.Classes.Internal.UserMedia;
 import me.muapp.android.R;
 
 import static com.bumptech.glide.Glide.with;
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
 public class AddPhotosDetailActivity extends BaseActivity {
     public static final String CURRENT_MEDIA = "CURRENT_MEDIA";
@@ -153,7 +154,7 @@ public class AddPhotosDetailActivity extends BaseActivity {
                                         @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
                                         thisContent.setContentUrl(downloadUrl.toString());
                                         thisContent.setStorageName(mainReference.getPath());
-                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
+                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
                                         String key = ref.push().getKey();
                                         ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
@@ -216,7 +217,7 @@ public class AddPhotosDetailActivity extends BaseActivity {
                                                             @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
                                                             thisContent.setContentUrl(downloadUrl.toString());
                                                             thisContent.setStorageName(mainReference.getPath());
-                                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
+                                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
                                                             String key = ref.push().getKey();
                                                             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                 @Override

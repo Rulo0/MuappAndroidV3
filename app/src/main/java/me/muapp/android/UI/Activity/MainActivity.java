@@ -468,7 +468,7 @@ public class MainActivity extends BaseActivity implements
             double lat = lastLocation.getLatitude(), lon = lastLocation.getLongitude();
             Log.v(TAG, lat + " - " + lon);*/
             createLocationRequest();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Nearby");
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Nearby");
             mResultReceiver = new AddressResultReceiver(new android.os.Handler());
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener = new LocationListener() {
                 @Override
@@ -493,6 +493,8 @@ public class MainActivity extends BaseActivity implements
 
     protected void onStart() {
         mGoogleApiClient.connect();
+        if (navigationElement != null && navigationElement.getFrag() instanceof ProfileFragment)
+            getSupportActionBar().setTitle(loggedUser.getFullName());
         super.onStart();
     }
 

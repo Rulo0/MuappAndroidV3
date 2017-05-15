@@ -37,6 +37,7 @@ import org.json.JSONObject;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.Internal.AgeRange;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserSettings;
 import me.muapp.android.Classes.Util.Constants;
@@ -91,6 +92,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         userSettings.setVisibleLastName(loggedUser.getVisibleLastName());
         userSettings.setNotifyMatches(loggedUser.getNotifyMatches());
         userSettings.setNotifyPokes(loggedUser.getNotifyPokes());
+        userSettings.setDistance(loggedUser.getDistance());
+        userSettings.setAgeRange(loggedUser.getAgeRange());
         try {
             mainUserSetting = userSettings.clone();
         } catch (Exception x) {
@@ -100,14 +103,19 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         distance_seekbar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
-                // txt_settings_distance_value.setText((Integer.parseInt(rightPinValue) == 500 ? rightPinValue : rightPinValue + "+") + " km");
+                txt_settings_distance_value.setText((Integer.parseInt(rightPinValue) == 500 ? rightPinValue + "+" : rightPinValue) + " km");
+                userSettings.setDistance(Integer.parseInt(rightPinValue));
             }
         });
 
         age_seekbar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
-                //  txt_settings_age_value.setText(leftPinValue + " / " + (Integer.parseInt(rightPinValue) == 55 ? rightPinValue + "+" : rightPinValue) + " años");
+                txt_settings_age_value.setText(leftPinValue + " / " + (Integer.parseInt(rightPinValue) == 55 ? rightPinValue + "+ " : rightPinValue) + " " + getString(R.string.lbl_years));
+                AgeRange ageRange = new AgeRange();
+                ageRange.set1(Integer.parseInt(leftPinValue));
+                ageRange.set2(Integer.parseInt(rightPinValue));
+                userSettings.setAgeRange(ageRange);
             }
         });
     }
@@ -120,7 +128,15 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
 
     private void fillData() {
         age_seekbar.setRangePinsByValue(loggedUser.getAgeRange().get1(), loggedUser.getAgeRange().get2());
-        distance_seekbar.setSeekPinByValue(10);
+
+        int distanceValue = loggedUser.getDistance();
+        if (distanceValue == 0) {
+            distanceValue = 1;
+        } else if (distanceValue > 500) {
+            distanceValue = 500;
+        }
+
+        distance_seekbar.setSeekPinByValue(distanceValue);
 
         if (loggedUser.getFakeAccount()) {
             phone_verification_container.setVisibility(View.GONE);
@@ -205,6 +221,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 loggedUser.setVisibleLastName(userSettings.getVisibleLastName());
                 loggedUser.setNotifyMatches(userSettings.getNotifyMatches());
                 loggedUser.setNotifyPokes(userSettings.getNotifyPokes());
+                loggedUser.setAgeRange(userSettings.getAgeRange());
+                loggedUser.setDistance(userSettings.getDistance());
                 saveUser(loggedUser);
                 try {
                     new APIService(this).patchUser(new JSONObject(new Gson().toJson(userSettings)), new UserInfoHandler() {

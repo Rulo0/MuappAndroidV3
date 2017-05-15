@@ -115,7 +115,7 @@
 
     <string name="lbl_search">Search</string>
     <string name="lbl_edit">Edit</string>
-    <!-- Chat Activity Strings -->
+    <!-- Message Activity Strings -->
     <string name="matched_at">Match at </string>
     <string name="crush_at">Crush at </string>
     <string name="minutes_ago">%d minutes ago</string>
@@ -205,5 +205,9 @@
     <string name="lbl_settings_what_see">Who you want to see?</string>
     <string name="lbl_settings_distance">Distance</string>
     <string name="lbl_settings_age">Age</string>
+    <string name="lbl_years">years</string>
+    <string name="lbl_rating_sent">Your rating has been sent</string>
+    <string name="lbl_thank_you">Thank you!</string>
+    <string name="lbl_your_report_will_be_analized">Your report will be analyzed. This user will no longer be able to contact you.</string>
 
 </resources>

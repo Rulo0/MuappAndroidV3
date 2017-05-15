@@ -148,7 +148,7 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
             double lat = lastLocation.getLatitude(), lon = lastLocation.getLongitude();
             Log.v(TAG, lat + " - " + lon);*/
             createLocationRequest();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Nearby");
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Nearby");
             mResultReceiver = new AddressResultReceiver(new android.os.Handler());
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, mLocationListener = new LocationListener() {
                 @Override

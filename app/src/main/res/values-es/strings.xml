@@ -164,4 +164,8 @@
     <string name="lbl_settings_what_see">¿A quién quieres ver?</string>
     <string name="lbl_settings_distance">Distancia</string>
     <string name="lbl_settings_age">Edad</string>
+    <string name="lbl_years">años</string>
+    <string name="lbl_rating_sent">Tu puntuación ha sido enviada</string>
+    <string name="lbl_thank_you">¡Muchas gracias!</string>
+    <string name="lbl_your_report_will_be_analized">Tu denuncia será analizada. Este usuario ya no podrá contactar contigo.</string>
 </resources>
