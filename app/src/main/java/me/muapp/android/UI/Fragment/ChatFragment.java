@@ -11,29 +11,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.quickblox.chat.QBIncomingMessagesManager;
-import com.quickblox.chat.model.QBChatDialog;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
+import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Internal.User;
-import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatDialogsListener;
-import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatHelper;
-import me.muapp.android.Classes.Quickblox.cache.CacheUtils;
-import me.muapp.android.Classes.Quickblox.cache.DialogCacheHelper;
-import me.muapp.android.Classes.Quickblox.cache.DialogCacheObject;
-import me.muapp.android.Classes.Quickblox.messages.QuickBloxMessagesListener;
 import me.muapp.android.Classes.Util.ProgressUtil;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.CrushesAdapter;
 import me.muapp.android.UI.Adapter.MatchesAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
-public class ChatFragment extends Fragment implements OnFragmentInteractionListener, QuickBloxChatDialogsListener, QuickBloxMessagesListener {
+
+public class ChatFragment extends Fragment implements OnFragmentInteractionListener {
     private static final String TAG = "ChatFragment";
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
     ProgressUtil progressUtil;
@@ -42,9 +36,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     MatchesAdapter matchesAdapter;
     CrushesAdapter crushesAdapter;
     View progress_chats, content_chats;
-    private Realm realm;
     RecyclerView recycler_matches, recycler_crushes;
-    QBIncomingMessagesManager incomingMessagesManager;
 
     public ChatFragment() {
 
@@ -65,8 +57,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         if (getArguments() != null) {
             user = getArguments().getParcelable(ARG_CURRENT_USER);
         }
-        matchesAdapter = new MatchesAdapter(getContext());
-        crushesAdapter = new CrushesAdapter(getContext());
+
     }
 
     @Override
@@ -91,19 +82,33 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        realm = CacheUtils.getInstance(user);
-        Log.wtf(TAG, QuickBloxChatHelper.getInstance().isSessionActive() + "");
-       /* if (!QuickBloxChatHelper.getInstance().isSessionActive()) {
-            QuickBloxLoginHelper.login(getContext(), savedInstanceState, new QuickBloxLoginListener() {
-                @Override
-                public void onSessionCreated(QBSession session) {
-                    QuickBloxChatHelper.getInstance().getDialogs(ChatFragment.this);
-                }
-            });
-        } else {
-            QuickBloxChatHelper.getInstance().getDialogs(this);
-        }*/
+        FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("conversations").child("45430").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Conversation conversation = dataSnapshot.getValue(Conversation.class);
+                Log.wtf("CHAT", conversation.toString());
+            }
 
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -126,54 +131,5 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onFragmentInteraction(String name, Object data) {
 
-    }
-
-    @Override
-    public void onDialogsLoaded(List<QBChatDialog> dialogs, boolean success) {
-        DialogCacheHelper.setDialogs(realm, dialogs, user.getId(), success, new DialogCacheHelper.CacheDialogsHandler() {
-            @Override
-            public void onItemAdded(final DialogCacheObject dialogCacheObject) {
-                Log.wtf("onItemAdded", dialogCacheObject.getDialogId() + "");
-                if (dialogCacheObject.getCrush() != null && dialogCacheObject.getCrush())
-                    recycler_crushes.post(new Runnable() {
-                        public void run() {
-                            crushesAdapter.addDialog(dialogCacheObject);
-                        }
-                    });
-                else
-                    recycler_matches.post(new Runnable() {
-                        public void run() {
-                            matchesAdapter.addDialog(dialogCacheObject);
-                        }
-                    });
-            }
-
-            @Override
-            public void onAllDialogsAdded(int dialogsSize, List<DialogCacheObject> cachedDialogs) {
-                Log.wtf("onAllDialogsAdded", dialogsSize + "");
-            }
-        });
-        progressUtil.showProgress(false);
-    }
-
-    @Override
-    public void onDialogUpdated(String chatDialog) {
-        DialogCacheHelper.getDialogs(realm, "", new RealmChangeListener<RealmResults<DialogCacheObject>>() {
-            @Override
-            public void onChange(RealmResults<DialogCacheObject> element) {
-                for (DialogCacheObject o : element) {
-                    DialogCacheObject dco = realm.copyFromRealm(o);
-                    if (dco.getCrush())
-                        crushesAdapter.addDialog(dco);
-                    else
-                        matchesAdapter.addDialog(dco);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onNewDialog() {
-        QuickBloxChatHelper.getInstance().getDialogs(this);
     }
 }

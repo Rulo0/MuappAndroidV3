@@ -1,29 +1,35 @@
 package me.muapp.android.UI.Adapter;
 
-import android.content.Context;
-import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-
-import java.util.Calendar;
-import java.util.Date;
-
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
-import me.muapp.android.Classes.Quickblox.cache.DialogCacheObject;
-import me.muapp.android.R;
 
 /**
  * Created by rulo on 4/04/17.
  */
 
 public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.MatchesViewHolder> {
-    private final LayoutInflater mInflater;
+    @Override
+    public MatchesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(MatchesViewHolder holder, int position) {
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return 0;
+    }
+
+    public class MatchesViewHolder extends RecyclerView.ViewHolder {
+        public MatchesViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+    /*private final LayoutInflater mInflater;
     private SortedList<DialogCacheObject> dialogs;
     private Context mContext;
 
@@ -142,5 +148,5 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.MatchesV
 
             }
         }
-    }
+    }*/
 }

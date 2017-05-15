@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import me.muapp.android.Application.MuappApplication;
-import me.muapp.android.Classes.Quickblox.Chats.QuickBloxChatHelper;
 
 import static com.facebook.GraphRequest.TAG;
 
@@ -39,13 +38,9 @@ public class LoginHelper {
         MuappApplication.getMixpanelAPI().getPeople().set("last_connection", dateFormat.format(new Date()));
         MuappApplication.getMixpanelAPI().getPeople().set("location", "Enable");
         MuappApplication.getMixpanelAPI().getPeople().set("notifications", null);
-        loginToQuickBlox();
         loginToFireBase();
     }
 
-    private void loginToQuickBlox() {
-        QuickBloxChatHelper.getInstance().loginToChat(context);
-    }
 
     private void loginToFireBase() {
         int userId = userHelper.getLoggedUser().getId();

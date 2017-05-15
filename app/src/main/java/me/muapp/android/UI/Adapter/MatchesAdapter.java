@@ -1,29 +1,8 @@
 package me.muapp.android.UI.Adapter;
 
-import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-
-import java.util.Date;
-
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
-import me.muapp.android.Classes.Quickblox.QuickbloxHelper;
-import me.muapp.android.Classes.Quickblox.cache.DialogCacheObject;
-import me.muapp.android.Classes.Util.DateUtils;
-import me.muapp.android.R;
-import me.muapp.android.UI.Activity.ChatActivity;
-
-import static me.muapp.android.UI.Activity.ChatActivity.DIALOG_EXTRA;
 
 
 /**
@@ -31,7 +10,27 @@ import static me.muapp.android.UI.Activity.ChatActivity.DIALOG_EXTRA;
  */
 
 public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesViewHolder> {
-    private final LayoutInflater mInflater;
+    @Override
+    public MatchesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(MatchesViewHolder holder, int position) {
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return 0;
+    }
+
+    public class MatchesViewHolder extends RecyclerView.ViewHolder {
+        public MatchesViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+   /* private final LayoutInflater mInflater;
     private SortedList<DialogCacheObject> dialogs;
     private Context mContext;
 
@@ -147,5 +146,5 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             chatIntent.putExtra(DIALOG_EXTRA, thisDialog);
             mContext.startActivity(chatIntent);
         }
-    }
+    }*/
 }

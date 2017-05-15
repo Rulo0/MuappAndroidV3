@@ -51,6 +51,7 @@ import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.UserPhotos.UserPhotoTouchHelper;
+
 import me.muapp.android.UI.Adapter.UserPhotos.UserPictureAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnProfileImageSelectedListener;
 

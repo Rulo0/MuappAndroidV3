@@ -16,6 +16,48 @@ public class Message implements Parcelable {
     Long timeStamp;
     UserContent attachment;
 
+    public Message() {
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public int getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(int senderId) {
+        this.senderId = senderId;
+    }
+
+    public Long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public UserContent getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(UserContent attachment) {
+        this.attachment = attachment;
+    }
 
     protected Message(Parcel in) {
         key = in.readString();
@@ -64,7 +106,7 @@ public class Message implements Parcelable {
                 ", content='" + content + '\'' +
                 ", senderId=" + senderId +
                 ", timeStamp=" + timeStamp +
-                ", attachment=" + attachment != null ? attachment.toString() : "null" +
+                ", attachment=" + attachment +
                 '}';
     }
 }

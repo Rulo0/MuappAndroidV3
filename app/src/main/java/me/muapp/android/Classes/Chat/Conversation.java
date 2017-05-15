@@ -13,9 +13,12 @@ public class Conversation implements Parcelable {
     Message lastMessage;
     String content;
     int senderId;
-    Long timeStamp;
+    Long  creationDate;
     String opponentConversationId;
     int opponentId;
+
+    public Conversation() {
+    }
 
     protected Conversation(Parcel in) {
         key = in.readString();
@@ -24,9 +27,73 @@ public class Conversation implements Parcelable {
         lastMessage = (Message) in.readValue(Message.class.getClassLoader());
         content = in.readString();
         senderId = in.readInt();
-        timeStamp = in.readByte() == 0x00 ? null : in.readLong();
+        creationDate = in.readByte() == 0x00 ? null : in.readLong();
         opponentConversationId = in.readString();
         opponentId = in.readInt();
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public Boolean getCrush() {
+        return isCrush;
+    }
+
+    public void setCrush(Boolean crush) {
+        isCrush = crush;
+    }
+
+    public Message getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(Message lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public int getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(int senderId) {
+        this.senderId = senderId;
+    }
+
+    public Long getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Long creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getOpponentConversationId() {
+        return opponentConversationId;
+    }
+
+    public void setOpponentConversationId(String opponentConversationId) {
+        this.opponentConversationId = opponentConversationId;
+    }
+
+    public int getOpponentId() {
+        return opponentId;
+    }
+
+    public void setOpponentId(int opponentId) {
+        this.opponentId = opponentId;
     }
 
     @Override
@@ -45,11 +112,11 @@ public class Conversation implements Parcelable {
         dest.writeValue(lastMessage);
         dest.writeString(content);
         dest.writeInt(senderId);
-        if (timeStamp == null) {
+        if (creationDate == null) {
             dest.writeByte((byte) (0x00));
         } else {
             dest.writeByte((byte) (0x01));
-            dest.writeLong(timeStamp);
+            dest.writeLong(creationDate);
         }
         dest.writeString(opponentConversationId);
         dest.writeInt(opponentId);
@@ -76,7 +143,7 @@ public class Conversation implements Parcelable {
                 ", lastMessage=" + lastMessage +
                 ", content='" + content + '\'' +
                 ", senderId=" + senderId +
-                ", timeStamp=" + timeStamp +
+                ", creationDate=" + creationDate +
                 ", opponentConversationId='" + opponentConversationId + '\'' +
                 ", opponentId=" + opponentId +
                 '}';

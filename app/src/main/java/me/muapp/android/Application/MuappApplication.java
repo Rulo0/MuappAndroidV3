@@ -8,10 +8,7 @@ import android.util.Log;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.zplesac.connectionbuddy.ConnectionBuddy;
 import com.zplesac.connectionbuddy.ConnectionBuddyConfiguration;
-
-import io.realm.Realm;
 import me.muapp.android.BuildConfig;
-import me.muapp.android.Classes.Quickblox.QuickbloxHelper;
 
 /**
  * Created by rulo on 21/03/17.
@@ -39,8 +36,6 @@ public class MuappApplication extends Application {
         Log.wtf("DATABASE_REFERENCE", DATABASE_REFERENCE);
 
         //MIXPANEL TOKEN
-        Realm.init(this);
-        QuickbloxHelper.init(getApplicationContext());
         mixpanelAPI = MixpanelAPI.getInstance(this, projectTokenStagging);
         ConnectionBuddyConfiguration networkInspectorConfiguration =
                 new ConnectionBuddyConfiguration.Builder(this)

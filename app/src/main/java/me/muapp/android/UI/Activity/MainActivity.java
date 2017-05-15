@@ -55,12 +55,10 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-import io.realm.Realm;
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.CurrentNavigationElement;
 import me.muapp.android.Classes.Internal.User;
-import me.muapp.android.Classes.Quickblox.cache.CacheUtils;
 import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Utils;
@@ -83,7 +81,6 @@ public class MainActivity extends BaseActivity implements
     private CurrentNavigationElement navigationElement;
     private int mSelectedItem;
     HashMap<Integer, Fragment> fragmentHashMap = new HashMap<>();
-    private Realm realm;
     BottomNavigationView navigation;
     FloatingActionButton fab_add_content;
     Toolbar toolbar;
@@ -157,7 +154,6 @@ public class MainActivity extends BaseActivity implements
                         .build();
             }
             updateValuesFromBundle(savedInstanceState);
-            realm = CacheUtils.getInstance(loggedUser);
             navigation = (BottomNavigationView) findViewById(R.id.navigation);
             fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
             if (checkPlayServices()) {
