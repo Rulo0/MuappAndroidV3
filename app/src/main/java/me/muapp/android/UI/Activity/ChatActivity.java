@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.fivehundredpx.android.blur.BlurringView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,8 +62,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
         recycler_conversation.setLayoutManager(llm);
         recycler_conversation.setAdapter(messagesAdapter);
         Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(this)).diskCacheStrategy(DiskCacheStrategy.ALL).into((ImageView) toolbar.findViewById(R.id.toolbar_opponent_photo));
-        BlurringView blurringView = new BlurringView(this);
-        blurringView.setBlurredView(findViewById(R.id.sender_container));
     }
 
     @Override
