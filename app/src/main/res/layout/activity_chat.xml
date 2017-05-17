@@ -13,9 +13,73 @@
         android:id="@+id/main_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/color_chat_bg"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Add you content here -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:focusableInTouchMode="true" />
 
+        <android.support.v7.widget.CardView
+            android:id="@+id/sender_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="8dp">
+
+            <android.support.constraint.ConstraintLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true">
+
+                <ImageButton
+                    android:id="@+id/chatSendButton"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_send" />
+
+                <EditText
+                    android:id="@+id/etMessage"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center_vertical"
+                    android:hint="Write something..."
+                    android:imeOptions="actionSend"
+                    android:inputType="textMultiLine"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/color_muapp_dark"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/chatSendButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_conversation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="4dp" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import me.muapp.android.R;
 
@@ -201,6 +202,15 @@ public class Utils {
             return false;
         }
         return true;
+    }
+
+    public static String generateRandomString() {
+        String ALLOWED_CHARACTERS = "0123456789 QWERTYUIOPASDFGHJKLÑZXCVBNM qwertyuiopasdfghjklñzxcvbnm ";
+        final Random random = new Random();
+        final StringBuilder sb = new StringBuilder(140);
+        for (int i = 0; i < 140; ++i)
+            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(ALLOWED_CHARACTERS.length())));
+        return sb.toString();
     }
 
 }

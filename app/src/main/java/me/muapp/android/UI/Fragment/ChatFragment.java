@@ -14,9 +14,15 @@ import android.view.ViewGroup;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import me.muapp.android.Classes.Chat.Conversation;
+import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.ProgressUtil;
 import me.muapp.android.R;
@@ -27,7 +33,7 @@ import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
 
-public class ChatFragment extends Fragment implements OnFragmentInteractionListener {
+public class ChatFragment extends Fragment implements OnFragmentInteractionListener, ChildEventListener {
     private static final String TAG = "ChatFragment";
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
     ProgressUtil progressUtil;
@@ -35,8 +41,57 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     private OnFragmentInteractionListener mListener;
     MatchesAdapter matchesAdapter;
     CrushesAdapter crushesAdapter;
+    // ChatsAdapter chatsAdapter;
     View progress_chats, content_chats;
-    RecyclerView recycler_matches, recycler_crushes;
+    RecyclerView recycler_matches, recycler_crushes, recycler_chats;
+    DatabaseReference chatReference;
+    HashMap<String, ChatItemObject> listenerHashMap = new HashMap();
+
+    public class ChatItemObject {
+        String itemKey;
+        boolean isCrush;
+        DatabaseReference reference;
+        ValueEventListener listener;
+
+        public ChatItemObject(final String userProfilePicture, final String itemKey, final boolean isCrush, DatabaseReference reference) {
+            this.itemKey = itemKey;
+            this.isCrush = isCrush;
+            this.reference = reference.child("profilePicture");
+            this.listener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.getValue(String.class).equals(userProfilePicture))
+                        if (!isCrush) {
+                            matchesAdapter.updateConversationUser(itemKey, dataSnapshot.getValue(String.class));
+                        } else {
+                            crushesAdapter.updateConversationUser(itemKey, dataSnapshot.getValue(String.class));
+                        }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+            this.reference.addValueEventListener(this.listener);
+        }
+
+        public String getItemKey() {
+            return itemKey;
+        }
+
+        public boolean isCrush() {
+            return isCrush;
+        }
+
+        public DatabaseReference getReference() {
+            return reference;
+        }
+
+        public ValueEventListener getListener() {
+            return listener;
+        }
+    }
 
     public ChatFragment() {
 
@@ -57,7 +112,36 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         if (getArguments() != null) {
             user = getArguments().getParcelable(ARG_CURRENT_USER);
         }
+        matchesAdapter = new MatchesAdapter(getContext());
+        crushesAdapter = new CrushesAdapter(getContext());
+        chatReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(user.getId()));
+        chatReference.keepSynced(true);
 
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        chatReference.addChildEventListener(this);
+        if (listenerHashMap.size() > 0) {
+            for (Map.Entry entry : listenerHashMap.entrySet()) {
+                ChatItemObject object = ((ChatItemObject) entry.getValue());
+                object.reference.addValueEventListener(object.getListener());
+            }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        chatReference.removeEventListener(this);
+        if (listenerHashMap.size() > 0) {
+            for (Map.Entry entry : listenerHashMap.entrySet()) {
+                ChatItemObject object = ((ChatItemObject) entry.getValue());
+                object.reference.removeEventListener(object.getListener());
+            }
+        }
     }
 
     @Override
@@ -70,9 +154,14 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         recycler_crushes = (RecyclerView) v.findViewById(R.id.recycler_crushes);
         LinearLayoutManager linearLayoutManagerHorizontal = new LinearLayoutManager(getContext());
         linearLayoutManagerHorizontal.setOrientation(LinearLayoutManager.HORIZONTAL);
+        linearLayoutManagerHorizontal.setStackFromEnd(true);
+        linearLayoutManagerHorizontal.setReverseLayout(true);
         recycler_crushes.setLayoutManager(linearLayoutManagerHorizontal);
         recycler_crushes.setAdapter(crushesAdapter);
-        recycler_matches.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager verticalLLM = new LinearLayoutManager(getContext());
+        verticalLLM.setStackFromEnd(true);
+        verticalLLM.setReverseLayout(true);
+        recycler_matches.setLayoutManager(verticalLLM);
         recycler_matches.setAdapter(matchesAdapter);
         progressUtil = new ProgressUtil(getContext(), content_chats, progress_chats);
         progressUtil.showProgress(true);
@@ -82,33 +171,6 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("conversations").child("45430").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Conversation conversation = dataSnapshot.getValue(Conversation.class);
-                Log.wtf("CHAT", conversation.toString());
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override
@@ -130,6 +192,64 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onFragmentInteraction(String name, Object data) {
+
+    }
+
+    private void prepareConversation(final Conversation conversation) {
+        final DatabaseReference userInfoReference = FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("users").child(String.valueOf(conversation.getOpponentId()));
+        userInfoReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ConversationItem conversationItem = dataSnapshot.getValue(ConversationItem.class);
+                if (conversationItem != null) {
+                    conversationItem.setKey(conversation.getKey());
+                    conversationItem.setConversation(conversation);
+                    Log.w("ConversationItem", conversationItem.toString());
+                    if (conversationItem.getConversation().getCrush())
+                        crushesAdapter.addConversation(conversationItem);
+                    else
+                        matchesAdapter.addConversation(conversationItem);
+                    progressUtil.showProgress(false);
+                    listenerHashMap.put(conversation.getKey(), new ChatItemObject(conversationItem.getProfilePicture(), conversation.getKey(), conversation.getCrush(), userInfoReference));
+
+                } else {
+                    Log.w("ConversationItem", "IS NULL");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    @Override
+    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        Conversation conversation = dataSnapshot.getValue(Conversation.class);
+        conversation.setKey(dataSnapshot.getKey());
+        Log.wtf("CHAT", conversation.toString());
+        prepareConversation(conversation);
+    }
+
+    @Override
+    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+    }
+
+    @Override
+    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+    }
+
+    @Override
+    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
 
     }
 }

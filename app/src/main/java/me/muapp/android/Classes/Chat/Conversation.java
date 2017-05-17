@@ -9,27 +9,29 @@ import android.os.Parcelable;
 
 public class Conversation implements Parcelable {
     String key;
-    Boolean isCrush;
+    Boolean crush;
+    Boolean likeByMe;
+    Boolean likeByOpponent;
     Message lastMessage;
-    String content;
-    int senderId;
-    Long  creationDate;
+    Long creationDate;
     String opponentConversationId;
     int opponentId;
 
-    public Conversation() {
-    }
-
     protected Conversation(Parcel in) {
         key = in.readString();
-        byte isCrushVal = in.readByte();
-        isCrush = isCrushVal == 0x02 ? null : isCrushVal != 0x00;
+        byte crushVal = in.readByte();
+        crush = crushVal == 0x02 ? null : crushVal != 0x00;
+        byte likeByMeVal = in.readByte();
+        likeByMe = likeByMeVal == 0x02 ? null : likeByMeVal != 0x00;
+        byte likeByOpponentVal = in.readByte();
+        likeByOpponent = likeByOpponentVal == 0x02 ? null : likeByOpponentVal != 0x00;
         lastMessage = (Message) in.readValue(Message.class.getClassLoader());
-        content = in.readString();
-        senderId = in.readInt();
         creationDate = in.readByte() == 0x00 ? null : in.readLong();
         opponentConversationId = in.readString();
         opponentId = in.readInt();
+    }
+
+    public Conversation() {
     }
 
     public String getKey() {
@@ -41,11 +43,27 @@ public class Conversation implements Parcelable {
     }
 
     public Boolean getCrush() {
-        return isCrush;
+        return crush;
     }
 
     public void setCrush(Boolean crush) {
-        isCrush = crush;
+        this.crush = crush;
+    }
+
+    public Boolean getLikeByMe() {
+        return likeByMe;
+    }
+
+    public void setLikeByMe(Boolean likeByMe) {
+        this.likeByMe = likeByMe;
+    }
+
+    public Boolean getLikeByOpponent() {
+        return likeByOpponent;
+    }
+
+    public void setLikeByOpponent(Boolean likeByOpponent) {
+        this.likeByOpponent = likeByOpponent;
     }
 
     public Message getLastMessage() {
@@ -54,22 +72,6 @@ public class Conversation implements Parcelable {
 
     public void setLastMessage(Message lastMessage) {
         this.lastMessage = lastMessage;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public int getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(int senderId) {
-        this.senderId = senderId;
     }
 
     public Long getCreationDate() {
@@ -104,14 +106,22 @@ public class Conversation implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(key);
-        if (isCrush == null) {
+        if (crush == null) {
             dest.writeByte((byte) (0x02));
         } else {
-            dest.writeByte((byte) (isCrush ? 0x01 : 0x00));
+            dest.writeByte((byte) (crush ? 0x01 : 0x00));
+        }
+        if (likeByMe == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (likeByMe ? 0x01 : 0x00));
+        }
+        if (likeByOpponent == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (likeByOpponent ? 0x01 : 0x00));
         }
         dest.writeValue(lastMessage);
-        dest.writeString(content);
-        dest.writeInt(senderId);
         if (creationDate == null) {
             dest.writeByte((byte) (0x00));
         } else {
@@ -139,10 +149,10 @@ public class Conversation implements Parcelable {
     public String toString() {
         return "Conversation{" +
                 "key='" + key + '\'' +
-                ", isCrush=" + isCrush +
+                ", crush=" + crush +
+                ", likeByMe=" + likeByMe +
+                ", likeByOpponent=" + likeByOpponent +
                 ", lastMessage=" + lastMessage +
-                ", content='" + content + '\'' +
-                ", senderId=" + senderId +
                 ", creationDate=" + creationDate +
                 ", opponentConversationId='" + opponentConversationId + '\'' +
                 ", opponentId=" + opponentId +

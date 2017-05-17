@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/chat_toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
@@ -20,7 +21,9 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_back" />
+            android:clickable="true"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/ic_arrow_back" />
 
         <ImageView
             android:id="@+id/toolbar_opponent_photo"
@@ -47,7 +50,7 @@
                 android:drawablePadding="4dp"
                 android:ellipsize="end"
                 android:lines="1"
-                android:textColor="@android:color/black"
+                android:textColor="@color/color_muapp_dark"
                 android:textSize="20sp" />
 
             <TextView
@@ -58,7 +61,7 @@
                 android:ellipsize="end"
                 android:lines="1"
                 android:text="Sólo está hablando contigo"
-                android:textColor="@android:color/black"
+                android:textColor="@color/color_muapp_dark"
                 android:textSize="15sp" />
         </LinearLayout>
     </RelativeLayout>

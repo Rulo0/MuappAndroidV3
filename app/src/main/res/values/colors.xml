@@ -27,4 +27,5 @@
     <color name="color_add_content_disabled">#dddcdc</color>
     <color name="color_icons_matching">#ced0d5</color>
     <color name="color_white_alpha">#66ffffff</color>
+    <color name="color_chat_bg">#ecedef</color>
 </resources>

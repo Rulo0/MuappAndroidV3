@@ -217,7 +217,6 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     @Override
     public UserContentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.wtf("ViewType", viewType + "");
         UserContentHolder holder;
         switch (viewType) {
             case -1:

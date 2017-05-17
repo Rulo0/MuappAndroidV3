@@ -5,9 +5,11 @@ import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.zplesac.connectionbuddy.ConnectionBuddy;
 import com.zplesac.connectionbuddy.ConnectionBuddyConfiguration;
+
 import me.muapp.android.BuildConfig;
 
 /**
@@ -29,7 +31,7 @@ public class MuappApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         if (!BuildConfig.DEBUG) {
             DATABASE_REFERENCE = "prodDB";
         }

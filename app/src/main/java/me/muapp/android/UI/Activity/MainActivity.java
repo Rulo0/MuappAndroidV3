@@ -71,6 +71,7 @@ import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import me.muapp.android.UI.Fragment.MatchingFragment;
 import me.muapp.android.UI.Fragment.ProfileFragment;
 
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.R.id.btn_add_youtube;
 
 public class MainActivity extends BaseActivity implements
@@ -200,6 +201,8 @@ public class MainActivity extends BaseActivity implements
         } else {
             requestPermissions();
         }
+
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
     }
 
     public static void disableABCShowHideAnimation(ActionBar actionBar) {
