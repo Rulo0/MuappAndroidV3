@@ -114,7 +114,9 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         }
         matchesAdapter = new MatchesAdapter(getContext());
         crushesAdapter = new CrushesAdapter(getContext());
-        chatReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(user.getId()));
+        //chatReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(user.getId()));
+        chatReference = FirebaseDatabase.getInstance().getReference().child("JW").child(String.valueOf(user.getId()));
+
         chatReference.keepSynced(true);
 
 

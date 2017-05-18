@@ -6,24 +6,27 @@
     android:layout_marginLeft="8dp"
     android:layout_marginRight="64dp"
     android:layout_marginTop="4dp"
-    android:background="@drawable/bg_message_receiver"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:orientation="vertical">
 
-    <com.github.curioustechizen.ago.RelativeTimeTextView
-        android:id="@+id/txt_time_receiver"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/txt_content_receiver"
-        android:layout_below="@+id/txt_content_receiver"
-        android:layout_marginTop="4dp"
-        android:text="hora" />
+        android:background="@drawable/bg_message_receiver"
+        android:orientation="vertical"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/txt_content_receiver"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:paddingRight="8dp"
-        android:text="probando 123" />
+        <TextView
+            android:id="@+id/txt_content_receiver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="probando 123" />
+
+        <com.github.curioustechizen.ago.RelativeTimeTextView
+            android:id="@+id/txt_time_receiver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="hora"
+            android:textSize="10dp" />
+    </LinearLayout>
 </RelativeLayout>

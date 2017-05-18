@@ -13,6 +13,11 @@ public class ConversationItem implements Parcelable {
     String name;
     String lastName;
     Conversation conversation;
+    String pushToken;
+
+    public String getFullName() {
+        return String.format("%s %s", name, lastName);
+    }
 
     public ConversationItem() {
     }
@@ -49,10 +54,6 @@ public class ConversationItem implements Parcelable {
         this.lastName = lastName;
     }
 
-    public String getFullName() {
-        return String.format("%s %s", name, lastName);
-    }
-
     public Conversation getConversation() {
         return conversation;
     }
@@ -61,12 +62,21 @@ public class ConversationItem implements Parcelable {
         this.conversation = conversation;
     }
 
+    public String getPushToken() {
+        return pushToken;
+    }
+
+    public void setPushToken(String pushToken) {
+        this.pushToken = pushToken;
+    }
+
     protected ConversationItem(Parcel in) {
         key = in.readString();
         profilePicture = in.readString();
         name = in.readString();
         lastName = in.readString();
         conversation = (Conversation) in.readValue(Conversation.class.getClassLoader());
+        pushToken = in.readString();
     }
 
     @Override
@@ -81,6 +91,7 @@ public class ConversationItem implements Parcelable {
         dest.writeString(name);
         dest.writeString(lastName);
         dest.writeValue(conversation);
+        dest.writeString(pushToken);
     }
 
     @SuppressWarnings("unused")
@@ -103,7 +114,8 @@ public class ConversationItem implements Parcelable {
                 ", profilePicture='" + profilePicture + '\'' +
                 ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", conversation=" + conversation.toString() +
+                ", conversation=" + conversation +
+                ", pushToken='" + pushToken + '\'' +
                 '}';
     }
 }

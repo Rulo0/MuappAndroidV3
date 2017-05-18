@@ -25,7 +25,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     Context context;
     LayoutInflater mInflater;
     MediaPlayer mediaPlayer;
-
+    RecyclerView mRecyclerView;
     Integer loggedUserId;
 
     public void setLoggedUserId(Integer loggedUserId) {
@@ -37,6 +37,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     public void addMessage(Message m) {
         messageList.add(m);
+
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        mRecyclerView = recyclerView;
     }
 
     public MessagesAdapter(Context context) {
@@ -46,6 +53,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             @Override
             public void onInserted(int position, int count) {
                 notifyItemRangeInserted(position, count);
+                mRecyclerView.scrollToPosition(position);
             }
 
             @Override

@@ -6,27 +6,32 @@
     android:layout_marginLeft="64dp"
     android:layout_marginRight="8dp"
     android:layout_marginTop="4dp"
-    android:background="@drawable/bg_message_sender"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:gravity="right"
+    android:orientation="vertical">
 
-    <com.github.curioustechizen.ago.RelativeTimeTextView
-        android:id="@+id/txt_time_sender"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/txt_content_sender"
-        android:layout_below="@+id/txt_content_sender"
-        android:layout_marginTop="4dp"
-        android:text="hora"
-        android:textColor="@android:color/white" />
-
-    <TextView
-        android:id="@+id/txt_content_sender"
-        android:layout_width="wrap_content"
-        android:textColor="@android:color/white"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="4dp"
+        android:background="@drawable/bg_message_sender"
         android:gravity="right"
-        android:text="probando 123" />
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/txt_content_sender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="probando 123"
+            android:textColor="@android:color/white" />
+
+        <com.github.curioustechizen.ago.RelativeTimeTextView
+            android:id="@+id/txt_time_sender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="hora"
+            android:textColor="@android:color/white"
+            android:textSize="10dp" />
+    </LinearLayout>
 </RelativeLayout>

@@ -8,15 +8,25 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
+import me.muapp.android.Classes.API.APIService;
+import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.CurrentNavigationElement;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Fragment.AddContentDialogFragment;
@@ -24,6 +34,7 @@ import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import me.muapp.android.UI.Fragment.ManGateFragment;
 import me.muapp.android.UI.Fragment.ProfileFragment;
 
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.R.id.navigation_profile_man_profile;
 
 public class ManGateActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener, AddContentDialogFragment.Listener {
@@ -60,6 +71,36 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
                 AddContentDialogFragment.newInstance(true).show(getSupportFragmentManager(), "dialog");
             }
         });
+
+        if (checkPlayServices()) {
+            final String token = FirebaseInstanceId.getInstance().getToken();
+            FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("pushToken").setValue(token);
+            if (!TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token) || !loggedUser.getPushToken().equals(token)) {
+                FirebaseMessaging.getInstance().subscribeToTopic("android");
+                JSONObject tokenUser = new JSONObject();
+                try {
+                    tokenUser.put("push_token", token);
+                    new APIService(this).patchUser(tokenUser, new UserInfoHandler() {
+                        @Override
+                        public void onSuccess(int responseCode, String userResponse) {
+                        }
+
+                        @Override
+                        public void onSuccess(int responseCode, User user) {
+                            new PreferenceHelper(ManGateActivity.this).putGCMToken(token);
+                            saveUser(user);
+                        }
+
+                        @Override
+                        public void onFailure(boolean isSuccessful, String responseString) {
+
+                        }
+                    });
+                } catch (Exception x) {
+                    x.printStackTrace();
+                }
+            }
+        }
     }
 
     private void selectFragment(MenuItem item) {
