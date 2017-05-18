@@ -1,6 +1,8 @@
 package me.muapp.android.UI.Activity;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,6 +44,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
+
 public class ChatActivity extends BaseActivity implements ChildEventListener {
     public static final String CONVERSATION_EXTRA = "CONVERSATION_EXTRA";
     ConversationItem conversationItem;
@@ -51,7 +56,21 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
     MessagesAdapter messagesAdapter;
     EditText etMessage;
     ImageButton chatSendButton;
-    DatabaseReference myConversation, yourConversation;
+    DatabaseReference myConversation, yourConversation, yourPresence;
+    ValueEventListener presenceListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            boolean imOnline = dataSnapshot.getValue(Boolean.class);
+            Drawable img = ContextCompat.getDrawable(ChatActivity.this, imOnline ? R.drawable.ic_chat_user_online : R.drawable.ic_chat_user_offline);
+            toolbar_opponent_fullname.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+        }
+
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +79,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
         conversationItem = getIntent().getParcelableExtra(CONVERSATION_EXTRA);
         if (conversationItem == null)
             finish();
-        Log.wtf("convesration",conversationItem.toString());
+        Log.wtf("convesration", conversationItem.toString());
+        yourPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("online");
         messagesAdapter = new MessagesAdapter(this);
         messagesAdapter.setLoggedUserId(loggedUser.getId());
         conversationReference = /*FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
@@ -122,12 +142,14 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
     protected void onStart() {
         super.onStart();
         conversationReference.addChildEventListener(this);
+        yourPresence.addValueEventListener(presenceListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         conversationReference.removeEventListener(this);
+        yourPresence.removeEventListener(presenceListener);
     }
 
     @Override

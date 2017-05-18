@@ -237,8 +237,12 @@ public class MainActivity extends BaseActivity implements
         } else {
             requestPermissions();
         }
-
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
+
+        //for FirebasePresence
+        DatabaseReference usr = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("online");
+        usr.onDisconnect().setValue(false);
+        usr.setValue(true);
     }
 
     public static void disableABCShowHideAnimation(ActionBar actionBar) {

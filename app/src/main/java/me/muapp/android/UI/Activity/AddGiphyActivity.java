@@ -128,10 +128,10 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
         protected List<GiphyEntry> doInBackground(String... params) {
             List<GiphyEntry> result = new ArrayList<>();
             try {
-                Log.wtf("Searching", String.format("http://api.giphy.com/v1/gifs/search?q=%s&api_key=dc6zaTOxFJmzC&limit=100&lang=%s", URLEncoder.encode(params[0], "utf-8"), Locale.getDefault().getLanguage()));
+                Log.wtf("Searching", String.format("http://api.giphy.com/v1/gifs/search?q=%s&api_key=3o6ZthRhJhfgXMOmpa&limit=100&lang=%s", URLEncoder.encode(params[0], "utf-8"), Locale.getDefault().getLanguage()));
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder()
-                        .url(String.format("http://api.giphy.com/v1/gifs/search?q=%s&api_key=dc6zaTOxFJmzC&limit=100&lang=%s", URLEncoder.encode(params[0], "utf-8"), Locale.getDefault().getLanguage()))
+                        .url(String.format("http://api.giphy.com/v1/gifs/search?q=%s&api_key=3o6ZthRhJhfgXMOmpa&limit=100&lang=%s", URLEncoder.encode(params[0], "utf-8"), Locale.getDefault().getLanguage()))
                         .get()
                         .build();
                 Response response = client.newCall(request).execute();
@@ -171,7 +171,7 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
             try {
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder()
-                        .url("http://api.giphy.com/v1/gifs/trending?api_key=dc6zaTOxFJmzC&limit=100")
+                        .url("http://api.giphy.com/v1/gifs/trending?api_key=3o6ZthRhJhfgXMOmpa&limit=100")
                         .get()
                         .build();
                 Response response = client.newCall(request).execute();
