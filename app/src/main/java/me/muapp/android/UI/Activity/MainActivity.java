@@ -23,6 +23,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
@@ -57,7 +60,7 @@ import java.util.HashMap;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
-import me.muapp.android.Classes.Internal.CurrentNavigationElement;
+import me.muapp.android.Classes.Internal.SelectedNavigationElement;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.PreferenceHelper;
@@ -76,13 +79,14 @@ import static me.muapp.android.R.id.btn_add_youtube;
 
 public class MainActivity extends BaseActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
-        OnFragmentInteractionListener, SearchView.OnQueryTextListener, AddContentDialogFragment.Listener {
+        OnFragmentInteractionListener, SearchView.OnQueryTextListener, AddContentDialogFragment.Listener, AHBottomNavigation.OnTabSelectedListener {
     private static final int PHONE_REQUEST_CODE = 79;
     public static final String TAG = "MainActivity";
-    private CurrentNavigationElement navigationElement;
+    // private CurrentNavigationElement navigationElement;
+    private SelectedNavigationElement selectedNavigationElement;
     private int mSelectedItem;
     HashMap<Integer, Fragment> fragmentHashMap = new HashMap<>();
-    BottomNavigationView navigation;
+    // BottomNavigationView navigation;
     FloatingActionButton fab_add_content;
     Toolbar toolbar;
     private static final int REQUEST_CHECK_SETTINGS = 399;
@@ -94,6 +98,7 @@ public class MainActivity extends BaseActivity implements
     private AddressResultReceiver mResultReceiver;
     private static final String LOCATION_KEY = "LOCATION";
     private static final String LAST_UPDATED_TIME_STRING_KEY = "LAST_TIME_UPDATED";
+    AHBottomNavigation bottomNavigation;
 
     public Location getCurrentLocation() {
         return mCurrentLocation;
@@ -155,7 +160,30 @@ public class MainActivity extends BaseActivity implements
                         .build();
             }
             updateValuesFromBundle(savedInstanceState);
-            navigation = (BottomNavigationView) findViewById(R.id.navigation);
+            bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
+
+
+            // Create items
+            AHBottomNavigationItem item1 = new AHBottomNavigationItem(R.string.title_home, R.drawable.ic_discover, R.color.colorAccent);
+            AHBottomNavigationItem item2 = new AHBottomNavigationItem(R.string.title_dashboard, R.drawable.ic_chat, R.color.colorAccent);
+            AHBottomNavigationItem item3 = new AHBottomNavigationItem(R.string.title_notifications, R.drawable.ic_profile, R.color.colorAccent);
+
+// Add items
+            bottomNavigation.addItem(item1);
+            bottomNavigation.addItem(item2);
+            bottomNavigation.addItem(item3);
+
+            AHNotification notification = new AHNotification.Builder()
+                    .setText("1")
+                    .setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
+                    .setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
+                    .build();
+            bottomNavigation.setNotification(notification, 1);
+
+            bottomNavigation.setAccentColor(ContextCompat.getColor(this, R.color.colorAccent));
+            bottomNavigation.setInactiveColor(ContextCompat.getColor(this, R.color.color_inactive_bnv));
+            bottomNavigation.setOnTabSelectedListener(this);
+            // navigation = (BottomNavigationView) findViewById(R.id.navigation);
             fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
             if (checkPlayServices()) {
                 final String token = FirebaseInstanceId.getInstance().getToken();
@@ -187,16 +215,23 @@ public class MainActivity extends BaseActivity implements
             }
             if (preferenceHelper.getFirstLogin() && !loggedUser.getFakeAccount())
                 phoneValidation();
-            navigation.setOnNavigationItemSelectedListener(this);
-            fragmentHashMap.put(R.id.navigation_home, MatchingFragment.newInstance(loggedUser));
+            // navigation.setOnNavigationItemSelectedListener(this);
+        /*    fragmentHashMap.put(R.id.navigation_home, MatchingFragment.newInstance(loggedUser));
             fragmentHashMap.put(R.id.navigation_dashboard, ChatFragment.newInstance(loggedUser));
-            fragmentHashMap.put(R.id.navigation_profile, ProfileFragment.newInstance(loggedUser));
+            fragmentHashMap.put(R.id.navigation_profile, ProfileFragment.newInstance(loggedUser));*/
+
+            fragmentHashMap.put(0, MatchingFragment.newInstance(loggedUser));
+            fragmentHashMap.put(1, ChatFragment.newInstance(loggedUser));
+            fragmentHashMap.put(2, ProfileFragment.newInstance(loggedUser));
+
+
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-            ft.replace(R.id.content_main_male, fragmentHashMap.get(R.id.navigation_home));
+            ft.replace(R.id.content_main_male, fragmentHashMap.get(0));
             ft.commit();
             fab_add_content.hide();
-            navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
+            //  navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
+            selectedNavigationElement = new SelectedNavigationElement(0, fragmentHashMap.get(0));
             invalidateOptionsMenu();
         } else {
             requestPermissions();
@@ -318,7 +353,7 @@ public class MainActivity extends BaseActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void selectFragment(MenuItem item) {
+   /* private void selectFragment(MenuItem item) {
         try {
             Log.wtf("selectFragment", item.getTitle().toString());
             Fragment frag = fragmentHashMap.get(item.getItemId());
@@ -338,7 +373,7 @@ public class MainActivity extends BaseActivity implements
                 } else {
                     ft.add(R.id.content_main_male, frag, item.getTitle().toString());
                 }
-                ft.hide(navigationElement.getFrag());
+                ft.hide(selectedNavigationElement.getFrag());
                 ft.commit();
             }
             if (frag instanceof ProfileFragment) {
@@ -352,7 +387,48 @@ public class MainActivity extends BaseActivity implements
                     AddContentDialogFragment.newInstance(false).show(getSupportFragmentManager(), "dialog");
                 }
             });
-            navigationElement = new CurrentNavigationElement(item, frag);
+            // navigationElement = new CurrentNavigationElement(item, frag);
+            invalidateOptionsMenu();
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+    }*/
+
+    private void selectFragment(int position) {
+        try {
+            Log.wtf("selectFragment", bottomNavigation.getItem(position).getTitle(this));
+            Fragment frag = fragmentHashMap.get(position);
+            if (frag instanceof MatchingFragment) {
+                getSupportActionBar().hide();
+            } else {
+                getSupportActionBar().show();
+            }
+
+            mSelectedItem = position;
+            if (frag != null) {
+                FragmentManager manager = getSupportFragmentManager();
+                FragmentTransaction ft = manager.beginTransaction();
+                ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+                if (frag.isAdded()) {
+                    ft.show(frag);
+                } else {
+                    ft.add(R.id.content_main_male, frag, bottomNavigation.getItem(position).getTitle(this));
+                }
+                ft.hide(selectedNavigationElement.getFrag());
+                ft.commit();
+            }
+            if (frag instanceof ProfileFragment) {
+                fab_add_content.show();
+            } else {
+                fab_add_content.hide();
+            }
+            fab_add_content.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AddContentDialogFragment.newInstance(false).show(getSupportFragmentManager(), "dialog");
+                }
+            });
+            selectedNavigationElement = new SelectedNavigationElement(position, frag);
             invalidateOptionsMenu();
         } catch (Exception x) {
             x.printStackTrace();
@@ -361,13 +437,14 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.navigation_profile)
+    /*    if (item.getItemId() == R.id.navigation_profile)
             getSupportActionBar().setTitle(loggedUser.getFullName());
         else
             getSupportActionBar().setTitle(item.getTitle());
         if (!navigationElement.getItm().equals(item)) {
             selectFragment(item);
         }
+        return true;*/
         return true;
     }
 
@@ -492,7 +569,9 @@ public class MainActivity extends BaseActivity implements
 
     protected void onStart() {
         mGoogleApiClient.connect();
-        if (navigationElement != null && navigationElement.getFrag() instanceof ProfileFragment)
+      /*  if (navigationElement != null && navigationElement.getFrag() instanceof ProfileFragment)
+            getSupportActionBar().setTitle(loggedUser.getFullName());*/
+        if (selectedNavigationElement != null && selectedNavigationElement.getFrag() instanceof ProfileFragment)
             getSupportActionBar().setTitle(loggedUser.getFullName());
         super.onStart();
     }
@@ -509,5 +588,17 @@ public class MainActivity extends BaseActivity implements
         if (mGoogleApiClient.isConnected()) {
             getLocation();
         }
+    }
+
+    @Override
+    public boolean onTabSelected(int position, boolean wasSelected) {
+        if (position == bottomNavigation.getItemsCount() - 1)
+            getSupportActionBar().setTitle(loggedUser.getFullName());
+        else
+            getSupportActionBar().setTitle(bottomNavigation.getItem(position).getTitle(this));
+        if (selectedNavigationElement.getPos() != position) {
+            selectFragment(position);
+        }
+        return true;
     }
 }

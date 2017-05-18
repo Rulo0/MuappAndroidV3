@@ -16,20 +16,7 @@ public class Conversation implements Parcelable {
     Long creationDate;
     String opponentConversationId;
     int opponentId;
-
-    protected Conversation(Parcel in) {
-        key = in.readString();
-        byte crushVal = in.readByte();
-        crush = crushVal == 0x02 ? null : crushVal != 0x00;
-        byte likeByMeVal = in.readByte();
-        likeByMe = likeByMeVal == 0x02 ? null : likeByMeVal != 0x00;
-        byte likeByOpponentVal = in.readByte();
-        likeByOpponent = likeByOpponentVal == 0x02 ? null : likeByOpponentVal != 0x00;
-        lastMessage = (Message) in.readValue(Message.class.getClassLoader());
-        creationDate = in.readByte() == 0x00 ? null : in.readLong();
-        opponentConversationId = in.readString();
-        opponentId = in.readInt();
-    }
+    String lastMessageReadedId;
 
     public Conversation() {
     }
@@ -98,6 +85,29 @@ public class Conversation implements Parcelable {
         this.opponentId = opponentId;
     }
 
+    public String getLastMessageReadedId() {
+        return lastMessageReadedId;
+    }
+
+    public void setLastMessageReadedId(String lastMessageReadedId) {
+        this.lastMessageReadedId = lastMessageReadedId;
+    }
+
+    protected Conversation(Parcel in) {
+        key = in.readString();
+        byte crushVal = in.readByte();
+        crush = crushVal == 0x02 ? null : crushVal != 0x00;
+        byte likeByMeVal = in.readByte();
+        likeByMe = likeByMeVal == 0x02 ? null : likeByMeVal != 0x00;
+        byte likeByOpponentVal = in.readByte();
+        likeByOpponent = likeByOpponentVal == 0x02 ? null : likeByOpponentVal != 0x00;
+        lastMessage = (Message) in.readValue(Message.class.getClassLoader());
+        creationDate = in.readByte() == 0x00 ? null : in.readLong();
+        opponentConversationId = in.readString();
+        opponentId = in.readInt();
+        lastMessageReadedId = in.readString();
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -130,6 +140,7 @@ public class Conversation implements Parcelable {
         }
         dest.writeString(opponentConversationId);
         dest.writeInt(opponentId);
+        dest.writeString(lastMessageReadedId);
     }
 
     @SuppressWarnings("unused")
@@ -144,18 +155,4 @@ public class Conversation implements Parcelable {
             return new Conversation[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "Conversation{" +
-                "key='" + key + '\'' +
-                ", crush=" + crush +
-                ", likeByMe=" + likeByMe +
-                ", likeByOpponent=" + likeByOpponent +
-                ", lastMessage=" + lastMessage +
-                ", creationDate=" + creationDate +
-                ", opponentConversationId='" + opponentConversationId + '\'' +
-                ", opponentId=" + opponentId +
-                '}';
-    }
 }

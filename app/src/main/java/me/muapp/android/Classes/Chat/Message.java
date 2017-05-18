@@ -15,6 +15,7 @@ public class Message implements Parcelable {
     int senderId;
     Long timeStamp;
     UserContent attachment;
+    Boolean readed;
 
     public Message() {
     }
@@ -59,12 +60,22 @@ public class Message implements Parcelable {
         this.attachment = attachment;
     }
 
+    public Boolean getReaded() {
+        return readed;
+    }
+
+    public void setReaded(Boolean readed) {
+        this.readed = readed;
+    }
+
     protected Message(Parcel in) {
         key = in.readString();
         content = in.readString();
         senderId = in.readInt();
         timeStamp = in.readByte() == 0x00 ? null : in.readLong();
         attachment = (UserContent) in.readValue(UserContent.class.getClassLoader());
+        byte readedVal = in.readByte();
+        readed = readedVal == 0x02 ? null : readedVal != 0x00;
     }
 
     @Override
@@ -84,6 +95,11 @@ public class Message implements Parcelable {
             dest.writeLong(timeStamp);
         }
         dest.writeValue(attachment);
+        if (readed == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (readed ? 0x01 : 0x00));
+        }
     }
 
     @SuppressWarnings("unused")
@@ -107,6 +123,7 @@ public class Message implements Parcelable {
                 ", senderId=" + senderId +
                 ", timeStamp=" + timeStamp +
                 ", attachment=" + attachment +
+                ", readed=" + readed +
                 '}';
     }
 }

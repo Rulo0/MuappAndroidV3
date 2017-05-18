@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.curioustechizen.ago.RelativeTimeTextView;
+
 import java.util.Date;
 
 import me.muapp.android.Classes.Chat.Message;
@@ -122,35 +124,35 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     public class MyMessageContentHolder extends MessageContentHolder {
-        TextView txt_time_sender;
+        RelativeTimeTextView txt_time_sender;
         TextView txt_content_sender;
 
         public MyMessageContentHolder(View itemView) {
             super(itemView);
-            txt_time_sender = (TextView) itemView.findViewById(R.id.txt_time_sender);
+            txt_time_sender = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender);
             txt_content_sender = (TextView) itemView.findViewById(R.id.txt_content_sender);
         }
 
         @Override
         public void bind(Message message) {
-            txt_time_sender.setText(message.getTimeStamp().toString());
+            txt_time_sender.setReferenceTime(message.getTimeStamp());
             txt_content_sender.setText(message.getContent());
         }
     }
 
     public class YourMessageContentHolder extends MessageContentHolder {
-        TextView txt_time_receiver;
+        RelativeTimeTextView txt_time_receiver;
         TextView txt_content_receiver;
 
         public YourMessageContentHolder(View itemView) {
             super(itemView);
-            txt_time_receiver = (TextView) itemView.findViewById(R.id.txt_time_receiver);
+            txt_time_receiver = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_receiver);
             txt_content_receiver = (TextView) itemView.findViewById(R.id.txt_content_receiver);
         }
 
         @Override
         public void bind(Message message) {
-            txt_time_receiver.setText(message.getTimeStamp().toString());
+            txt_time_receiver.setReferenceTime(message.getTimeStamp());
             txt_content_receiver.setText(message.getContent());
         }
     }

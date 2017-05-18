@@ -28,4 +28,5 @@
     <color name="color_icons_matching">#ced0d5</color>
     <color name="color_white_alpha">#66ffffff</color>
     <color name="color_chat_bg">#ecedef</color>
+    <color name="color_inactive_bnv">#9EA5AD</color>
 </resources>
