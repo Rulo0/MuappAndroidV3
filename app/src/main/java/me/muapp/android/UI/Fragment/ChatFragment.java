@@ -237,7 +237,10 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+        Conversation conversation = dataSnapshot.getValue(Conversation.class);
+        conversation.setKey(dataSnapshot.getKey());
+        Log.wtf("CHAT", conversation.toString());
+        prepareConversation(conversation);
     }
 
     @Override

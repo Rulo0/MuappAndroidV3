@@ -1,7 +1,15 @@
 package me.muapp.android.UI.Activity;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,26 +24,33 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Map;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Chat.Message;
+import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MessagesAdapter;
+import me.muapp.android.UI.Fragment.AddAttachmentDialogFragment;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -46,8 +61,9 @@ import okhttp3.Response;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
-public class ChatActivity extends BaseActivity implements ChildEventListener {
+public class ChatActivity extends BaseActivity implements ChildEventListener, AddAttachmentDialogFragment.ChatAttachmentListener {
     public static final String CONVERSATION_EXTRA = "CONVERSATION_EXTRA";
+    private static final int ATTACHMENT_PICTURE = 911;
     ConversationItem conversationItem;
     Toolbar toolbar;
     TextView toolbar_opponent_fullname;
@@ -56,7 +72,9 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
     MessagesAdapter messagesAdapter;
     EditText etMessage;
     ImageButton chatSendButton;
+    ImageButton chatAddAttachmentButton;
     DatabaseReference myConversation, yourConversation, yourPresence;
+    StorageReference myStorageReference;
     ValueEventListener presenceListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -76,10 +94,12 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
         conversationItem = getIntent().getParcelableExtra(CONVERSATION_EXTRA);
         if (conversationItem == null)
             finish();
         Log.wtf("convesration", conversationItem.toString());
+        myStorageReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("conversations").child(conversationItem.getKey());
         yourPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("online");
         messagesAdapter = new MessagesAdapter(this);
         messagesAdapter.setLoggedUserId(loggedUser.getId());
@@ -114,9 +134,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
                         .child(conversationItem.getConversation().getOpponentConversationId());
 
         Log.wtf("convesration", "yours " + yourConversation.getRef().toString());
-        toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
+
         etMessage = (EditText) findViewById(R.id.etMessage);
         chatSendButton = (ImageButton) findViewById(R.id.chatSendButton);
+        chatAddAttachmentButton = (ImageButton) findViewById(R.id.chatAddAttachmentButton);
         toolbar_opponent_fullname = (TextView) findViewById(R.id.toolbar_opponent_fullname);
         toolbar_opponent_fullname.setText(conversationItem.getFullName());
         toolbar.findViewById(R.id.toolbar_btn_back).setOnClickListener(new View.OnClickListener() {
@@ -133,24 +154,32 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
         chatSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attempSend();
+                attempSend(null);
+            }
+        });
+        chatAddAttachmentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddAttachmentDialogFragment.newInstance(6).show(getSupportFragmentManager(), "attach");
             }
         });
     }
 
+
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         conversationReference.addChildEventListener(this);
         yourPresence.addValueEventListener(presenceListener);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
         conversationReference.removeEventListener(this);
         yourPresence.removeEventListener(presenceListener);
     }
+
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -181,10 +210,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
 
     }
 
-    private void attempSend() {
-        if (!TextUtils.isEmpty(etMessage.getText().toString())) {
-            Map<String, String> map = ServerValue.TIMESTAMP;
-
+    private void attempSend(UserContent content) {
+        if (!TextUtils.isEmpty(etMessage.getText().toString()) || content != null) {
             Message m = new Message();
             m.setTimeStamp(new Date().getTime());
             m.setSenderId(loggedUser.getId());
@@ -192,7 +219,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
             etMessage.setText("");
             conversationReference.child(conversationReference.push().getKey()).setValue(m);
             yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m);
-
+            if (content != null)
+                m.setAttachment(content);
             m.setReaded(false);
             myConversation.child("lastMessage").setValue(m);
             yourConversation.child("lastMessage").setValue(m);
@@ -242,6 +270,105 @@ public class ChatActivity extends BaseActivity implements ChildEventListener {
             });
         }
     }
+
+    @Override
+    public void onChatAttachmentItemClicked(int position) {
+        galleryIntent();
+    }
+
+    private void galleryIntent() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        startActivityForResult(Intent.createChooser(intent, "Select File"), ATTACHMENT_PICTURE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case ATTACHMENT_PICTURE:
+                    onSelectFromGalleryResult(data);
+                    break;
+            }
+        }
+    }
+
+    private void onSelectFromGalleryResult(Intent data) {
+        File f = null;
+        String filePath = "";
+        Uri selectedImage = null;
+        if (data != null && data.getData() != null) {
+            try {
+                selectedImage = data.getData();
+                Log.v("file", selectedImage.toString());
+                String wholeID = DocumentsContract.getDocumentId(selectedImage);
+                String id = wholeID.split(":")[1];
+                String[] column = {MediaStore.Images.Media.DATA};
+                String sel = MediaStore.Images.Media._ID + "=?";
+                Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column, sel, new String[]{id}, null);
+                int columnIndex = cursor.getColumnIndex(column[0]);
+                if (cursor.moveToFirst()) {
+                    filePath = cursor.getString(columnIndex);
+                    Log.v("filePath", filePath);
+                    compressAndUpload(f);
+                } else {
+                }
+                cursor.close();
+                Log.wtf("selected", f.getAbsolutePath());
+            } catch (Exception x) {
+                try {
+                    f = new File(getRealPathFromURI(selectedImage));
+                    compressAndUpload(f);
+                } catch (Exception ex) {
+
+                }
+            }
+        }
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+
+    private void compressAndUpload(File f) {
+        final UserContent thisContent = new UserContent();
+        Log.wtf("selected", f.getAbsolutePath());
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), options);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
+        myStorageReference = myStorageReference.child("media" + new Date().getTime());
+        UploadTask uploadTask = myStorageReference.putBytes(out.toByteArray());
+        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if (task.isSuccessful()) {
+                    @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
+                    thisContent.setComment("");
+                    thisContent.setCreatedAt(new Date().getTime());
+                    thisContent.setCatContent("contentPic");
+                    thisContent.setContentUrl(downloadUrl.toString());
+                    thisContent.setStorageName(myStorageReference.getPath());
+                    attempSend(thisContent);
+                }
+            }
+        });
+    }
+
 }
 
 

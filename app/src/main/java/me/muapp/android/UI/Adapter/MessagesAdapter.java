@@ -78,12 +78,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
             @Override
             public boolean areContentsTheSame(Message oldItem, Message newItem) {
-                return false;
+                return oldItem.toString().equals(newItem.toString());
             }
 
             @Override
             public boolean areItemsTheSame(Message item1, Message item2) {
-                return false;
+                return item1.getKey().equals(item2.getKey());
             }
         });
     }

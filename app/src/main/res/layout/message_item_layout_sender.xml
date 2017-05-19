@@ -22,8 +22,11 @@
             android:id="@+id/txt_content_sender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:linksClickable="true"
             android:text="probando 123"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textColorLink="@android:color/white" />
 
         <com.github.curioustechizen.ago.RelativeTimeTextView
             android:id="@+id/txt_time_sender"

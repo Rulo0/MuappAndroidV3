@@ -169,4 +169,5 @@
     <string name="lbl_thank_you">¡Muchas gracias!</string>
     <string name="lbl_your_report_will_be_analized">Tu denuncia será analizada. Este usuario ya no podrá contactar contigo.</string>
     <string name="notif_sent_message">%s te ha enviado un mensaje</string>
+    <string name="lbl_add_attachment">Añadir adjunto</string>
 </resources>

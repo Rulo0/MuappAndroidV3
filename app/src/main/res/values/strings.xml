@@ -210,4 +210,5 @@
     <string name="lbl_thank_you">Thank you!</string>
     <string name="lbl_your_report_will_be_analized">Your report will be analyzed. This user will no longer be able to contact you.</string>
     <string name="notif_sent_message">%s has sent you a message</string>
+    <string name="lbl_add_attachment">Add attachment</string>
 </resources>

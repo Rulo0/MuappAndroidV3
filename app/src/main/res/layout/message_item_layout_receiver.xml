@@ -19,6 +19,8 @@
             android:id="@+id/txt_content_receiver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:linksClickable="true"
             android:text="probando 123" />
 
         <com.github.curioustechizen.ago.RelativeTimeTextView

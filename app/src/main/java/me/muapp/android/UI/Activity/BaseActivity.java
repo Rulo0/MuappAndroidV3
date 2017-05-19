@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.zplesac.connectionbuddy.ConnectionBuddy;
 import com.zplesac.connectionbuddy.cache.ConnectionBuddyCache;
 import com.zplesac.connectionbuddy.interfaces.ConnectivityChangeListener;
@@ -17,6 +19,8 @@ import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
+
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
 /**
  * Created by rulo on 22/03/17.
@@ -29,6 +33,7 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
     ProgressDialog dialog;
     User loggedUser;
     PreferenceHelper preferenceHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +42,13 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
         }
         loggedUser = new UserHelper(this).getLoggedUser();
         preferenceHelper = new PreferenceHelper(this);
+
+        //for FirebasePresence
+        if (loggedUser != null && loggedUser.getId() != null) {
+            DatabaseReference usr = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("online");
+            usr.onDisconnect().setValue(false);
+            usr.setValue(true);
+        }
     }
 
     @Override

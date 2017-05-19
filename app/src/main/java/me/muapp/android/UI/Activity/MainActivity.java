@@ -238,11 +238,6 @@ public class MainActivity extends BaseActivity implements
             requestPermissions();
         }
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
-
-        //for FirebasePresence
-        DatabaseReference usr = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("online");
-        usr.onDisconnect().setValue(false);
-        usr.setValue(true);
     }
 
     public static void disableABCShowHideAnimation(ActionBar actionBar) {
@@ -321,10 +316,6 @@ public class MainActivity extends BaseActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile_menu, menu);
-      /*  SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        search.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
-        search.setOnQueryTextListener(this);*/
         return super.onCreateOptionsMenu(menu);
     }
 
