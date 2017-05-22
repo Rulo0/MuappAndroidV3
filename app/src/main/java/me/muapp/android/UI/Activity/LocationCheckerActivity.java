@@ -82,11 +82,13 @@ public class LocationCheckerActivity extends AppCompatActivity implements View.O
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        boolean permissionsOk = true;
         switch (requestCode) {
             case REQUEST_LOCATION:
                 for (int i = 0, len = permissions.length; i < len; i++) {
                     String permission = permissions[i];
                     if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                        permissionsOk = false;
                         // user rejected the permission
                         boolean showRationale = shouldShowRequestPermissionRationale(permission);
                         if (!showRationale) {
@@ -96,7 +98,8 @@ public class LocationCheckerActivity extends AppCompatActivity implements View.O
                         }
                     }
                 }
-                redirectToNext();
+                if (permissionsOk)
+                    redirectToNext();
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Giphy.Data.GiphyEntries;
 import me.muapp.android.Classes.Giphy.Data.GiphyEntry;
 import me.muapp.android.Classes.Util.ProgressUtil;
@@ -33,6 +34,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static me.muapp.android.UI.Activity.AddGiphyDetailActivity.GIPHY_CODE;
+import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
 
 public class AddGiphyActivity extends BaseActivity implements SearchView.OnQueryTextListener {
     RecyclerView recycler_add_giphy;
@@ -40,13 +42,18 @@ public class AddGiphyActivity extends BaseActivity implements SearchView.OnQuery
     AddGiphyAdapter ada;
     ProgressUtil progressUtil;
     LinearLayout placeholder_giphy;
+    ChatReferences chatReferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_giphy);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        chatReferences = getIntent().getParcelableExtra(CONTENT_FROM_CHAT);
         ada = new AddGiphyAdapter(this);
+        if (chatReferences != null)
+            ada.setChatReferences(chatReferences);
         ada.setActivity(this);
         progress_giphy = (ProgressBar) findViewById(R.id.progress_giphy);
         recycler_add_giphy = (RecyclerView) findViewById(R.id.recycler_add_giphy);

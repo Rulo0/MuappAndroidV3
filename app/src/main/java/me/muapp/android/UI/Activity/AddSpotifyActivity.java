@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Spotify.Data.Song;
 import me.muapp.android.Classes.Spotify.Data.SpotifyResult;
 import me.muapp.android.Classes.Util.ProgressUtil;
@@ -35,15 +36,16 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static me.muapp.android.UI.Activity.AddSpotifyDetailActivity.SPOTIFY_REQUEST_CODE;
+import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
 
 public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQueryTextListener {
     public static String TAG = "AddSpotifyActivity";
-    /*SearchView srch_spotify_tracks;*/
     RecyclerView recycler_spotify;
     LinearLayout placeholder_spotify;
     ProgressBar progress_spotify;
     SpotifyAdapter ada;
     ProgressUtil progressUtil;
+    ChatReferences chatReferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +53,11 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
         ada = new SpotifyAdapter(this);
         setContentView(R.layout.activity_spotify_search);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //srch_spotify_tracks = (SearchView) findViewById(srch_spotify_tracks);
+        chatReferences = getIntent().getParcelableExtra(CONTENT_FROM_CHAT);
+        if (chatReferences != null)
+            ada.setChatReferences(chatReferences);
         placeholder_spotify = (LinearLayout) findViewById(R.id.placeholder_spotify);
         progress_spotify = (ProgressBar) findViewById(R.id.progress_spotify);
-        //srch_spotify_tracks.setOnQueryTextListener(this);
         recycler_spotify = (RecyclerView) findViewById(R.id.recycler_spotify);
         recycler_spotify.setLayoutManager(new LinearLayoutManager(this));
         recycler_spotify.setAdapter(ada);
@@ -118,7 +121,7 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
             if (songs.size() > 0) {
                 boolean mustShowPlaceholder = true;
                 for (Song s : songs) {
-                    if (!TextUtils.isEmpty(s.getAlbum().getHigherImage())) {
+                    if (!TextUtils.isEmpty(s.getAlbum().getHigherImage()) && !TextUtils.isEmpty(s.getPreviewUrl())) {
                         ada.addSong(s);
                         mustShowPlaceholder = false;
                     }

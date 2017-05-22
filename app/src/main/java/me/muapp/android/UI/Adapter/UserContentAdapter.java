@@ -197,7 +197,6 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     @Override
     public int getItemViewType(int position) {
-
         switch (position) {
             case 0:
                 return -1;

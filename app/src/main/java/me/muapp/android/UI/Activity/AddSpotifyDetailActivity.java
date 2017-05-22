@@ -25,10 +25,14 @@ import java.util.Date;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.muapp.android.Application.MuappApplication;
+import me.muapp.android.Classes.Chat.ChatReferences;
+import me.muapp.android.Classes.Chat.Message;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Spotify.Data.Song;
 import me.muapp.android.R;
+
+import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
 
 public class AddSpotifyDetailActivity extends BaseActivity implements MediaPlayer.OnPreparedListener {
     public static final String CURRENT_SONG = "CURRENT_SONG";
@@ -39,12 +43,14 @@ public class AddSpotifyDetailActivity extends BaseActivity implements MediaPlaye
     MediaPlayer mp;
     ImageButton btn_play_detail;
     EditText et_spotify_about;
+    ChatReferences chatReferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spotify_detail);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        chatReferences = getIntent().getParcelableExtra(CONTENT_FROM_CHAT);
         et_spotify_about = (EditText) findViewById(R.id.et_spotify_about);
         btn_play_detail = (ImageButton) findViewById(R.id.btn_play_detail);
         img_detail_album_blurred = (ImageView) findViewById(R.id.img_detail_album_blurred);
@@ -121,15 +127,33 @@ public class AddSpotifyDetailActivity extends BaseActivity implements MediaPlaye
         spotifyData.setName(currentSong.getName());
         spotifyData.setThumb(currentSong.getAlbum().getHigherImage());
         thisContent.setSpotifyData(spotifyData);
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
-        String key = ref.push().getKey();
-        ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                setResult(RESULT_OK);
-                finish();
-            }
-        });
+        if (chatReferences == null) {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
+            String key = ref.push().getKey();
+            ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    setResult(RESULT_OK);
+                    finish();
+                }
+            });
+        } else {
+            DatabaseReference myConversation = FirebaseDatabase.getInstance().getReferenceFromUrl(chatReferences.getMyConversationRef());
+            DatabaseReference yourConversation = FirebaseDatabase.getInstance().getReferenceFromUrl(chatReferences.getYourConversationRef());
+            Log.wtf("Attemp to write", myConversation.getRef().toString() + " | " + yourConversation.getRef().toString());
+            Message m = new Message();
+            m.setTimeStamp(new Date().getTime());
+            m.setSenderId(loggedUser.getId());
+            m.setContent(thisContent.getComment());
+            m.setAttachment(thisContent);
+            myConversation.child("conversation").child(myConversation.push().getKey()).setValue(m);
+            yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m);
+            m.setReaded(false);
+            myConversation.child("lastMessage").setValue(m);
+            yourConversation.child("lastMessage").setValue(m);
+            setResult(RESULT_OK);
+            finish();
+        }
     }
 
     @Override

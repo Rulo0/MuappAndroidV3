@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Youtube.Data.YoutubeVideo;
 import me.muapp.android.R;
@@ -22,6 +23,7 @@ import me.muapp.android.UI.Activity.AddYoutubeDetailActivity;
 
 import static me.muapp.android.UI.Activity.AddYoutubeDetailActivity.CURRENT_VIDEO;
 import static me.muapp.android.UI.Activity.AddYoutubeDetailActivity.YOUTUBE_REQUEST_CODE;
+import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
 
 /**
  * Created by rulo on 28/03/17.
@@ -33,6 +35,11 @@ public class YoutubeAdapter extends RecyclerView.Adapter<YoutubeAdapter.SongView
     private List<YoutubeVideo> videos;
     private Context mContext;
     private String userFBToken;
+    ChatReferences chatReferences;
+
+    public void setChatReferences(ChatReferences chatReferences) {
+        this.chatReferences = chatReferences;
+    }
 
     public YoutubeAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
@@ -92,6 +99,8 @@ public class YoutubeAdapter extends RecyclerView.Adapter<YoutubeAdapter.SongView
                 public void onClick(View v) {
                     Intent youtubeIntent = new Intent(mContext, AddYoutubeDetailActivity.class);
                     youtubeIntent.putExtra(CURRENT_VIDEO, video);
+                    if (chatReferences != null)
+                        youtubeIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
                     ((AddYoutubeActivity) mContext).startActivityForResult(youtubeIntent, YOUTUBE_REQUEST_CODE);
                 }
             });

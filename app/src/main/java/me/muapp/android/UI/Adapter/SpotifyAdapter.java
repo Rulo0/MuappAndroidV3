@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Spotify.Data.Song;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
@@ -24,6 +25,7 @@ import me.muapp.android.UI.Activity.AddSpotifyDetailActivity;
 
 import static me.muapp.android.UI.Activity.AddSpotifyDetailActivity.CURRENT_SONG;
 import static me.muapp.android.UI.Activity.AddSpotifyDetailActivity.SPOTIFY_REQUEST_CODE;
+import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
 
 /**
  * Created by rulo on 28/03/17.
@@ -35,6 +37,11 @@ public class SpotifyAdapter extends RecyclerView.Adapter<SpotifyAdapter.SongView
     private List<Song> songs;
     private Context mContext;
     private String userFBToken;
+    ChatReferences chatReferences;
+
+    public void setChatReferences(ChatReferences chatReferences) {
+        this.chatReferences = chatReferences;
+    }
 
     public SpotifyAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
@@ -84,6 +91,7 @@ public class SpotifyAdapter extends RecyclerView.Adapter<SpotifyAdapter.SongView
         }
 
         public void bind(final Song song) {
+            Log.wtf("binding", song.toString());
             Glide.with(mContext).load(song.getAlbum().getHigherImage()).centerCrop().placeholder(R.drawable.ic_spotify).into(img_spotify);
             txt_spotify_title.setText(song.getName());
             txt_spotify_artist.setText(song.getAlbum().getArtistNames());
@@ -92,6 +100,8 @@ public class SpotifyAdapter extends RecyclerView.Adapter<SpotifyAdapter.SongView
                 public void onClick(View v) {
                     Intent spotifyIntent = new Intent(mContext, AddSpotifyDetailActivity.class);
                     spotifyIntent.putExtra(CURRENT_SONG, new Gson().toJson(song));
+                    if (chatReferences != null)
+                        spotifyIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
                     Log.wtf("currentSong", song.toString());
                     ((AddSpotifyActivity) mContext).startActivityForResult(spotifyIntent, SPOTIFY_REQUEST_CODE);
                 }

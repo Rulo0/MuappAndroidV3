@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Util.ProgressUtil;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.Classes.Youtube.Data.YoutubeResult;
@@ -33,6 +34,7 @@ import okhttp3.Response;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 import static me.muapp.android.UI.Activity.AddYoutubeDetailActivity.YOUTUBE_REQUEST_CODE;
+import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
 
 public class AddYoutubeActivity extends BaseActivity implements SearchView.OnQueryTextListener {
     LinearLayout placeholder_youtube;
@@ -41,6 +43,7 @@ public class AddYoutubeActivity extends BaseActivity implements SearchView.OnQue
     RecyclerView recycler_youtube;
     YoutubeAdapter ada;
     private final String TAG = "AddYoutubeActivity";
+    ChatReferences chatReferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,9 @@ public class AddYoutubeActivity extends BaseActivity implements SearchView.OnQue
         setContentView(R.layout.activity_add_youtube);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ada = new YoutubeAdapter(this);
+        chatReferences = getIntent().getParcelableExtra(CONTENT_FROM_CHAT);
+        if (chatReferences != null)
+            ada.setChatReferences(chatReferences);
         placeholder_youtube = (LinearLayout) findViewById(R.id.placeholder_youtube);
         progress_youtube = (ProgressBar) findViewById(R.id.progress_youtube);
         recycler_youtube = (RecyclerView) findViewById(R.id.recycler_youtube);

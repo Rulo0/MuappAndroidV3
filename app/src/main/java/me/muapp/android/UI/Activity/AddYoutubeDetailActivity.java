@@ -16,11 +16,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Date;
 
 import me.muapp.android.Application.MuappApplication;
+import me.muapp.android.Classes.Chat.ChatReferences;
+import me.muapp.android.Classes.Chat.Message;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Youtube.Data.YoutubeVideo;
 import me.muapp.android.R;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
+import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
 
 public class AddYoutubeDetailActivity extends BaseActivity implements YouTubePlayer.OnInitializedListener {
     public static final String CURRENT_VIDEO = "CURRENT_VIDEO";
@@ -28,6 +31,7 @@ public class AddYoutubeDetailActivity extends BaseActivity implements YouTubePla
     YoutubeVideo currentVideo;
     EditText et_youtube_about;
     YouTubePlayerFragment youtube_fragment;
+    ChatReferences chatReferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,8 @@ public class AddYoutubeDetailActivity extends BaseActivity implements YouTubePla
                     .findFragmentById(R.id.youtube_fragment);
             youtube_fragment.initialize(getYoutubeApiKey(), this);
             currentVideo = getIntent().getParcelableExtra(CURRENT_VIDEO);
+            chatReferences = getIntent().getParcelableExtra(CONTENT_FROM_CHAT);
+            Log.wtf("AddYoutbe", chatReferences.toString());
         } catch (Exception x) {
             Log.wtf("currentVideo", x.getMessage());
             x.printStackTrace();
@@ -76,15 +82,33 @@ public class AddYoutubeDetailActivity extends BaseActivity implements YouTubePla
         thisContent.setCatContent("contentYtv");
         thisContent.setThumbUrl(currentVideo.getSnippet().getThumbnails().getHigh().getUrl());
         thisContent.setVideoId(currentVideo.getId().getVideoId());
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
-        String key = ref.push().getKey();
-        ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                setResult(RESULT_OK);
-                finish();
-            }
-        });
+        if (chatReferences == null) {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
+            String key = ref.push().getKey();
+            ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    setResult(RESULT_OK);
+                    finish();
+                }
+            });
+        } else {
+            DatabaseReference myConversation = FirebaseDatabase.getInstance().getReferenceFromUrl(chatReferences.getMyConversationRef());
+            DatabaseReference yourConversation = FirebaseDatabase.getInstance().getReferenceFromUrl(chatReferences.getYourConversationRef());
+            Message m = new Message();
+            m.setTimeStamp(new Date().getTime());
+            m.setSenderId(loggedUser.getId());
+            m.setContent(thisContent.getComment());
+            m.setAttachment(thisContent);
+            myConversation.child("conversation").child(myConversation.push().getKey()).setValue(m);
+            yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m);
+            m.setReaded(false);
+            myConversation.child("lastMessage").setValue(m);
+            yourConversation.child("lastMessage").setValue(m);
+            setResult(RESULT_OK);
+            finish();
+
+        }
     }
 
     @Override

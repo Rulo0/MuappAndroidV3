@@ -1,15 +1,20 @@
 package me.muapp.android.UI.Activity;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,9 +47,12 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Chat.Message;
 import me.muapp.android.Classes.Internal.UserContent;
@@ -63,7 +71,9 @@ import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
 public class ChatActivity extends BaseActivity implements ChildEventListener, AddAttachmentDialogFragment.ChatAttachmentListener {
     public static final String CONVERSATION_EXTRA = "CONVERSATION_EXTRA";
+    public static final String CONTENT_FROM_CHAT = "CONTENT_FROM_CHAT";
     private static final int ATTACHMENT_PICTURE = 911;
+    private static final int REQUEST_GALLERY_PERMISSIONS = 470;
     ConversationItem conversationItem;
     Toolbar toolbar;
     TextView toolbar_opponent_fullname;
@@ -75,6 +85,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     ImageButton chatAddAttachmentButton;
     DatabaseReference myConversation, yourConversation, yourPresence;
     StorageReference myStorageReference;
+    ChatReferences chatReferences;
     ValueEventListener presenceListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -89,6 +100,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
         }
     };
+    private boolean shouldSendToSettingsChatPermissions;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +111,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         conversationItem = getIntent().getParcelableExtra(CONVERSATION_EXTRA);
         if (conversationItem == null)
             finish();
-        Log.wtf("convesration", conversationItem.toString());
         myStorageReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("conversations").child(conversationItem.getKey());
         yourPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("online");
         messagesAdapter = new MessagesAdapter(this);
@@ -134,6 +146,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                         .child(conversationItem.getConversation().getOpponentConversationId());
 
         Log.wtf("convesration", "yours " + yourConversation.getRef().toString());
+
+        chatReferences = new ChatReferences(myConversation.getRef().toString(), yourConversation.getRef().toString());
 
         etMessage = (EditText) findViewById(R.id.etMessage);
         chatSendButton = (ImageButton) findViewById(R.id.chatSendButton);
@@ -212,15 +226,16 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
     private void attempSend(UserContent content) {
         if (!TextUtils.isEmpty(etMessage.getText().toString()) || content != null) {
+            Log.wtf("Sending message", "");
             Message m = new Message();
             m.setTimeStamp(new Date().getTime());
             m.setSenderId(loggedUser.getId());
             m.setContent(etMessage.getText().toString());
+            if (content != null)
+                m.setAttachment(content);
             etMessage.setText("");
             conversationReference.child(conversationReference.push().getKey()).setValue(m);
             yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m);
-            if (content != null)
-                m.setAttachment(content);
             m.setReaded(false);
             myConversation.child("lastMessage").setValue(m);
             yourConversation.child("lastMessage").setValue(m);
@@ -273,7 +288,27 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
     @Override
     public void onChatAttachmentItemClicked(int position) {
-        galleryIntent();
+        switch (position) {
+            //Pictures
+            case 2:
+                if (checkAndRequestGalleryPermissions())
+                    galleryIntent();
+                break;
+            case 3:
+                Intent giphyIntent = new Intent(this, AddGiphyActivity.class);
+                giphyIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
+                startActivity(giphyIntent);
+                break;
+            case 4:
+                Intent spotifyIntent = new Intent(this, AddSpotifyActivity.class);
+                spotifyIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
+                startActivity(spotifyIntent);
+            case 5:
+                Intent youtubeIntent = new Intent(this, AddYoutubeActivity.class);
+                youtubeIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
+                startActivity(youtubeIntent);
+        }
+
     }
 
     private void galleryIntent() {
@@ -290,7 +325,11 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case ATTACHMENT_PICTURE:
+                    Log.wtf("attach", "picture started");
                     onSelectFromGalleryResult(data);
+                    break;
+                default:
+                    sendPushMessage();
                     break;
             }
         }
@@ -367,6 +406,48 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 }
             }
         });
+    }
+
+
+    private boolean checkAndRequestGalleryPermissions() {
+        int permissionRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (permissionRead != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(ChatActivity.this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_GALLERY_PERMISSIONS);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    @TargetApi(Build.VERSION_CODES.M)
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean permissionsGranted = true;
+        switch (requestCode) {
+            case REQUEST_GALLERY_PERMISSIONS:
+                for (int i = 0, len = permissions.length; i < len; i++) {
+                    String permission = permissions[i];
+                    if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                        permissionsGranted = false;
+                        // user rejected the permission
+                        boolean showRationale = shouldShowRequestPermissionRationale(permission);
+                        if (!showRationale) {
+                            // user also CHECKED "never ask again"
+                            shouldSendToSettingsChatPermissions = true;
+                            break;
+                        }
+                    }
+                }
+                if (permissionsGranted) {
+                    galleryIntent();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
 }

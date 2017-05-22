@@ -16,12 +16,14 @@ import com.bumptech.glide.request.target.Target;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Giphy.Data.GiphyEntry;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.AddGiphyDetailActivity;
 
 import static me.muapp.android.UI.Activity.AddGiphyDetailActivity.CURRENT_GIPHY;
 import static me.muapp.android.UI.Activity.AddGiphyDetailActivity.GIPHY_CODE;
+import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
 
 /**
  * Created by rulo on 28/03/17.
@@ -32,9 +34,14 @@ public class AddGiphyAdapter extends RecyclerView.Adapter<AddGiphyAdapter.PhotoV
     private List<GiphyEntry> entries;
     private Context mContext;
     private Activity activity;
+    ChatReferences chatReferences;
 
     public void setActivity(Activity activity) {
         this.activity = activity;
+    }
+
+    public void setChatReferences(ChatReferences chatReferences) {
+        this.chatReferences = chatReferences;
     }
 
     public AddGiphyAdapter(Context context) {
@@ -105,6 +112,8 @@ public class AddGiphyAdapter extends RecyclerView.Adapter<AddGiphyAdapter.PhotoV
             if (activity != null) {
                 Intent giphyIntent = new Intent(activity, AddGiphyDetailActivity.class);
                 giphyIntent.putExtra(CURRENT_GIPHY, currentGiphy);
+                if (chatReferences != null)
+                    giphyIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
                 activity.startActivityForResult(giphyIntent, GIPHY_CODE);
             }
         }

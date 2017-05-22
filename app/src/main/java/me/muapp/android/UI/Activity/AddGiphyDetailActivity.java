@@ -18,25 +18,32 @@ import com.google.firebase.storage.StorageReference;
 import java.util.Date;
 
 import me.muapp.android.Application.MuappApplication;
+import me.muapp.android.Classes.Chat.ChatReferences;
+import me.muapp.android.Classes.Chat.Message;
 import me.muapp.android.Classes.Giphy.Data.GiphyEntry;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 
+import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
+
 
 public class AddGiphyDetailActivity extends BaseActivity {
     public static final String CURRENT_GIPHY = "CURRENT_GIPHY";
     public static final int GIPHY_CODE = 44;
+    ChatReferences chatReferences;
     EditText et_giphy_comment;
     ImageView img_giphy_detail;
     StorageReference mainReference;
     GiphyEntry currentGiphy;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_giphy_detail);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        chatReferences = getIntent().getParcelableExtra(CONTENT_FROM_CHAT);
         img_giphy_detail = (ImageView) findViewById(R.id.img_giphy_detail);
         et_giphy_comment = (EditText) findViewById(R.id.et_giphy_comment);
         if ((currentGiphy = getIntent().getParcelableExtra(CURRENT_GIPHY)) != null) {
@@ -67,6 +74,7 @@ public class AddGiphyDetailActivity extends BaseActivity {
 
     private void publishThisMedia() {
         showProgressDialog();
+
         final UserContent thisContent = new UserContent();
         thisContent.setComment(et_giphy_comment.getText().toString());
         thisContent.setCreatedAt(new Date().getTime());
@@ -77,15 +85,50 @@ public class AddGiphyDetailActivity extends BaseActivity {
         giphyMeasureData.setWidth(Integer.parseInt(currentGiphy.getImages().getOriginal().getWidth()));
         giphyMeasureData.setHeight(Integer.parseInt(currentGiphy.getImages().getOriginal().getHeight()));
         thisContent.setGiphyMeasureData(giphyMeasureData);
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
-        String key = ref.push().getKey();
-        ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                hideProgressDialog();
-                setResult(RESULT_OK);
-                finish();
-            }
-        });
+
+        if (chatReferences == null) {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
+            String key = ref.push().getKey();
+            ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    hideProgressDialog();
+                    setResult(RESULT_OK);
+                    finish();
+                }
+            });
+        } else {
+            DatabaseReference myConversation = FirebaseDatabase.getInstance().getReferenceFromUrl(chatReferences.getMyConversationRef());
+            DatabaseReference yourConversation = FirebaseDatabase.getInstance().getReferenceFromUrl(chatReferences.getYourConversationRef());
+
+            Log.wtf("Attemp to write", myConversation.getRef().toString() + " | " + yourConversation.getRef().toString());
+            Message m = new Message();
+            m.setTimeStamp(new Date().getTime());
+            m.setSenderId(loggedUser.getId());
+            m.setContent(thisContent.getComment());
+            m.setAttachment(thisContent);
+            myConversation.child("conversation").child(myConversation.push().getKey()).setValue(m);
+            yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m);
+            m.setReaded(false);
+            myConversation.child("lastMessage").setValue(m);
+            yourConversation.child("lastMessage").setValue(m);
+            hideProgressDialog();
+            setResult(RESULT_OK);
+            finish();
+/*
+            Message m = new Message();
+            m.setTimeStamp(new Date().getTime());
+            m.setSenderId(loggedUser.getId());
+            m.setContent(etMessage.getText().toString());
+            m.setReaded(false);
+            if (content != null)
+                m.setAttachment(content);
+            etMessage.setText("");
+            conversationReference.child(conversationReference.push().getKey()).setValue(m);
+            yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m);
+            myConversation.child("lastMessage").setValue(m);
+            yourConversation.child("lastMessage").setValue(m);
+*/
+        }
     }
 }

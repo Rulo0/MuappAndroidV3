@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    android:layout_marginLeft="64dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="4dp"
+    android:gravity="right"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:background="@android:color/black">
+
+        <com.google.android.youtube.player.YouTubeThumbnailView
+            android:id="@+id/youtube_thumbnail_sender"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            app:srcCompat="@drawable/ic_play_videos" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bg_message_sender_bottom"
+        android:gravity="right"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/txt_content_sender_youtube"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:linksClickable="true"
+            android:text="probando 123"
+            android:textColor="@android:color/white"
+            android:textColorLink="@android:color/white" />
+
+        <com.github.curioustechizen.ago.RelativeTimeTextView
+            android:id="@+id/txt_time_sender_youtube"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="hora"
+            android:textColor="@android:color/white"
+            android:textSize="10dp" />
+    </LinearLayout>
+
+</LinearLayout>
