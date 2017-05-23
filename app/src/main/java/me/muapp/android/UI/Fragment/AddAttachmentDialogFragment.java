@@ -26,16 +26,18 @@ import me.muapp.android.R;
  * <p>You activity (or fragment) needs to implement {@link ChatAttachmentListener}.</p>
  */
 public class AddAttachmentDialogFragment extends BottomSheetDialogFragment {
-
-    // TODO: Customize parameter argument names
-    private static final String ARG_ITEM_COUNT = "item_count";
     private ChatAttachmentListener mListener;
 
-    // TODO: Customize parameters
-    public static AddAttachmentDialogFragment newInstance(int itemCount) {
+    public enum AttachmentType {
+        TypePicture,
+        TypeGif,
+        TypeMusic,
+        TypeYoutube
+    }
+
+    public static AddAttachmentDialogFragment newInstance() {
         final AddAttachmentDialogFragment fragment = new AddAttachmentDialogFragment();
         final Bundle args = new Bundle();
-        args.putInt(ARG_ITEM_COUNT, itemCount);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,8 +52,8 @@ public class AddAttachmentDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         final RecyclerView recyclerView = (RecyclerView) view;
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        recyclerView.setAdapter(new ChatItemAdapter(getArguments().getInt(ARG_ITEM_COUNT)));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setAdapter(new ChatItemAdapter());
     }
 
     @Override
@@ -72,20 +74,20 @@ public class AddAttachmentDialogFragment extends BottomSheetDialogFragment {
     }
 
     public interface ChatAttachmentListener {
-        void onChatAttachmentItemClicked(int position);
+        void onChatAttachmentItemClicked(AttachmentType type);
     }
 
 
     private class ChatItemAdapter extends RecyclerView.Adapter<ChatItemAdapter.AddAttachmentHolder> {
-        private final int mItemCount;
-
         class ItemAttachment {
             String title;
             int resourceId;
+            AttachmentType attachmentType;
 
-            public ItemAttachment(int titleId, int resourceId) {
+            public ItemAttachment(int titleId, int resourceId, AttachmentType attachmentType) {
                 this.title = getContext().getString(titleId);
                 this.resourceId = resourceId;
+                this.attachmentType = attachmentType;
             }
 
             public String getTitle() {
@@ -95,20 +97,22 @@ public class AddAttachmentDialogFragment extends BottomSheetDialogFragment {
             public int getResourceId() {
                 return resourceId;
             }
+
+            public AttachmentType getAttachmentType() {
+                return attachmentType;
+            }
         }
 
         ArrayList<ItemAttachment> itemAttachments = new ArrayList<ItemAttachment>() {{
-            add(new ItemAttachment(R.string.lbl_add_about_me, R.drawable.ic_add_quotes));
-            add(new ItemAttachment(R.string.lbl_add_voice_note, R.drawable.ic_add_mic));
-            add(new ItemAttachment(R.string.lbl_add_gallery, R.drawable.ic_add_photo));
-            add(new ItemAttachment(R.string.lbl_add_giphy, R.drawable.ic_add_giphy));
-            add(new ItemAttachment(R.string.lbl_add_music, R.drawable.ic_add_spotify));
-            add(new ItemAttachment(R.string.lbl_add_video, R.drawable.ic_add_youtube));
+            add(new ItemAttachment(R.string.lbl_add_gallery, R.drawable.ic_add_photo, AttachmentType.TypePicture));
+            add(new ItemAttachment(R.string.lbl_add_giphy, R.drawable.ic_add_giphy, AttachmentType.TypeGif));
+            add(new ItemAttachment(R.string.lbl_add_music, R.drawable.ic_add_spotify, AttachmentType.TypeMusic));
+            add(new ItemAttachment(R.string.lbl_add_video, R.drawable.ic_add_youtube, AttachmentType.TypeYoutube));
         }};
 
 
-        ChatItemAdapter(int itemCount) {
-            mItemCount = itemCount;
+        ChatItemAdapter() {
+
         }
 
         @Override
@@ -123,7 +127,7 @@ public class AddAttachmentDialogFragment extends BottomSheetDialogFragment {
 
         @Override
         public int getItemCount() {
-            return mItemCount;
+            return itemAttachments.size();
         }
 
         class AddAttachmentHolder extends RecyclerView.ViewHolder {
@@ -135,20 +139,20 @@ public class AddAttachmentDialogFragment extends BottomSheetDialogFragment {
                 super(inflater.inflate(R.layout.fragment_chatitem_list_dialog_item, parent, false));
                 txt_attachment_title = (TextView) itemView.findViewById(R.id.txt_attachment_title);
                 btn_attachment_item = (ImageButton) itemView.findViewById(R.id.btn_attachment_item);
+            }
+
+            private void bind(final ItemAttachment itemAttachment) {
+                btn_attachment_item.setImageResource(itemAttachment.getResourceId());
+                txt_attachment_title.setText(String.valueOf(itemAttachment.getTitle()));
                 btn_attachment_item.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (mListener != null) {
-                            mListener.onChatAttachmentItemClicked(getAdapterPosition());
+                            mListener.onChatAttachmentItemClicked(itemAttachment.getAttachmentType());
                             dismiss();
                         }
                     }
                 });
-            }
-
-            private void bind(ItemAttachment itemAttachment) {
-                btn_attachment_item.setImageResource(itemAttachment.getResourceId());
-                txt_attachment_title.setText(String.valueOf(itemAttachment.getTitle()));
             }
 
         }

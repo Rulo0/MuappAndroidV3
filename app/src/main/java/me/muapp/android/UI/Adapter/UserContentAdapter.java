@@ -293,11 +293,9 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         public UserContentHolder(View itemView) {
             super(itemView);
         }
-
         ImageButton btnMenu;
         PopupMenu menu;
         UserContent itemContent;
-
         public void setBtnMenu(ImageButton btnMenu) {
             this.btnMenu = btnMenu;
             if (showMenuButton)

@@ -106,6 +106,13 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
         });
     }
 
+
+
+    private void showCommentLayout(Boolean showComment) {
+        container_write_comment_voicenote.setVisibility(showComment ? View.VISIBLE : View.GONE);
+        txt_hold_to_record.setVisibility(showComment ? View.GONE : View.VISIBLE);
+    }
+
     private void startRecording() {
         if (thisFile != null) {
             thisFile.delete();
@@ -157,11 +164,6 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
             Log.wtf("startRecording2", e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    private void showCommentLayout(Boolean showComment) {
-        container_write_comment_voicenote.setVisibility(showComment ? View.VISIBLE : View.GONE);
-        txt_hold_to_record.setVisibility(showComment ? View.GONE : View.VISIBLE);
     }
 
     private void stopRecording() {

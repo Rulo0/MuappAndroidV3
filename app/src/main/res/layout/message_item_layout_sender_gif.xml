@@ -40,7 +40,6 @@
             android:id="@+id/txt_time_sender_gif"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
             android:text="hora"
             android:textColor="@android:color/white"
             android:textSize="10dp" />

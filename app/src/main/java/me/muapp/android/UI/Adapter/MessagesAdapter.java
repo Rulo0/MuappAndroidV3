@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Chat.Message;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.SpotifyData;
@@ -53,6 +54,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     int screenWidth;
     String currentPlaying = "";
     ImageButton previewPlayedButton;
+    Boolean fromOpponent = true;
+    String myPhotoUrl;
+    String yourPhotoUrl;
+
+    public void setParticipantsPhotos(String myPhotoUrl, String yourPhotoUrl) {
+        this.myPhotoUrl = myPhotoUrl;
+        this.yourPhotoUrl = yourPhotoUrl;
+    }
 
     public void setLoggedUserId(Integer loggedUserId) {
         this.loggedUserId = loggedUserId;
@@ -145,7 +154,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     @Override
     public MessageContentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         MessageContentHolder holder;
-        Log.wtf("creatingHolder", viewType + "");
         switch (viewType) {
             //Text
             case TYPE_SENDER:
@@ -155,6 +163,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             case TYPE_RECEIVER:
                 View receiverView = mInflater.inflate(R.layout.message_item_layout_receiver, parent, false);
                 holder = new YourMessageContentHolder(receiverView);
+                break;
+            //Audio
+            case 1:
+                View senderViewVoiceNote = mInflater.inflate(R.layout.message_item_layout_sender_voicenote, parent, false);
+                holder = new MyAudioContentHolder(senderViewVoiceNote);
+                break;
+            case -1:
+                View receiverViewVoiceNote = mInflater.inflate(R.layout.message_item_layout_receiver_voicenote, parent, false);
+                holder = new YourAudioContentHolder(receiverViewVoiceNote);
                 break;
             //Gifs
             case 3:
@@ -183,6 +200,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 View receiverSpotifyView = mInflater.inflate(R.layout.message_item_layout_receiver_spotify, parent, false);
                 holder = new YourSpotifyContentHolder(receiverSpotifyView);
                 break;
+            //YouTube
             case 8:
                 View senderYoutubeView = mInflater.inflate(R.layout.message_item_layout_sender_youtube, parent, false);
                 holder = new MyYoutubeContentHolder(senderYoutubeView);
@@ -197,6 +215,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 break;
         }
         return holder;
+    }
+
+    public void clearMediaPlayer() {
+        if (mediaPlayer.isPlaying())
+            mediaPlayer.stop();
+        mediaPlayer.release();
+    }
+
+    public void stopMediaPlayer() {
+        if (mediaPlayer.isPlaying())
+            mediaPlayer.stop();
+        currentPlaying = "";
     }
 
     @Override
@@ -270,6 +300,132 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         public void bind(Message message) {
             txt_time_receiver.setReferenceTime(message.getTimeStamp());
             txt_content_receiver.setText(message.getContent());
+        }
+    }
+
+    public class MyAudioContentHolder extends MessageContentHolder implements View.OnClickListener {
+        RelativeTimeTextView txt_time_sender_voicenote;
+        ImageView img_sender_audio_face;
+        ImageButton btn_sender_audio_play_pause;
+        UserContent itemContent;
+
+        public MyAudioContentHolder(View itemView) {
+            super(itemView);
+            txt_time_sender_voicenote = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_voicenote);
+            img_sender_audio_face = (ImageView) itemView.findViewById(R.id.img_sender_audio_face);
+            btn_sender_audio_play_pause = (ImageButton) itemView.findViewById(R.id.btn_sender_audio_play_pause);
+        }
+
+        @Override
+        public void bind(Message message) {
+            itemContent = message.getAttachment();
+            txt_time_sender_voicenote.setReferenceTime(message.getTimeStamp());
+            Glide.with(context).load(myPhotoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(context)).into(img_sender_audio_face);
+            btn_sender_audio_play_pause.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            try {
+                if (!currentPlaying.equals(itemContent.getContentUrl())) {
+                    if (previewPlayedButton != null) {
+                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    }
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
+                    fromOpponent = false;
+                    Log.wtf("trying to play", currentPlaying);
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            btn_sender_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause_white));
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            currentPlaying = "firebasestorage";
+                            btn_sender_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play_white));
+                        }
+                    });
+                    mediaPlayer.prepareAsync();
+                    previewPlayedButton = (ImageButton) v;
+                } else {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        btn_sender_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play_white));
+                    } else {
+                        mediaPlayer.start();
+                        btn_sender_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause_white));
+                    }
+                }
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+        }
+    }
+
+    public class YourAudioContentHolder extends MessageContentHolder implements View.OnClickListener {
+        RelativeTimeTextView txt_time_receiver_voicenote;
+        ImageView img_receiver_audio_face;
+        ImageButton btn_receiver_audio_play_pause;
+        UserContent itemContent;
+
+        public YourAudioContentHolder(View itemView) {
+            super(itemView);
+            txt_time_receiver_voicenote = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_receiver_voicenote);
+            img_receiver_audio_face = (ImageView) itemView.findViewById(R.id.img_receiver_audio_face);
+            btn_receiver_audio_play_pause = (ImageButton) itemView.findViewById(R.id.btn_receiver_audio_play_pause);
+        }
+
+        @Override
+        public void bind(Message message) {
+            itemContent = message.getAttachment();
+            txt_time_receiver_voicenote.setReferenceTime(message.getTimeStamp());
+            Glide.with(context).load(yourPhotoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(context)).into(img_receiver_audio_face);
+            btn_receiver_audio_play_pause.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            try {
+                if (!currentPlaying.equals(itemContent.getContentUrl())) {
+                    if (previewPlayedButton != null) {
+                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    }
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
+                    fromOpponent = true;
+                    Log.wtf("trying to play", currentPlaying);
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            currentPlaying = "firebasestorage";
+                            btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                        }
+                    });
+                    mediaPlayer.prepareAsync();
+                    previewPlayedButton = (ImageButton) v;
+                } else {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                    } else {
+                        mediaPlayer.start();
+                        btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
+                    }
+                }
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
         }
     }
 
@@ -439,7 +595,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
                         if (previewPlayedButton != null) {
-                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context,  fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
@@ -530,7 +686,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
                         if (previewPlayedButton != null) {
-                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context,  fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());

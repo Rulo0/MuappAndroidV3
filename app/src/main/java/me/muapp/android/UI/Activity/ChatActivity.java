@@ -1,27 +1,38 @@
 package me.muapp.android.UI.Activity;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Environment;
+import android.os.Vibrator;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -29,6 +40,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.dewarder.holdinglibrary.HoldingButtonLayout;
+import com.dewarder.holdinglibrary.HoldingButtonLayoutListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
@@ -44,8 +57,10 @@ import com.google.firebase.storage.UploadTask;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,8 +87,16 @@ import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 public class ChatActivity extends BaseActivity implements ChildEventListener, AddAttachmentDialogFragment.ChatAttachmentListener {
     public static final String CONVERSATION_EXTRA = "CONVERSATION_EXTRA";
     public static final String CONTENT_FROM_CHAT = "CONTENT_FROM_CHAT";
+    private static final String AUDIO_RECORDER_FILE_EXT_M4A = ".m4a";
+    private static final String AUDIO_RECORDER_FOLDER = "Muapp/voiceNotes";
+    private MediaRecorder recorder = null;
+    CountDownTimer voiceCountdown;
     private static final int ATTACHMENT_PICTURE = 911;
     private static final int REQUEST_GALLERY_PERMISSIONS = 470;
+    private static final int REQUEST_MIC_PERMISSIONS = 471;
+    private static final float SLIDE_TO_CANCEL_ALPHA_MULTIPLIER = 2.5f;
+    private File thisFile;
+    HoldingButtonLayout input_holder;
     ConversationItem conversationItem;
     Toolbar toolbar;
     TextView toolbar_opponent_fullname;
@@ -81,11 +104,12 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     DatabaseReference conversationReference;
     MessagesAdapter messagesAdapter;
     EditText etMessage;
-    ImageButton chatSendButton;
+    ImageButton chatSendButton, chatSendButtonVoicenote;
     ImageButton chatAddAttachmentButton;
     DatabaseReference myConversation, yourConversation, yourPresence;
     StorageReference myStorageReference;
     ChatReferences chatReferences;
+    Vibrator v;
     ValueEventListener presenceListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -103,10 +127,20 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     private boolean shouldSendToSettingsChatPermissions;
 
 
+    // Voice note stuff
+    int mAnimationDuration;
+    View slide_to_cancel;
+    View input_container;
+    ViewPropertyAnimator mTimeAnimator;
+    ViewPropertyAnimator mSlideToCancelAnimator;
+    ViewPropertyAnimator mInputAnimator;
+    private boolean hasAudioPermissions;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
         conversationItem = getIntent().getParcelableExtra(CONVERSATION_EXTRA);
         if (conversationItem == null)
@@ -114,6 +148,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         myStorageReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("conversations").child(conversationItem.getKey());
         yourPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("online");
         messagesAdapter = new MessagesAdapter(this);
+        messagesAdapter.setParticipantsPhotos(loggedUser.getPhoto(), conversationItem.getProfilePicture());
         messagesAdapter.setLoggedUserId(loggedUser.getId());
         conversationReference = /*FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
@@ -148,9 +183,47 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         Log.wtf("convesration", "yours " + yourConversation.getRef().toString());
 
         chatReferences = new ChatReferences(myConversation.getRef().toString(), yourConversation.getRef().toString());
-
+        input_holder = (HoldingButtonLayout) findViewById(R.id.input_holder);
+        slide_to_cancel = findViewById(R.id.slide_to_cancel);
+        input_container = findViewById(R.id.input_container);
         etMessage = (EditText) findViewById(R.id.etMessage);
+        etMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().trim().length() == 0) {
+                    chatSendButton.setVisibility(View.GONE);
+                    if (chatSendButtonVoicenote.getVisibility() == View.GONE)
+                        chatSendButtonVoicenote.setVisibility(View.VISIBLE);
+                    if (hasAudioPermissions)
+                        input_holder.setButtonEnabled(true);
+                } else {
+                    if (chatSendButton.getVisibility() == View.GONE)
+                        chatSendButton.setVisibility(View.VISIBLE);
+                    if (chatSendButtonVoicenote.getVisibility() == View.VISIBLE)
+                        chatSendButtonVoicenote.setVisibility(View.GONE);
+                    if (hasAudioPermissions)
+                        input_holder.setButtonEnabled(false);
+                }
+            }
+        });
         chatSendButton = (ImageButton) findViewById(R.id.chatSendButton);
+        chatSendButtonVoicenote = (ImageButton) findViewById(R.id.chatSendButtonVoicenote);
+        chatSendButtonVoicenote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         chatAddAttachmentButton = (ImageButton) findViewById(R.id.chatAddAttachmentButton);
         toolbar_opponent_fullname = (TextView) findViewById(R.id.toolbar_opponent_fullname);
         toolbar_opponent_fullname.setText(conversationItem.getFullName());
@@ -174,9 +247,12 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         chatAddAttachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddAttachmentDialogFragment.newInstance(6).show(getSupportFragmentManager(), "attach");
+                AddAttachmentDialogFragment.newInstance().show(getSupportFragmentManager(), "attach");
             }
         });
+
+
+        setupVoicenote();
     }
 
 
@@ -190,10 +266,16 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     @Override
     protected void onPause() {
         super.onPause();
+        messagesAdapter.stopMediaPlayer();
         conversationReference.removeEventListener(this);
         yourPresence.removeEventListener(presenceListener);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        messagesAdapter.clearMediaPlayer();
+    }
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -259,7 +341,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 notification.put("color", "#ff666e");
                 notification.put("sound", "default");
                 notification.put("body_loc_key", "notif_sent_message");
-                notification.put("body_loc_args", new JSONArray(new String[]{conversationItem.getName()}));
+                notification.put("body_loc_args", new JSONArray(new String[]{loggedUser.getFirstName()}));
                 sendObject.put("notification", notification);
             } catch (Exception x) {
 
@@ -287,26 +369,28 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
     @Override
-    public void onChatAttachmentItemClicked(int position) {
-        switch (position) {
+    public void onChatAttachmentItemClicked(AddAttachmentDialogFragment.AttachmentType attachmentType) {
+        switch (attachmentType) {
             //Pictures
-            case 2:
+            case TypePicture:
                 if (checkAndRequestGalleryPermissions())
                     galleryIntent();
                 break;
-            case 3:
+            case TypeGif:
                 Intent giphyIntent = new Intent(this, AddGiphyActivity.class);
                 giphyIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
                 startActivity(giphyIntent);
                 break;
-            case 4:
+            case TypeMusic:
                 Intent spotifyIntent = new Intent(this, AddSpotifyActivity.class);
                 spotifyIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
                 startActivity(spotifyIntent);
-            case 5:
+                break;
+            case TypeYoutube:
                 Intent youtubeIntent = new Intent(this, AddYoutubeActivity.class);
                 youtubeIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
                 startActivity(youtubeIntent);
+                break;
         }
 
     }
@@ -390,8 +474,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), options);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
-        myStorageReference = myStorageReference.child("media" + new Date().getTime());
-        UploadTask uploadTask = myStorageReference.putBytes(out.toByteArray());
+        final StorageReference imageReference = myStorageReference.child("media" + new Date().getTime());
+        UploadTask uploadTask = imageReference.putBytes(out.toByteArray());
         uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
@@ -401,7 +485,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                     thisContent.setCreatedAt(new Date().getTime());
                     thisContent.setCatContent("contentPic");
                     thisContent.setContentUrl(downloadUrl.toString());
-                    thisContent.setStorageName(myStorageReference.getPath());
+                    thisContent.setStorageName(imageReference.getPath());
                     attempSend(thisContent);
                 }
             }
@@ -420,6 +504,40 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             return false;
         }
         return true;
+    }
+
+    private boolean checkAndRequestMicPermissions() {
+        int permissionMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+        int permissionStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (permissionMic != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.RECORD_AUDIO);
+        }
+        if (permissionStorage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.RECORD_AUDIO);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(ChatActivity.this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_MIC_PERMISSIONS);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PermissionChecker.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PermissionChecker.PERMISSION_GRANTED) {
+            hasAudioPermissions = false;
+            input_holder.setButtonEnabled(false);
+            chatSendButtonVoicenote.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkAndRequestMicPermissions();
+                }
+            });
+        } else {
+            hasAudioPermissions = true;
+        }
     }
 
     @Override
@@ -445,8 +563,237 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                     galleryIntent();
                 }
                 break;
+            case REQUEST_MIC_PERMISSIONS:
+                for (int i = 0, len = permissions.length; i < len; i++) {
+                    String permission = permissions[i];
+                    if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                        permissionsGranted = false;
+                        // user rejected the permission
+                        boolean showRationale = shouldShowRequestPermissionRationale(permission);
+                        if (!showRationale) {
+                            // user also CHECKED "never ask again"
+                            shouldSendToSettingsChatPermissions = true;
+                            break;
+                        }
+                    }
+                }
+                if (permissionsGranted) {
+                    input_holder.setButtonEnabled(true);
+                }
+                break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+//Voicenote Setup
+
+    private void setupVoicenote() {
+        input_holder.setIcon(R.drawable.ic_mic_white);
+        mAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        input_holder.addListener(new HoldingButtonLayoutListener() {
+            @Override
+            public void onBeforeExpand() {
+                cancelAllAnimations();
+                slide_to_cancel.setTranslationX(0f);
+                slide_to_cancel.setAlpha(0f);
+                slide_to_cancel.setVisibility(View.VISIBLE);
+                mSlideToCancelAnimator = slide_to_cancel.animate().alpha(1f).setDuration(mAnimationDuration);
+                mSlideToCancelAnimator.start();
+
+                mInputAnimator = input_container.animate().alpha(0f).setDuration(mAnimationDuration);
+                mInputAnimator.setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        input_container.setVisibility(View.INVISIBLE);
+                        mInputAnimator.setListener(null);
+                    }
+                });
+                mInputAnimator.start();
+            /*    mTime.setTranslationY(mTime.getHeight());
+                mTime.setAlpha(0f);
+                mTime.setVisibility(View.VISIBLE);
+                mTimeAnimator = mTime.animate().translationY(0f).alpha(1f).setDuration(mAnimationDuration);
+                mTimeAnimator.start();*/
+            }
+
+            @Override
+            public void onExpand() {
+                startRecording();
+            }
+
+            @Override
+            public void onBeforeCollapse() {
+                cancelAllAnimations();
+                mSlideToCancelAnimator = slide_to_cancel.animate().alpha(0f).setDuration(mAnimationDuration);
+                mSlideToCancelAnimator.setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        slide_to_cancel.setVisibility(View.INVISIBLE);
+                        mSlideToCancelAnimator.setListener(null);
+                    }
+                });
+                mSlideToCancelAnimator.start();
+
+                input_container.setAlpha(0f);
+                input_container.setVisibility(View.VISIBLE);
+                mInputAnimator = input_container.animate().alpha(1f).setDuration(mAnimationDuration);
+                mInputAnimator.start();
+            }
+
+            @Override
+            public void onCollapse(boolean isCancel) {
+                stopRecording(!isCancel);
+                Log.wtf("collapse", !isCancel + "");
+            }
+
+            @Override
+            public void onOffsetChanged(float offset, boolean isCancel) {
+                slide_to_cancel.setTranslationX(-input_holder.getWidth() * offset);
+                slide_to_cancel.setAlpha(1 - SLIDE_TO_CANCEL_ALPHA_MULTIPLIER * offset);
+                if (offset > 0.65f) {
+                    input_holder.cancel();
+                }
+            }
+        });
+    }
+
+    private void cancelAllAnimations() {
+        if (mInputAnimator != null) {
+            mInputAnimator.cancel();
+        }
+
+        if (mSlideToCancelAnimator != null) {
+            mSlideToCancelAnimator.cancel();
+        }
+
+        if (mTimeAnimator != null) {
+            mTimeAnimator.cancel();
+        }
+    }
+
+    private void startRecording() {
+        if (thisFile != null) {
+            thisFile.delete();
+        }
+        v.vibrate(100);
+        //For timer
+        /*final Float Length = 20000f;
+        final Float Period = 1f;
+        voiceCountdown = new CountDownTimer(Length.longValue(), Period.longValue()) {
+            @Override
+            public void onTick(long millisUntilFinished_) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                stopRecording(true);
+
+            }
+        }.start();
+        */
+        thisFile = new File(getFilename());
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        recorder.setOutputFile(thisFile.getAbsolutePath());
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        recorder.setAudioEncodingBitRate(256);
+        recorder.setAudioChannels(1);
+        recorder.setAudioSamplingRate(44100);
+        recorder.setOnErrorListener(new MediaRecorder.OnErrorListener() {
+            @Override
+            public void onError(MediaRecorder mr, int what, int extra) {
+                Log.v("RECORDING", "Error: " + what + ", " + extra);
+            }
+        });
+        recorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
+            @Override
+            public void onInfo(MediaRecorder mr, int what, int extra) {
+                Log.v("RECORDING", "Error: " + what + ", " + extra);
+            }
+        });
+        try {
+            recorder.prepare();
+            recorder.start();
+        } catch (IllegalStateException e) {
+            Log.wtf("startRecording1", e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.wtf("startRecording2", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private String getFilename() {
+        String filepath = Environment.getExternalStorageDirectory().getPath();
+        File newfile = new File(filepath, AUDIO_RECORDER_FOLDER);
+        if (!newfile.exists()) {
+            newfile.mkdirs();
+        }
+        String fname = (newfile.getAbsolutePath() + "/" + "voiceNote" + new Date().getTime() + AUDIO_RECORDER_FILE_EXT_M4A);
+        Log.wtf("VOICENOTE", fname);
+        File f = new File(fname);
+        if (f.exists())
+            f.delete();
+        return fname;
+    }
+
+    private void stopRecording(boolean sendFile) {
+        if (voiceCountdown != null)
+            voiceCountdown.cancel();
+        try {
+            if (recorder != null) {
+                recorder.stop();
+                recorder.reset();
+                recorder.release();
+                recorder = null;
+                v.vibrate(100);
+                if (sendFile) {
+                    sendVoiceNote(thisFile);
+                } else {
+                    Log.wtf("Sending", "delete " + thisFile.getAbsolutePath());
+                    thisFile.delete();
+                    thisFile = null;
+                }
+            }
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+    }
+
+    private void sendVoiceNote(final File f) {
+        if (thisFile.exists()) {
+            try {
+                int size = (int) f.length();
+                byte[] bytes = new byte[size];
+                final UserContent thisContent = new UserContent();
+                thisContent.setCreatedAt(new Date().getTime());
+                thisContent.setLikes(0);
+                thisContent.setCatContent("contentAud");
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(f));
+                buf.read(bytes, 0, bytes.length);
+                buf.close();
+                final StorageReference audioReference = myStorageReference.child("audio" + new Date().getTime());
+                UploadTask uploadTask = audioReference.putBytes(bytes);
+                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            @SuppressWarnings("VisibleForTests") Uri downloadUrl = task.getResult().getDownloadUrl();
+                            thisContent.setContentUrl(downloadUrl.toString());
+                            thisContent.setStorageName(audioReference.getPath());
+                            Log.wtf("Sending complete", thisContent.toString());
+                            attempSend(thisContent);
+                            f.delete();
+                            thisFile = null;
+                        }
+                    }
+                });
+            } catch (Exception x) {
+
+            }
         }
     }
 
