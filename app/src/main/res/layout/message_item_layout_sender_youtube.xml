@@ -48,14 +48,28 @@
             android:textColor="@android:color/white"
             android:textColorLink="@android:color/white" />
 
-        <com.github.curioustechizen.ago.RelativeTimeTextView
-            android:id="@+id/txt_time_sender_youtube"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:text="hora"
-            android:textColor="@android:color/white"
-            android:textSize="10dp" />
+            android:orientation="horizontal">
+
+            <com.github.curioustechizen.ago.RelativeTimeTextView
+                android:id="@+id/txt_time_sender_youtube"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="hora"
+                android:textColor="@android:color/white"
+                android:textSize="10dp" />
+
+            <ImageView
+                android:id="@+id/img_indicator_sender_youtube"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_margin="4dp"
+                app:srcCompat="@drawable/ic_chat_indicator_received" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

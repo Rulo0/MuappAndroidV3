@@ -60,6 +60,7 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
 
             @Override
             public boolean areContentsTheSame(ConversationItem oldItem, ConversationItem newItem) {
+                oldItem.getConversation().getLastMessage().toString().equals(newItem.getConversation().getLastMessage().toString());
                 return oldItem.toString().equals(newItem.toString());
             }
 

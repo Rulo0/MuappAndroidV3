@@ -212,4 +212,6 @@
     <string name="notif_sent_message">%s has sent you a message</string>
     <string name="lbl_add_attachment">Add attachment</string>
     <string name="lbl_cancel_voicenote">Slide to cancel</string>
+    <string name="lbl_match_header">MATCH!</string>
+    <string name="format_match_names">%s and you like each other.</string>
 </resources>

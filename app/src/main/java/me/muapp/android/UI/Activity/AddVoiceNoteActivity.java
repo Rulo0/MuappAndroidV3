@@ -158,10 +158,8 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
             recorder.prepare();
             recorder.start();
         } catch (IllegalStateException e) {
-            Log.wtf("startRecording1", e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
-            Log.wtf("startRecording2", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -224,7 +222,6 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
             newfile.mkdirs();
         }
         String fname = (newfile.getAbsolutePath() + "/" + "voiceNote" + new Date().getTime() + AUDIO_RECORDER_FILE_EXT_M4A);
-        Log.wtf("VOICENOTE", fname);
         File f = new File(fname);
         if (f.exists())
             f.delete();
@@ -317,7 +314,6 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                         @SuppressWarnings("VisibleForTests") Long transfered = taskSnapshot.getBytesTransferred();
                         @SuppressWarnings("VisibleForTests") Long total = taskSnapshot.getTotalByteCount();
-                        Log.wtf("Uploading", transfered + " of " + total);
                     }
                 });
                 uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -334,7 +330,6 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                                 public void onSuccess(Void aVoid) {
                                     long stopTime = System.currentTimeMillis();
                                     long elapsedTime = stopTime - startTime;
-                                    Log.wtf("Upload time", elapsedTime + "");
                                     hideProgressDialog();
                                     thisFile.delete();
                                     setResult(RESULT_OK);

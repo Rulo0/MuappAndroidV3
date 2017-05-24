@@ -3,7 +3,6 @@ package me.muapp.android.UI.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +90,6 @@ public class SpotifyAdapter extends RecyclerView.Adapter<SpotifyAdapter.SongView
         }
 
         public void bind(final Song song) {
-            Log.wtf("binding", song.toString());
             Glide.with(mContext).load(song.getAlbum().getHigherImage()).centerCrop().placeholder(R.drawable.ic_spotify).into(img_spotify);
             txt_spotify_title.setText(song.getName());
             txt_spotify_artist.setText(song.getAlbum().getArtistNames());
@@ -102,7 +100,6 @@ public class SpotifyAdapter extends RecyclerView.Adapter<SpotifyAdapter.SongView
                     spotifyIntent.putExtra(CURRENT_SONG, new Gson().toJson(song));
                     if (chatReferences != null)
                         spotifyIntent.putExtra(CONTENT_FROM_CHAT, chatReferences);
-                    Log.wtf("currentSong", song.toString());
                     ((AddSpotifyActivity) mContext).startActivityForResult(spotifyIntent, SPOTIFY_REQUEST_CODE);
                 }
             });

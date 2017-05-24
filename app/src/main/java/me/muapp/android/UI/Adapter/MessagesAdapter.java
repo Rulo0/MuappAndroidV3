@@ -1,6 +1,7 @@
 package me.muapp.android.UI.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.media.MediaPlayer;
@@ -26,9 +27,12 @@ import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+import com.google.firebase.database.ServerValue;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
@@ -37,6 +41,7 @@ import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
+import me.muapp.android.UI.Activity.YoutubeViewActivity;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 
@@ -57,6 +62,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     Boolean fromOpponent = true;
     String myPhotoUrl;
     String yourPhotoUrl;
+    Long lastSeenByOpponent = 0L;
+    private Set<MessageContentHolder> mBoundViewHolders = new HashSet<>();
+
+
+    public void setLastSeenByOpponent(Long lastSeenByOpponent) {
+        this.lastSeenByOpponent = lastSeenByOpponent;
+        Log.wtf("lastSeenByOpponent", "Now: " + lastSeenByOpponent);
+        for (MessageContentHolder holder : mBoundViewHolders) {
+            holder.updateIndicators();
+        }
+    }
 
     public void setParticipantsPhotos(String myPhotoUrl, String yourPhotoUrl) {
         this.myPhotoUrl = myPhotoUrl;
@@ -94,7 +110,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     public void addMessage(Message m) {
         messageList.add(m);
-
     }
 
     @Override
@@ -247,6 +262,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     @Override
     public void onBindViewHolder(MessageContentHolder holder, int position) {
         holder.bind(messageList.get(position));
+        mBoundViewHolders.add(holder);
+    }
+
+    @Override
+    public void onViewRecycled(MessageContentHolder holder) {
+        super.onViewRecycled(holder);
+        mBoundViewHolders.remove(holder);
     }
 
     @Override
@@ -256,31 +278,66 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     interface UserMessagesInterface {
         void bind(Message message);
+
+        void setIndicatorView(ImageView indicatorView);
+
+        void updateIndicators();
     }
 
     public class MessageContentHolder extends RecyclerView.ViewHolder implements UserMessagesInterface {
+        ImageView indicatorView;
+        Long messageTimeStamp;
+        UserContent attachment;
+
         public MessageContentHolder(View itemView) {
             super(itemView);
         }
 
         @Override
         public void bind(Message message) {
+            if (message.getAttachment() != null)
+                this.attachment = message.getAttachment();
+            this.messageTimeStamp = message.getTimeStamp();
+            if (this.indicatorView != null) {
+                if (message.getTimeStamp() <= lastSeenByOpponent)
+                    this.indicatorView.setImageResource(R.drawable.ic_chat_indicator_read);
+                else
+                    this.indicatorView.setImageResource(R.drawable.ic_chat_indicator_received);
+            }
+        }
 
+        @Override
+        public void setIndicatorView(ImageView indicatorView) {
+            this.indicatorView = indicatorView;
+        }
+
+        @Override
+        public void updateIndicators() {
+            if (this.indicatorView != null) {
+                if (this.messageTimeStamp <= lastSeenByOpponent)
+                    this.indicatorView.setImageResource(R.drawable.ic_chat_indicator_read);
+                else
+                    this.indicatorView.setImageResource(R.drawable.ic_chat_indicator_received);
+            }
         }
     }
 
     public class MyMessageContentHolder extends MessageContentHolder {
         RelativeTimeTextView txt_time_sender;
         TextView txt_content_sender;
+        ImageView img_indicator_sender;
 
         public MyMessageContentHolder(View itemView) {
             super(itemView);
             txt_time_sender = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender);
             txt_content_sender = (TextView) itemView.findViewById(R.id.txt_content_sender);
+            img_indicator_sender = (ImageView) itemView.findViewById(R.id.img_indicator_sender);
+            setIndicatorView(img_indicator_sender);
         }
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             txt_time_sender.setReferenceTime(message.getTimeStamp());
             txt_content_sender.setText(message.getContent());
         }
@@ -298,6 +355,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             txt_time_receiver.setReferenceTime(message.getTimeStamp());
             txt_content_receiver.setText(message.getContent());
         }
@@ -307,6 +365,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         RelativeTimeTextView txt_time_sender_voicenote;
         ImageView img_sender_audio_face;
         ImageButton btn_sender_audio_play_pause;
+        ImageView img_indicator_sender_voicenote;
         UserContent itemContent;
 
         public MyAudioContentHolder(View itemView) {
@@ -314,10 +373,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             txt_time_sender_voicenote = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_voicenote);
             img_sender_audio_face = (ImageView) itemView.findViewById(R.id.img_sender_audio_face);
             btn_sender_audio_play_pause = (ImageButton) itemView.findViewById(R.id.btn_sender_audio_play_pause);
+            img_indicator_sender_voicenote = (ImageView) itemView.findViewById(R.id.img_indicator_sender_voicenote);
+            setIndicatorView(img_indicator_sender_voicenote);
         }
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             itemContent = message.getAttachment();
             txt_time_sender_voicenote.setReferenceTime(message.getTimeStamp());
             Glide.with(context).load(myPhotoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(context)).into(img_sender_audio_face);
@@ -334,7 +396,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
                     fromOpponent = false;
-                    Log.wtf("trying to play", currentPlaying);
                     mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mp) {
@@ -381,6 +442,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             itemContent = message.getAttachment();
             txt_time_receiver_voicenote.setReferenceTime(message.getTimeStamp());
             Glide.with(context).load(yourPhotoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(context)).into(img_receiver_audio_face);
@@ -397,7 +459,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
                     fromOpponent = true;
-                    Log.wtf("trying to play", currentPlaying);
                     mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mp) {
@@ -433,16 +494,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         RelativeTimeTextView txt_time_sender_gif;
         TextView txt_content_sender_gif;
         ImageView img_gif_sender;
+        ImageView img_indicator_sender_gif;
 
         public MyGifContentHolder(View itemView) {
             super(itemView);
             img_gif_sender = (ImageView) itemView.findViewById(R.id.img_gif_sender);
             txt_time_sender_gif = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_gif);
             txt_content_sender_gif = (TextView) itemView.findViewById(R.id.txt_content_sender_gif);
+            img_indicator_sender_gif = (ImageView) itemView.findViewById(R.id.img_indicator_sender_gif);
+            setIndicatorView(img_indicator_sender_gif);
         }
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             txt_time_sender_gif.setReferenceTime(message.getTimeStamp());
             if (!TextUtils.isEmpty(message.getContent()))
                 txt_content_sender_gif.setText(message.getContent());
@@ -459,9 +524,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                     Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_sender);
                 }
             } catch (Exception x) {
-                Log.wtf("Binding Error", x.getMessage());
                 x.printStackTrace();
             }
+
         }
     }
 
@@ -495,7 +560,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                     Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_receiver);
                 }
             } catch (Exception x) {
-                Log.wtf("Binding Error", x.getMessage());
                 x.printStackTrace();
             }
         }
@@ -504,15 +568,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     public class MyImageContentHolder extends MessageContentHolder {
         RelativeTimeTextView txt_time_sender_image;
         ImageView img_sender_image;
+        ImageView img_indicator_sender_image;
 
         public MyImageContentHolder(View itemView) {
             super(itemView);
             txt_time_sender_image = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_image);
             img_sender_image = (ImageView) itemView.findViewById(R.id.img_sender_image);
+            img_indicator_sender_image = (ImageView) itemView.findViewById(R.id.img_indicator_sender_image);
+            setIndicatorView(img_indicator_sender_image);
         }
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             txt_time_sender_image.setReferenceTime(message.getTimeStamp());
             Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_sender_image);
         }
@@ -533,7 +601,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             try {
                 txt_time_receiver_image.setReferenceTime(message.getTimeStamp());
             } catch (Exception x) {
-                Log.wtf("Error in", message.toString());
+
             }
             Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_receiver_image);
         }
@@ -546,6 +614,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         SpotifyData currentData;
         TextView txt_content_sender_spotify;
         RelativeTimeTextView txt_time_sender_spotify;
+        ImageView img_indicator_sender_spotify;
 
         public MySpotifyContentHolder(View itemView) {
             super(itemView);
@@ -556,6 +625,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             this.txt_detail_artist = (TextView) itemView.findViewById(R.id.txt_detail_artist);
             this.txt_content_sender_spotify = (TextView) itemView.findViewById(R.id.txt_content_sender_spotify);
             this.txt_time_sender_spotify = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_spotify);
+            this.img_indicator_sender_spotify = (ImageView) itemView.findViewById(R.id.img_indicator_sender_spotify);
+            setIndicatorView(img_indicator_sender_spotify);
         }
 
         private int dpToPx(int dp) {
@@ -564,6 +635,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_sender_spotify.setText(message.getContent());
                 txt_content_sender_spotify.setVisibility(View.VISIBLE);
@@ -595,7 +667,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
                         if (previewPlayedButton != null) {
-                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context,  fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
@@ -655,6 +727,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_receiver_spotify.setText(message.getContent());
                 txt_content_receiver_spotify.setVisibility(View.VISIBLE);
@@ -686,7 +759,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
                         if (previewPlayedButton != null) {
-                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context,  fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
@@ -725,17 +798,21 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         YouTubeThumbnailView youtube_thumbnail_sender;
         TextView txt_content_sender_youtube;
         RelativeTimeTextView txt_time_sender_youtube;
+        ImageView img_indicator_sender_youtube;
 
         public MyYoutubeContentHolder(View itemView) {
             super(itemView);
             this.youtube_thumbnail_sender = (YouTubeThumbnailView) itemView.findViewById(R.id.youtube_thumbnail_sender);
             this.txt_content_sender_youtube = (TextView) itemView.findViewById(R.id.txt_content_sender_youtube);
             this.txt_time_sender_youtube = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_youtube);
+            this.img_indicator_sender_youtube = (ImageView) itemView.findViewById(R.id.img_indicator_sender_youtube);
+            setIndicatorView(img_indicator_sender_youtube);
         }
 
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_sender_youtube.setText(message.getContent());
                 txt_content_sender_youtube.setVisibility(View.VISIBLE);
@@ -759,7 +836,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         @Override
         public void onClick(View v) {
-
+            Intent youtubeIntent = new Intent(context, YoutubeViewActivity.class);
+            youtubeIntent.putExtra("itemContent", attachment);
+            context.startActivity(youtubeIntent);
         }
     }
 
@@ -778,6 +857,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         @Override
         public void bind(Message message) {
+            super.bind(message);
             if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_receiver_youtube.setText(message.getContent());
                 txt_content_receiver_youtube.setVisibility(View.VISIBLE);
@@ -792,7 +872,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
                 @Override
                 public void onInitializationFailure(YouTubeThumbnailView youTubeThumbnailView, YouTubeInitializationResult youTubeInitializationResult) {
-
+               
                 }
             });
             youtube_thumbnail_receiver.setOnClickListener(this);
@@ -801,7 +881,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         @Override
         public void onClick(View v) {
-
+            Intent youtubeIntent = new Intent(context, YoutubeViewActivity.class);
+            youtubeIntent.putExtra("itemContent", attachment);
+            context.startActivity(youtubeIntent);
         }
     }
 

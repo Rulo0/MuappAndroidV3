@@ -108,7 +108,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         findViewById(R.id.txt_privacy_login).setOnClickListener(this);
         findViewById(R.id.txt_terms_login).setOnClickListener(this);
         if (loggedUser != null) {
-            Log.wtf(TAG, "" + (loggedUser != null));
             try {
                 // startActivity(new Intent(LoginActivity.this, ConfirmUserActivity.class));
             } catch (Exception x) {
@@ -118,25 +117,22 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private void loginToMuapp() {
         showProgressDialog();
-        Log.wtf(TAG, "Login To Muapp");
         try {
             new APIService(LoginActivity.this).loginToMuapp(new UserInfoHandler() {
                 @Override
                 public void onSuccess(int responseCode, String userResponse) {
                     hideProgressDialog();
-                    Log.wtf(TAG, userResponse);
                     try {
                         JSONObject response = new JSONObject(userResponse);
                         if (response.has("user")) {
                             Gson gson = new Gson();
                             User u = gson.fromJson(serializeUser(response.getJSONObject("user")), User.class);
                             if (u != null) {
-                                Log.wtf(TAG, u.toString());
                                 saveUser(u);
                                 redirectLoggedUser();
                                 new LoginHelper(LoginActivity.this).performFullLogin();
                             } else {
-                                Log.wtf(TAG, "user is null");
+
                             }
                         } else {
                             if (response.has("error")) {
@@ -148,7 +144,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         }
 
                     } catch (Exception x) {
-                        Log.wtf(TAG, "ErrorData " + x.getMessage());
+
                         x.printStackTrace();
                     }
 
@@ -162,7 +158,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 @Override
                 public void onFailure(boolean isSuccessful, String responseString) {
                     hideProgressDialog();
-                    Log.wtf(TAG, "onFailure " + responseString);
                     Gson gson = new Gson();
                     LoginError le = gson.fromJson(responseString, LoginError.class);
                     if (le != null)

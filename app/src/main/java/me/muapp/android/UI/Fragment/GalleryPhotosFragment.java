@@ -150,14 +150,12 @@ public class GalleryPhotosFragment extends Fragment {
                 try {
                     while (cursor.moveToNext()) {
                         UserMedia dp = new UserMedia(cursor.getInt(0), cursor.getString(1), Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getString(0)), cursor.getLong(2), cursor.getInt(3));
-                        Log.wtf("getAllUserMedia", dp.toString());
                         result.add(dp);
                     }
                 } finally {
                     cursor.close();
                 }
             } catch (Exception x) {
-                Log.wtf("GALLERY", x.getMessage());
                 x.printStackTrace();
             }
             return result;

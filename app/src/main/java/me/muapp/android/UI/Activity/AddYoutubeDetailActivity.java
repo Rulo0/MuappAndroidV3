@@ -45,9 +45,7 @@ public class AddYoutubeDetailActivity extends BaseActivity implements YouTubePla
             youtube_fragment.initialize(getYoutubeApiKey(), this);
             currentVideo = getIntent().getParcelableExtra(CURRENT_VIDEO);
             chatReferences = getIntent().getParcelableExtra(CONTENT_FROM_CHAT);
-            Log.wtf("AddYoutbe", chatReferences.toString());
         } catch (Exception x) {
-            Log.wtf("currentVideo", x.getMessage());
             x.printStackTrace();
         }
     }

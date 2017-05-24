@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -56,7 +55,6 @@ public class ManGateInfoActivity extends BaseActivity {
             public void onSuccess(int responseCode, String userResponse) {
                 new PreferenceHelper(ManGateInfoActivity.this).clear();
                 saveUser(null);
-                Log.wtf("deleteUserAccount", userResponse.toString());
                 LoginManager.getInstance().logOut();
                 hideProgressDialog();
                 Intent intent = new Intent(ManGateInfoActivity.this, LoginActivity.class);
@@ -72,7 +70,6 @@ public class ManGateInfoActivity extends BaseActivity {
 
             @Override
             public void onFailure(boolean isSuccessful, String responseString) {
-                Log.wtf("deleteUserAccount", responseString.toString());
                 hideProgressDialog();
             }
         });

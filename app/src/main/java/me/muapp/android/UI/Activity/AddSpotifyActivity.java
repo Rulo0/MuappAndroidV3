@@ -138,7 +138,6 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
             List<Song> songs = new ArrayList<>();
             try {
                 String url = String.format("https://api.spotify.com/v1/search?query=%s&type=track&limit=50", URLEncoder.encode(params[0], "utf-8"));
-                Log.wtf(TAG, url);
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder()
                         .url(url)

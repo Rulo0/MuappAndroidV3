@@ -16,7 +16,7 @@ public class Conversation implements Parcelable {
     Long creationDate;
     String opponentConversationId;
     int opponentId;
-    String lastMessageReadedId;
+    Long lastSeenByOpponent;
 
     public Conversation() {
     }
@@ -85,12 +85,12 @@ public class Conversation implements Parcelable {
         this.opponentId = opponentId;
     }
 
-    public String getLastMessageReadedId() {
-        return lastMessageReadedId;
+    public Long getLastSeenByOpponent() {
+        return lastSeenByOpponent;
     }
 
-    public void setLastMessageReadedId(String lastMessageReadedId) {
-        this.lastMessageReadedId = lastMessageReadedId;
+    public void setLastSeenByOpponent(Long lastSeenByOpponent) {
+        this.lastSeenByOpponent = lastSeenByOpponent;
     }
 
     protected Conversation(Parcel in) {
@@ -105,12 +105,27 @@ public class Conversation implements Parcelable {
         creationDate = in.readByte() == 0x00 ? null : in.readLong();
         opponentConversationId = in.readString();
         opponentId = in.readInt();
-        lastMessageReadedId = in.readString();
+        lastSeenByOpponent = in.readByte() == 0x00 ? null : in.readLong();
     }
 
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Conversation{" +
+                "key='" + key + '\'' +
+                ", crush=" + crush +
+                ", likeByMe=" + likeByMe +
+                ", likeByOpponent=" + likeByOpponent +
+                ", lastMessage=" + lastMessage +
+                ", creationDate=" + creationDate +
+                ", opponentConversationId='" + opponentConversationId + '\'' +
+                ", opponentId=" + opponentId +
+                ", lastSeenByOpponent=" + lastSeenByOpponent +
+                '}';
     }
 
     @Override
@@ -140,7 +155,14 @@ public class Conversation implements Parcelable {
         }
         dest.writeString(opponentConversationId);
         dest.writeInt(opponentId);
-        dest.writeString(lastMessageReadedId);
+        if (lastSeenByOpponent == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeLong(lastSeenByOpponent);
+        }
+
+
     }
 
     @SuppressWarnings("unused")

@@ -39,12 +39,10 @@ public class VideoViewActivity extends BaseActivity implements OnPreparedListene
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         thisContent = getIntent().getParcelableExtra("itemContent");
         if (thisContent != null) {
-            Log.wtf("VideoView", thisContent.toString());
             vv_video_viewer = (VideoView) findViewById(R.id.vv_video_viewer);
             progress_video_view = (ProgressBar) findViewById(R.id.progress_video_view);
             txt_problem_video = (TextView) findViewById(R.id.txt_problem_video);
         } else {
-            Log.wtf("VideoView", "thisContent is null");
             finish();
         }
     }
@@ -55,7 +53,6 @@ public class VideoViewActivity extends BaseActivity implements OnPreparedListene
         super.onStart();
         try {
             Uri video = Uri.parse(thisContent.getContentUrl());
-            Log.wtf("VideoView video uri", video.toString());
             vv_video_viewer.setVideoURI(video);
             vv_video_viewer.setOnPreparedListener(this);
             vv_video_viewer.setOnErrorListener(this);

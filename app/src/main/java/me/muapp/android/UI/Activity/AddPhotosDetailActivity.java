@@ -145,7 +145,6 @@ public class AddPhotosDetailActivity extends BaseActivity {
                     .into(new SimpleTarget<byte[]>() {
                         @Override
                         public void onResourceReady(byte[] resource, GlideAnimation<? super byte[]> ignore) {
-                            Log.wtf("Ready", resource.length + "");
                             UploadTask uploadTask = mainReference.putBytes(resource);
                             uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                 @Override
@@ -181,7 +180,6 @@ public class AddPhotosDetailActivity extends BaseActivity {
                         .into(new SimpleTarget<Bitmap>() {
                             @Override
                             public void onResourceReady(Bitmap thumbResource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                Log.wtf("ThumbReady", thumbResource.getHeight() + " " + thumbResource.getWidth());
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                 thumbResource.compress(Bitmap.CompressFormat.PNG, 100, stream);
                                 byte[] thumb = stream.toByteArray();
@@ -207,7 +205,6 @@ public class AddPhotosDetailActivity extends BaseActivity {
                                                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                                                         @SuppressWarnings("VisibleForTests") Long transfered = taskSnapshot.getBytesTransferred();
                                                         @SuppressWarnings("VisibleForTests") Long total = taskSnapshot.getTotalByteCount();
-                                                        Log.wtf("Uploading", transfered + " of " + total);
                                                     }
                                                 });
                                                 uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -224,7 +221,6 @@ public class AddPhotosDetailActivity extends BaseActivity {
                                                                 public void onSuccess(Void aVoid) {
                                                                     long stopTime = System.currentTimeMillis();
                                                                     long elapsedTime = stopTime - startTime;
-                                                                    Log.wtf("Upload time", elapsedTime + "");
                                                                     setResult(RESULT_OK);
                                                                     finish();
                                                                 }

@@ -117,7 +117,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                 super.onScrolled(recyclerView, dx, dy);
                 LinearLayoutManager llm = (LinearLayoutManager) parentRecycler.getLayoutManager();
                 int pos = llm.findFirstVisibleItemPosition();
-                Log.wtf("Scrolled", recyclerView.getAdapter().getItemCount() + "");
+
                 if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
                     onProfileScrollListener.onScrollToTop();
                 } else {
@@ -253,7 +253,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
 
     @Override
     public UserContentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.wtf("ViewType", viewType + "");
+
         UserContentHolder holder;
         switch (viewType) {
             case -1:
@@ -308,9 +308,6 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             holder.bind(userQualificationsAdapter);
         else {
             holder.bind(userContentList.get(position - 2));
-
-            Log.wtf("Binding", (position - 2) + " of " + (getItemCount() - 2));
-            Log.wtf("Binding", userContentList.get(position - 2).toString());
         }
     }
 
@@ -668,7 +665,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                     Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
                 }
             } catch (Exception x) {
-                Log.wtf("Binding Error", x.getMessage());
+
                 x.printStackTrace();
             }
         }
@@ -889,7 +886,6 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                         }
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
-                        Log.wtf("trying to play", currentPlaying);
                         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {

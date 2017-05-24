@@ -2,7 +2,6 @@ package me.muapp.android.Classes.Util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -42,7 +41,6 @@ public class UserHelper {
     public User getLoggedUser() {
         Gson gson = new Gson();
         String json = preferences.getString(LOGGED_USER, "");
-        Log.wtf("getLoggedUser", json);
         User user = gson.fromJson(json, User.class);
         return user;
     }

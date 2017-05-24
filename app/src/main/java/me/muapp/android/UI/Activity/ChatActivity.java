@@ -106,7 +106,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     EditText etMessage;
     ImageButton chatSendButton, chatSendButtonVoicenote;
     ImageButton chatAddAttachmentButton;
-    DatabaseReference myConversation, yourConversation, yourPresence;
+    DatabaseReference myConversation, yourConversation, yourPresence, myLastSeenByYou;
     StorageReference myStorageReference;
     ChatReferences chatReferences;
     Vibrator v;
@@ -116,6 +116,24 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             boolean imOnline = dataSnapshot.getValue(Boolean.class);
             Drawable img = ContextCompat.getDrawable(ChatActivity.this, imOnline ? R.drawable.ic_chat_user_online : R.drawable.ic_chat_user_offline);
             toolbar_opponent_fullname.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+        }
+
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    ValueEventListener lastSeenByOpponentListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            Long lastSeenByYou = dataSnapshot.getValue(Long.class);
+            if (lastSeenByYou != null)
+                messagesAdapter.setLastSeenByOpponent(lastSeenByYou);
+            else
+                messagesAdapter.setLastSeenByOpponent(0L);
+
         }
 
 
@@ -159,8 +177,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                         .child(String.valueOf(loggedUser.getId()))
                         .child(conversationItem.getKey())
                         .child("conversation");
-
-
+        myLastSeenByYou = conversationReference.getParent().child("lastSeenByOpponent");
         myConversation = /*FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
                 .child(String.valueOf(loggedUser.getId()))
@@ -256,18 +273,26 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
 
+    private void updateYourConversationLastSeen() {
+        yourConversation.child("lastSeenByOpponent").setValue(new Date().getTime());
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         conversationReference.addChildEventListener(this);
         yourPresence.addValueEventListener(presenceListener);
+        myLastSeenByYou.addValueEventListener(lastSeenByOpponentListener);
+        updateYourConversationLastSeen();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         messagesAdapter.stopMediaPlayer();
+        updateYourConversationLastSeen();
         conversationReference.removeEventListener(this);
+        myLastSeenByYou.removeEventListener(lastSeenByOpponentListener);
         yourPresence.removeEventListener(presenceListener);
     }
 
@@ -279,6 +304,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        updateYourConversationLastSeen();
         Message m = dataSnapshot.getValue(Message.class);
         if (m != null)
             m.setKey(dataSnapshot.getKey());
@@ -288,17 +314,17 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+        updateYourConversationLastSeen();
     }
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+        updateYourConversationLastSeen();
     }
 
     @Override
     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+        updateYourConversationLastSeen();
     }
 
     @Override

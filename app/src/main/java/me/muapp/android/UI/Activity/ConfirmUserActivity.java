@@ -279,7 +279,6 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
                         Gson gson = new Gson();
                         User u = gson.fromJson(serializeUser(response.getJSONObject("user")), User.class);
                         if (u != null) {
-                            Log.wtf(TAG, u.toString());
                             saveUser(u);
                             if (loggedUser.validate() == User.ValidationResult.Ok) {
                                 ConfirmUserActivity.this.runOnUiThread(new Runnable() {
@@ -330,7 +329,6 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
                         Gson gson = new Gson();
                         User u = gson.fromJson(serializeUser(response.getJSONObject("user")), User.class);
                         if (u != null) {
-                            Log.wtf(TAG, u.toString());
                             new UserHelper(ConfirmUserActivity.this).saveUser(u);
                             validateUser();
                         } else {

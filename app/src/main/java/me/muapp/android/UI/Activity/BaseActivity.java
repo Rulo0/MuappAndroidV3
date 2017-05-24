@@ -45,9 +45,9 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
 
         //for FirebasePresence
         if (loggedUser != null && loggedUser.getId() != null) {
-            DatabaseReference usr = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("online");
-            usr.onDisconnect().setValue(false);
-            usr.setValue(true);
+            DatabaseReference usrPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("online");
+            usrPresence.onDisconnect().setValue(false, 0d);
+            usrPresence.setValue(true);
         }
     }
 

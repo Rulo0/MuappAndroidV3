@@ -176,7 +176,7 @@ public class UserPictureAdapter extends RecyclerView.Adapter<UserPictureAdapter.
 
             @Override
             public void onSuccess(int responseCode, User user) {
-                Log.wtf("Arrange", user.toString());
+
             }
 
             @Override

@@ -151,6 +151,10 @@
             android:name=".UI.Activity.LocationCheckerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".UI.Activity.MatchActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBarMatching" />
     </application>
 
 </manifest>

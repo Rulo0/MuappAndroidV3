@@ -56,7 +56,6 @@ public class AddQuoteActivity extends BaseActivity {
                 for (DataSnapshot s : dataSnapshot.getChildren()) {
                     UserContent c = s.getValue(UserContent.class);
                     if (c != null) {
-                        Log.wtf("Quotes", c.toString());
                         usedQuotes.add(c.getQuoteId());
                     }
                 }
@@ -101,7 +100,7 @@ public class AddQuoteActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
-                Log.wtf("Selected", quoteList.get(position).toString());
+
             }
 
             @Override

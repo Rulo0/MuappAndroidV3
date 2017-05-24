@@ -99,7 +99,6 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         } catch (Exception x) {
             x.printStackTrace();
         }
-        Log.wtf(TAG, "Initial " + mainUserSetting.toString());
         distance_seekbar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
@@ -174,7 +173,6 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.wtf(TAG, requestCode + " " + resultCode);
         if (requestCode == PHONE_REQUEST_CODE) { // confirm that this response matches your request
             AccountKitLoginResult loginResult = data.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
             if (loginResult.getError() != null) {

@@ -47,7 +47,6 @@ public class AddGiphyDetailActivity extends BaseActivity {
         img_giphy_detail = (ImageView) findViewById(R.id.img_giphy_detail);
         et_giphy_comment = (EditText) findViewById(R.id.et_giphy_comment);
         if ((currentGiphy = getIntent().getParcelableExtra(CURRENT_GIPHY)) != null) {
-            Log.wtf("Loading", currentGiphy.getImages().getFixed().getUrl());
             Glide.with(this).load(currentGiphy.getImages().getOriginal().getUrl()).asGif().priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).placeholder(R.drawable.ic_logo_muapp_no_caption).fitCenter().into(img_giphy_detail);
         }
     }
@@ -100,8 +99,6 @@ public class AddGiphyDetailActivity extends BaseActivity {
         } else {
             DatabaseReference myConversation = FirebaseDatabase.getInstance().getReferenceFromUrl(chatReferences.getMyConversationRef());
             DatabaseReference yourConversation = FirebaseDatabase.getInstance().getReferenceFromUrl(chatReferences.getYourConversationRef());
-
-            Log.wtf("Attemp to write", myConversation.getRef().toString() + " | " + yourConversation.getRef().toString());
             Message m = new Message();
             m.setTimeStamp(new Date().getTime());
             m.setSenderId(loggedUser.getId());
