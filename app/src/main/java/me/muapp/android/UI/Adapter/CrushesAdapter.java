@@ -50,8 +50,9 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
 
             @Override
             public int compare(ConversationItem o1, ConversationItem o2) {
-                return new Date(o2.getConversation().getLastMessage().getTimeStamp()).compareTo(new Date(o1.getConversation().getLastMessage().getTimeStamp()));
-            }
+                Long date1 = o1.getConversation().getLastMessage() != null ? o1.getConversation().getLastMessage().getTimeStamp() : o1.getConversation().getCreationDate();
+                Long date2 = o2.getConversation().getLastMessage() != null ? o2.getConversation().getLastMessage().getTimeStamp() : o2.getConversation().getCreationDate();
+                return new Date(date2).compareTo(new Date(date1));   }
 
             @Override
             public void onChanged(int position, int count) {
@@ -60,7 +61,6 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
 
             @Override
             public boolean areContentsTheSame(ConversationItem oldItem, ConversationItem newItem) {
-                oldItem.getConversation().getLastMessage().toString().equals(newItem.getConversation().getLastMessage().toString());
                 return oldItem.toString().equals(newItem.toString());
             }
 

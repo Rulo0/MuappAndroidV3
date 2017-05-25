@@ -97,7 +97,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     private static final float SLIDE_TO_CANCEL_ALPHA_MULTIPLIER = 2.5f;
     private File thisFile;
     HoldingButtonLayout input_holder;
-    ConversationItem conversationItem;
+    ConversationItem conversationItem = null;
     Toolbar toolbar;
     TextView toolbar_opponent_fullname;
     RecyclerView recycler_conversation;
@@ -113,7 +113,12 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     ValueEventListener presenceListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            boolean imOnline = dataSnapshot.getValue(Boolean.class);
+            boolean imOnline = false;
+            try {
+                imOnline = dataSnapshot.getValue(Boolean.class);
+            } catch (Exception x) {
+
+            }
             Drawable img = ContextCompat.getDrawable(ChatActivity.this, imOnline ? R.drawable.ic_chat_user_online : R.drawable.ic_chat_user_offline);
             toolbar_opponent_fullname.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
         }
@@ -158,44 +163,37 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-        toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
         conversationItem = getIntent().getParcelableExtra(CONVERSATION_EXTRA);
         if (conversationItem == null)
             finish();
+
+        v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+        toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
+
         myStorageReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("conversations").child(conversationItem.getKey());
         yourPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("online");
         messagesAdapter = new MessagesAdapter(this);
         messagesAdapter.setParticipantsPhotos(loggedUser.getPhoto(), conversationItem.getProfilePicture());
         messagesAdapter.setLoggedUserId(loggedUser.getId());
-        conversationReference = /*FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
+        conversationReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
                 .child(String.valueOf(loggedUser.getId()))
                 .child(conversationItem.getKey())
-                .child("conversation");*/
-                FirebaseDatabase.getInstance().getReference().child("JW")
-                        .child(String.valueOf(loggedUser.getId()))
-                        .child(conversationItem.getKey())
-                        .child("conversation");
+                .child("conversation");
+
         myLastSeenByYou = conversationReference.getParent().child("lastSeenByOpponent");
-        myConversation = /*FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
+        myConversation = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
                 .child(String.valueOf(loggedUser.getId()))
                 .child(conversationItem.getKey());
-*/
-                FirebaseDatabase.getInstance().getReference().child("JW")
-                        .child(String.valueOf(loggedUser.getId()))
-                        .child(conversationItem.getKey());
+
 
         Log.wtf("convesration", "mine " + myConversation.getRef().toString());
 
-        yourConversation = /*FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
+        yourConversation = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
                 .child(String.valueOf(loggedUser.getId()))
-                .child(conversationItem.getConversation().getOpponentConversationId());*/
-                FirebaseDatabase.getInstance().getReference().child("JW")
-                        .child(String.valueOf(conversationItem.getConversation().getOpponentId()))
-                        .child(conversationItem.getConversation().getOpponentConversationId());
+                .child(conversationItem.getConversation().getOpponentConversationId());
 
         Log.wtf("convesration", "yours " + yourConversation.getRef().toString());
 
@@ -267,8 +265,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 AddAttachmentDialogFragment.newInstance().show(getSupportFragmentManager(), "attach");
             }
         });
-
-
         setupVoicenote();
     }
 
@@ -299,7 +295,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        messagesAdapter.clearMediaPlayer();
+        if (messagesAdapter != null)
+            messagesAdapter.clearMediaPlayer();
     }
 
     @Override

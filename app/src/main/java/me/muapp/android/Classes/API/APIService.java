@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
+import me.muapp.android.Classes.API.Handlers.LikeUserHandler;
 import me.muapp.android.Classes.API.Handlers.MatchingUsersHandler;
 import me.muapp.android.Classes.API.Handlers.MuappUserInfoHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
@@ -23,6 +24,7 @@ import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
 import me.muapp.android.Classes.API.Handlers.UserReportHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
+import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.MatchingResult;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappUser;
@@ -172,7 +174,7 @@ public class APIService {
         });
     }
 
-    public void likeUser(int userId, String qbDialogId, final UserInfoHandler handler) {
+    public void likeUser(int userId, String qbDialogId, final LikeUserHandler handler) {
         String url = BASE_URL + String.format("users/%s/like", userId);
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
@@ -190,36 +192,37 @@ public class APIService {
                 .build();
         Log.i("likeUser", url);
         Log.i("likeUser", sendObject.toString());
+        final String demoMatch = "{\"match\":{\"id\":12608229,\"user_id\":30800,\"matcher_id\":52712,\"match\":true,\"created_at\":\"2017-05-17T15:16:48.301Z\",\"updated_at\":\"2017-05-17T15:16:49.267Z\",\"from_crush\":false,\"user\":{\"education\":null,\"work\":null,\"hometown\":\"Mexico City\",\"location\":null,\"audio_id\":null,\"first_name\":\"Rulo\",\"last_name\":\"Fb\",\"photo\":\"https://s3-eu-west-1.amazonaws.com/muapp-staging//900e5e04481b6d8763aefb6de300e753.jpg\",\"id\":52712,\"album\":[\"https://s3-eu-west-1.amazonaws.com/muapp-staging//900e5e04481b6d8763aefb6de300e753.jpg\"],\"common_friendships\":0,\"longitude\":\"-99.158026\",\"latitude\":\"19.426321\",\"last_seen\":\"2017-05-25T15:14:04.000Z\",\"birthday\":\"1998-03-29\",\"quickblox_id\":\"27772302\",\"active_conversations\":0,\"hours_ago\":24}},\"quickblox_dialog\":\"No existe convesación\",\"message\":\"Tu selección ha sido registrada con éxito.\"}\n";
         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (handler != null)
+                if (handler != null) {
                     handler.onFailure(false, e.getMessage());
-                e.printStackTrace();
+                }
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String responseString = response.body().string();
-                Log.i("likeUser", responseString);
-                if (handler != null)
-                    handler.onSuccess(response.code(), responseString);
-                try {
-                    JSONObject serverResponse = new JSONObject(responseString);
-                    if (serverResponse.has("user")) {
-                        Gson gson = new Gson();
-                        User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
-                        if (u != null) {
-                            Log.wtf("likeUser", u.toString());
-                            if (handler != null)
-                                handler.onSuccess(response.code(), u);
-                        } else {
-                            Log.wtf("likeUser", "user is null");
-                        }
+                if (response.isSuccessful()) {
+                    //TODO Remove demoMatch
+                    String responseString = response.body().string();
+                    Log.wtf("LikeResult", responseString);
+                    try {
+                        LikeUserResult result = new Gson().fromJson(responseString, LikeUserResult.class);
+                        if (result != null)
+                            if (handler != null) {
+                                handler.onSuccess(response.code(), result);
+                            } else {
+                                if (handler != null)
+                                    handler.onFailure(true, responseString);
+                            }
+                    } catch (Exception x) {
+                        if (handler != null)
+                            handler.onFailure(true, x.getMessage());
                     }
-                } catch (Exception x) {
-                    Log.wtf("likeUser", x.getMessage());
-                    x.printStackTrace();
+                } else {
+                    if (handler != null)
+                        handler.onFailure(true, response.message().toString());
                 }
             }
         });

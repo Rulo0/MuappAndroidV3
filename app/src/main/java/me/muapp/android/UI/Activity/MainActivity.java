@@ -238,8 +238,6 @@ public class MainActivity extends BaseActivity implements
             requestPermissions();
         }
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
-
-        startActivity(new Intent(this, MatchActivity.class));
     }
 
     public static void disableABCShowHideAnimation(ActionBar actionBar) {

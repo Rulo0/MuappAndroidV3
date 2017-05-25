@@ -214,4 +214,5 @@
     <string name="lbl_cancel_voicenote">Slide to cancel</string>
     <string name="lbl_match_header">MATCH!</string>
     <string name="format_match_names">%s and you like each other.</string>
+    <string name="title_activity_profile_view">ProfileViewActivity</string>
 </resources>

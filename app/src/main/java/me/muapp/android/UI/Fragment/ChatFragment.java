@@ -114,9 +114,9 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         }
         matchesAdapter = new MatchesAdapter(getContext());
         crushesAdapter = new CrushesAdapter(getContext());
-        //chatReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(user.getId()));
-        chatReference = FirebaseDatabase.getInstance().getReference().child("JW").child(String.valueOf(user.getId()));
-
+        chatReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(user.getId()));
+        //chatReference = FirebaseDatabase.getInstance().getReference().child("JW").child(String.valueOf(user.getId()));
+        Log.wtf("chatReference", chatReference.getRef().toString());
         chatReference.keepSynced(true);
 
 
@@ -230,9 +230,11 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
         Conversation conversation = dataSnapshot.getValue(Conversation.class);
-        conversation.setKey(dataSnapshot.getKey());
-        Log.wtf("CHAT", conversation.toString());
-        prepareConversation(conversation);
+        if (conversation != null) {
+            conversation.setKey(dataSnapshot.getKey());
+            Log.wtf("CHAT", conversation.toString());
+            prepareConversation(conversation);
+        }
     }
 
     @Override
