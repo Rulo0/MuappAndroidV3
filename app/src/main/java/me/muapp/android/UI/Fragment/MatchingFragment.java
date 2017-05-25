@@ -64,6 +64,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     RelativeLayout container_actions_matching;
     ImageButton btn_muapp_matching, btn_crush_matching, btn_no_muapp_matching;
     Boolean b = true;
+    View content_matching_profiles;
 
     public MatchingFragment() {
 
@@ -97,6 +98,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         btn_muapp_matching = (ImageButton) v.findViewById(R.id.btn_muapp_matching);
         btn_crush_matching = (ImageButton) v.findViewById(R.id.btn_crush_matching);
         btn_no_muapp_matching = (ImageButton) v.findViewById(R.id.btn_no_muapp_matching);
+        content_matching_profiles = v.findViewById(R.id.content_matching_profiles);
         return v;
     }
 
@@ -131,6 +133,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onStart() {
         super.onStart();
+        content_matching_profiles.invalidate();
         replaceFragment(GetMatchingUsersFragment.newInstance(user));
         handler = new Handler();
         Runnable runnable = new Runnable() {
