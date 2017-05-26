@@ -2,6 +2,7 @@ package me.muapp.android.Classes.API;
 
 import android.content.Context;
 import android.location.Location;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -32,6 +33,7 @@ import me.muapp.android.Classes.Internal.QualificationResult;
 import me.muapp.android.Classes.Internal.ReportResult;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
+import me.muapp.android.R;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -753,6 +755,56 @@ public class APIService {
         }
     }
 
+    public void sendPushNotification( String pushToken, String collapseKey, String notification_body, String body_loc_key, String[] body_loc_args) {
+        if (TextUtils.isEmpty(pushToken)) {
+            OkHttpClient client = new OkHttpClient();
+            MediaType mediaType = MediaType.parse("application/json");
+            JSONObject sendObject = new JSONObject();
+            try {
+                sendObject.put("to", pushToken);
+                if (!TextUtils.isEmpty(collapseKey))
+                    sendObject.put("collapse_key", collapseKey);
+                sendObject.put("priority", "high");
+                sendObject.put("content_available", true);
+                JSONObject notification = new JSONObject();
+                if (!TextUtils.isEmpty(collapseKey))
+                    notification.put("tag", collapseKey);
+                notification.put("title", mContext.getString(R.string.app_name));
+                notification.put("color", "#ff666e");
+                notification.put("sound", "default");
+                if (body_loc_key != null && body_loc_args != null) {
+                    notification.put("body_loc_key", "notif_sent_message");
+                    notification.put("body_loc_args", body_loc_args);
+                } else {
+                    notification.put("body", notification_body);
+                }
+                sendObject.put("notification", notification);
+            } catch (Exception x) {
+
+            }
+            Log.wtf("Push", sendObject.toString());
+            RequestBody body = RequestBody.create(mediaType, sendObject.toString());
+            Request request = new Request.Builder()
+                    .url("https://fcm.googleapis.com/fcm/send")
+                    .post(body)
+                    .addHeader("authorization", "key=AIzaSyCAPtbJ8ZFXLF8ot_hyadW2_zqD9E9fMkE")
+                    .addHeader("content-type", "application/json")
+                    .build();
+            Log.wtf("sendPushMessage", sendObject.toString());
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                }
+            });
+        }
+
+    }
 
     private Request addAuthHeaders(Request mainRequest) {
         PreferenceHelper helper = new PreferenceHelper(mContext);

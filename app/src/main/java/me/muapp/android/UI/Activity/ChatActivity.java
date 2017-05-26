@@ -63,17 +63,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Chat.Message;
+import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MessagesAdapter;
 import me.muapp.android.UI.Fragment.AddAttachmentDialogFragment;
+import me.muapp.android.UI.Fragment.CrushExpiredDialogFragment;
+import me.muapp.android.UI.Fragment.Interface.OnTimeExpiredListener;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -84,7 +91,7 @@ import okhttp3.Response;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
-public class ChatActivity extends BaseActivity implements ChildEventListener, AddAttachmentDialogFragment.ChatAttachmentListener {
+public class ChatActivity extends BaseActivity implements ChildEventListener, AddAttachmentDialogFragment.ChatAttachmentListener, OnTimeExpiredListener {
     public static final String CONVERSATION_EXTRA = "CONVERSATION_EXTRA";
     public static final String CONTENT_FROM_CHAT = "CONTENT_FROM_CHAT";
     private static final String AUDIO_RECORDER_FILE_EXT_M4A = ".m4a";
@@ -99,7 +106,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     HoldingButtonLayout input_holder;
     ConversationItem conversationItem = null;
     Toolbar toolbar;
-    TextView toolbar_opponent_fullname;
+    TextView toolbar_opponent_fullname, chat_user_last_conversations, txt_remaining_time;
     RecyclerView recycler_conversation;
     DatabaseReference conversationReference;
     MessagesAdapter messagesAdapter;
@@ -110,6 +117,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     StorageReference myStorageReference;
     ChatReferences chatReferences;
     Vibrator v;
+    Timer remainingTimer;
     ValueEventListener presenceListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -166,10 +174,12 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         conversationItem = getIntent().getParcelableExtra(CONVERSATION_EXTRA);
         if (conversationItem == null)
             finish();
-
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
-
+        chat_user_last_conversations = (TextView) findViewById(R.id.chat_user_last_conversations);
+        if (User.Gender.getGender(loggedUser.getGender()) != User.Gender.Female)
+            chat_user_last_conversations.setVisibility(View.GONE);
+        txt_remaining_time = (TextView) findViewById(R.id.txt_remaining_time);
         myStorageReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("conversations").child(conversationItem.getKey());
         yourPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("online");
         messagesAdapter = new MessagesAdapter(this);
@@ -268,6 +278,45 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         setupVoicenote();
     }
 
+    private void setupRemainingTime() {
+        final Calendar expirationDate = Calendar.getInstance();
+        expirationDate.setTimeInMillis(conversationItem.getConversation().getCreationDate());
+        expirationDate.add(Calendar.DATE, 1);
+        remainingTimer = new Timer();
+        remainingTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                long difference = expirationDate.getTime().getTime() - Calendar.getInstance().getTime().getTime();
+                if (difference < 0) {
+                    final long hh = (int) (TimeUnit.MILLISECONDS.toHours(difference));
+                    final long mm = (int) (TimeUnit.MILLISECONDS.toMinutes(difference) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(difference)));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            txt_remaining_time.setText(String.format(getString(R.string.format_remaining_time), getFormatedString(hh) + ":" + getFormatedString(mm)));
+                        }
+                    });
+                } else {
+                    remainingTimer.cancel();
+                    new CrushExpiredDialogFragment().newInstance(conversationItem).show(getSupportFragmentManager(), conversationItem.getKey());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            txt_remaining_time.setText(String.format(getString(R.string.format_remaining_time), "00:00"));
+                        }
+                    });
+                }
+
+            }
+        }, 0, 1000);//Run each minute
+    }
+
+    private String getFormatedString(long l) {
+        String r = l + "";
+        if (l < 10)
+            r = "0" + l;
+        return r;
+    }
 
     private void updateYourConversationLastSeen() {
         yourConversation.child("lastSeenByOpponent").setValue(new Date().getTime());
@@ -280,6 +329,11 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         yourPresence.addValueEventListener(presenceListener);
         myLastSeenByYou.addValueEventListener(lastSeenByOpponentListener);
         updateYourConversationLastSeen();
+        if (conversationItem.getConversation().getCrush()) {
+            setupRemainingTime();
+            txt_remaining_time.setVisibility(View.VISIBLE);
+        } else
+            txt_remaining_time.setVisibility(View.GONE);
     }
 
     @Override
@@ -290,6 +344,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         conversationReference.removeEventListener(this);
         myLastSeenByYou.removeEventListener(lastSeenByOpponentListener);
         yourPresence.removeEventListener(presenceListener);
+        if (remainingTimer != null)
+            remainingTimer.cancel();
     }
 
     @Override
@@ -369,6 +425,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             } catch (Exception x) {
 
             }
+            Log.wtf("Push", sendObject.toString());
             RequestBody body = RequestBody.create(mediaType, sendObject.toString());
             Request request = new Request.Builder()
                     .url("https://fcm.googleapis.com/fcm/send")
@@ -820,6 +877,26 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         }
     }
 
+    @Override
+    public void onExpiredMuapp() {
+        Log.wtf("Expired", "Muapp");
+    }
+
+    @Override
+    public void onExpiredNoMuapp() {
+        Log.wtf("Expired", "NoMuapp");
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).child(conversationItem.getKey()).removeValue();
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child(conversationItem.getConversation().getOpponentConversationId()).removeValue();
+        myStorageReference.delete();
+        FirebaseStorage.getInstance().getReference().child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("conversations").child(conversationItem.getConversation().getOpponentConversationId());
+        finish();
+    }
+
+    @Override
+    public void onExpiredCancel() {
+        Log.wtf("Expired", "Cancelled");
+        finish();
+    }
 }
 
 

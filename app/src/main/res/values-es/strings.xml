@@ -173,4 +173,8 @@
     <string name="lbl_cancel_voicenote">Desliza para cancelar</string>
     <string name="lbl_match_header">¡MATCH!</string>
     <string name="format_match_names">%s y tu se han gustado.</string>
+    <string name="format_remaining_time">Tiempo restante: %s</string>
+    <string name="lbl_time_over">¡El tiempo se ha terminado!</string>
+    <string name="format_time_to_choose">Es momento de decidir si %s es el match ideal.</string>
+    <string name="notif_crush">%s ha tenido un crush contigo</string>
 </resources>

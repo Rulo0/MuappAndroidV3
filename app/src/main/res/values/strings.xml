@@ -215,4 +215,8 @@
     <string name="lbl_match_header">MATCH!</string>
     <string name="format_match_names">%s and you like each other.</string>
     <string name="title_activity_profile_view">ProfileViewActivity</string>
+    <string name="format_remaining_time">Remaining time: %s</string>
+    <string name="lbl_time_over">The time is up!</string>
+    <string name="format_time_to_choose">It\'s time to decide if %s is the ideal match.</string>
+    <string name="notif_crush">%s got a crush with you</string>
 </resources>

@@ -124,6 +124,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onStart() {
+        clearRecyclers();
         super.onStart();
         chatReference.addChildEventListener(this);
         if (listenerHashMap.size() > 0) {
@@ -132,6 +133,11 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
                 object.reference.addValueEventListener(object.getListener());
             }
         }
+    }
+
+    private void clearRecyclers() {
+        matchesAdapter.clearConversations();
+        crushesAdapter.clearConversations();
     }
 
     @Override
@@ -229,6 +235,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        Log.wtf("Child", "Added");
         Conversation conversation = dataSnapshot.getValue(Conversation.class);
         if (conversation != null) {
             conversation.setKey(dataSnapshot.getKey());
@@ -239,6 +246,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        Log.wtf("Child", "Changed");
         Conversation conversation = dataSnapshot.getValue(Conversation.class);
         conversation.setKey(dataSnapshot.getKey());
         Log.wtf("CHAT", conversation.toString());
@@ -247,12 +255,21 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+        Log.wtf("Child", "Removed");
+        Conversation conversation = dataSnapshot.getValue(Conversation.class);
+        if (conversation != null) {
+            conversation.setKey(dataSnapshot.getKey());
+            if (conversation.getCrush()) {
+                crushesAdapter.removeConversation(conversation.getKey());
+            } else {
+                matchesAdapter.removeConversation(conversation.getKey());
+            }
+        }
     }
 
     @Override
     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+        Log.wtf("Child", "Moved");
     }
 
     @Override

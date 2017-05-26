@@ -31,4 +31,5 @@
     <color name="color_chat_bg">#ecedef</color>
     <color name="color_inactive_bnv">#9EA5AD</color>
     <color name="color_match_image_border">#80ffffff</color>
+    <color name="color_remaining_time">#ffe07d</color>
 </resources>

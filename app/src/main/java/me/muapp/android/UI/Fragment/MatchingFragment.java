@@ -37,6 +37,7 @@ import me.muapp.android.Classes.Internal.MatchingResult;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.ChatActivity;
@@ -65,6 +66,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     ImageButton btn_muapp_matching, btn_crush_matching, btn_no_muapp_matching;
     Boolean b = true;
     View content_matching_profiles;
+    private Fragment currentFragment;
 
     public MatchingFragment() {
 
@@ -133,7 +135,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onStart() {
         super.onStart();
-        content_matching_profiles.invalidate();
         replaceFragment(GetMatchingUsersFragment.newInstance(user));
         handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -211,10 +212,12 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     }
 
     private void replaceFragment(Fragment frag) {
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        if (currentFragment != null)
+            ft.remove(currentFragment);
+        currentFragment = frag;
         if (frag instanceof GetMatchingUsersFragment)
             showControls(false);
-
-        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_up);
         ft.replace(R.id.content_matching_profiles, frag);
         ft.commit();
@@ -351,6 +354,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 ConversationItem conversationItem = dataSnapshot.getValue(ConversationItem.class);
                                 if (conversationItem != null) {
+                                    new APIService(getContext()).sendPushNotification(conversationItem.getPushToken(), conversationItem.getKey(), null, "notif_crush", new String[]{new UserHelper(getContext()).getLoggedUser().getFirstName()});
                                     conversationItem.setKey(myCrushId);
                                     conversationItem.setConversation(crush);
                                     Intent crushIntent = new Intent(getContext(), ChatActivity.class);

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +82,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.wtf("Creating", "MatchingUserProfileFragment");
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);

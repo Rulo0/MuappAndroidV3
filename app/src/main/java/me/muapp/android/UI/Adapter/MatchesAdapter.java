@@ -86,8 +86,21 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
         }
     }
 
+    public void clearConversations() {
+        conversations.clear();
+    }
+
     public void addConversation(ConversationItem c) {
         conversations.add(c);
+    }
+
+    public void removeConversation(String conversationKey) {
+        for (int i = 0; i < conversations.size(); i++) {
+            if (conversations.get(i).getKey().equals(conversationKey)) {
+                conversations.removeItemAt(i);
+                break;
+            }
+        }
     }
 
     @Override
@@ -128,7 +141,11 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             match_item_container.setOnClickListener(this);
             Glide.with(mContext).load(conversation.getProfilePicture()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(mContext)).into(matchImage);
             matchLine1.setText(conversation.getFullName());
-            matchLine2.setText(conversation.getConversation().getLastMessage().getContent());
+            if (conversation.getConversation().getLastMessage() != null)
+                matchLine2.setText(conversation.getConversation().getLastMessage().getContent());
+            else {
+                matchLine2.setText("match hace");
+            }
         }
 
         @Override

@@ -52,7 +52,8 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
             public int compare(ConversationItem o1, ConversationItem o2) {
                 Long date1 = o1.getConversation().getLastMessage() != null ? o1.getConversation().getLastMessage().getTimeStamp() : o1.getConversation().getCreationDate();
                 Long date2 = o2.getConversation().getLastMessage() != null ? o2.getConversation().getLastMessage().getTimeStamp() : o2.getConversation().getCreationDate();
-                return new Date(date2).compareTo(new Date(date1));   }
+                return new Date(date1).compareTo(new Date(date2));
+            }
 
             @Override
             public void onChanged(int position, int count) {
@@ -83,8 +84,21 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
         }
     }
 
+    public void clearConversations() {
+        conversations.clear();
+    }
+
     public void addConversation(ConversationItem c) {
         conversations.add(c);
+    }
+
+    public void removeConversation(String conversationKey) {
+        for (int i = 0; i < conversations.size(); i++) {
+            if (conversations.get(i).getKey().equals(conversationKey)) {
+                conversations.removeItemAt(i);
+                break;
+            }
+        }
     }
 
     @Override

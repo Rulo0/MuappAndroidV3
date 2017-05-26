@@ -27,7 +27,7 @@ import me.muapp.android.UI.Fragment.Interface.OnUserReportedListener;
 
 public class ReportUserDialogFragment extends DialogFragment implements View.OnClickListener {
     MatchingUser matchingUser;
-    static final String ARG_MATCHING_USER = "ARG_MATCHING_USER";
+    static final String ARG_MATCHING_USER = "ARG_CONVERSATION_CRUSH";
     OnUserReportedListener onUserReportedListener;
     Button btn_cancel_report, btn_report_user;
     ListView list_report_reasons;
