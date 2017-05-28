@@ -46,7 +46,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     private static final String ARG_MATCHING_USER = "MATCHING_USER";
     private MatchingUser matchingUser;
     private OnMatchingInteractionListener onMatchingInteractionListener;
-    private OnProfileScrollListener onProfileScrollListener;
+    private OnProfileScrollListener onProfileScrollListener = null;
     RecyclerView recycler_user_content;
     MatchingUserContentAdapter adapter;
     DatabaseReference userReference;
@@ -92,8 +92,8 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         adapter.setShowMenuButton(false);
         adapter.setFragmentManager(getChildFragmentManager());
         adapter.setOnProfileScrollListener(onProfileScrollListener);
-        userReference = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(matchingUser.getId()));
-        FirebaseDatabase.getInstance().getReference("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
+        userReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(matchingUser.getId()));
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<MuappQuote> quoteList = new ArrayList<>();

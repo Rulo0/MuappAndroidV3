@@ -7,7 +7,5 @@ import me.muapp.android.Classes.Internal.MuappUser;
  */
 
 public interface MuappUserInfoHandler extends APIHandler {
-    void onSuccess(int responseCode, String userResponse);
-
     void onSuccess(int responseCode, MuappUser muappuser);
 }

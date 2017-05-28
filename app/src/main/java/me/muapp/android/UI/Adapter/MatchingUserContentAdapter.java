@@ -21,7 +21,6 @@ import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -110,21 +109,25 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     }
 
     public void setOnProfileScrollListener(OnProfileScrollListener profileScrollListener) {
-        this.onProfileScrollListener = profileScrollListener;
-        matchingScrollListener = new OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                LinearLayoutManager llm = (LinearLayoutManager) parentRecycler.getLayoutManager();
-                int pos = llm.findFirstVisibleItemPosition();
-
-                if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
-                    onProfileScrollListener.onScrollToTop();
-                } else {
-                    onProfileScrollListener.onScroll();
+        try {
+            this.onProfileScrollListener = profileScrollListener;
+            matchingScrollListener = new OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    LinearLayoutManager llm = (LinearLayoutManager) parentRecycler.getLayoutManager();
+                    int pos = llm.findFirstVisibleItemPosition();
+                    if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
+                        if (onProfileScrollListener != null)
+                            onProfileScrollListener.onScrollToTop();
+                    } else {
+                        if (onProfileScrollListener != null)
+                            onProfileScrollListener.onScroll();
+                    }
                 }
-            }
-        };
+            };
+        } catch (Exception x) {
+        }
     }
 
     @Override

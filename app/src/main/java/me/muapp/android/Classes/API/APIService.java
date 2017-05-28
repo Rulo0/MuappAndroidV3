@@ -614,7 +614,7 @@ public class APIService {
         }
     }
 
-    public void getFullUser(Long userId, final MuappUserInfoHandler handler) {
+    public void getFullUser(int userId, final MuappUserInfoHandler handler) {
         String url = BASE_URL + String.format("users/%s/profile_view", userId);
         PreferenceHelper helper = new PreferenceHelper(mContext);
         if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
@@ -636,26 +636,25 @@ public class APIService {
                     String responseString = response.body().string();
                     Log.wtf("getFullUser", responseString.toString());
                     if (handler != null)
-                        handler.onSuccess(response.code(), responseString);
-                    try {
-                        JSONObject serverResponse = new JSONObject(responseString);
-                        if (serverResponse.has("user")) {
-                            Gson gson = new Gson();
-                            MuappUser u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), MuappUser.class);
-                            if (u != null) {
-                                Log.wtf("getFullUser", u.toString());
-                                if (handler != null)
-                                    handler.onSuccess(response.code(), u);
-                            } else {
-                                Log.wtf("getFullUser", "user is null");
+                        try {
+                            JSONObject serverResponse = new JSONObject(responseString);
+                            if (serverResponse.has("user")) {
+                                Gson gson = new Gson();
+                                MuappUser u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), MuappUser.class);
+                                if (u != null) {
+                                    Log.wtf("getFullUser", u.toString());
+                                    if (handler != null)
+                                        handler.onSuccess(response.code(), u);
+                                } else {
+                                    Log.wtf("getFullUser", "user is null");
+                                }
                             }
+                        } catch (Exception x) {
+                            if (handler != null)
+                                handler.onFailure(true, x.getMessage());
+                            Log.wtf("getFullUser", x.getMessage());
+                            x.printStackTrace();
                         }
-                    } catch (Exception x) {
-                        if (handler != null)
-                            handler.onSuccess(response.code(), responseString);
-                        Log.wtf("getFullUser", x.getMessage());
-                        x.printStackTrace();
-                    }
 
                 }
             });
@@ -755,7 +754,7 @@ public class APIService {
         }
     }
 
-    public void sendPushNotification( String pushToken, String collapseKey, String notification_body, String body_loc_key, String[] body_loc_args) {
+    public void sendPushNotification(String pushToken, String collapseKey, String notification_body, String body_loc_key, String[] body_loc_args) {
         if (TextUtils.isEmpty(pushToken)) {
             OkHttpClient client = new OkHttpClient();
             MediaType mediaType = MediaType.parse("application/json");

@@ -234,6 +234,35 @@ public class MuappUser implements Parcelable {
         this.hoursAgo = hoursAgo;
     }
 
+    public MatchingUser toMatchingUser() {
+        MatchingUser user = new MatchingUser();
+        user.setAlbum(getAlbum());
+        user.setAudioId(getAudioId());
+        user.setAverage("");
+        user.setBirthday(getBirthday());
+        user.setCodeUser("");
+        user.setCommonFriendships(getCommonFriendships());
+        user.setDescription("");
+        user.setEducation(getEducation());
+        user.setFakeAccount(false);
+        user.setFirstName(getFirstName());
+        user.setIsFbFriend(false);
+        user.setHasUseInvitation(false);
+        user.setHometown(getHometown());
+        user.setHoursAgo(getHoursAgo());
+        user.setId(getId());
+        user.setInvPercentage(0);
+        user.setIsQualificationed(false);
+        user.setLastName(getLastName());
+        user.setLastSeen(getLastSeen());
+        user.setLatitude(getLatitude().toString());
+        user.setLongitude(getLongitude().toString());
+        user.setLocation(getLocation());
+        user.setQualificationsCount(0);
+        user.setWork(getWork());
+        return user;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(education);
         dest.writeValue(work);

@@ -155,6 +155,10 @@
             android:name=".UI.Activity.MatchActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBarMatching" />
+        <activity
+            android:name=".UI.Activity.ProfileViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

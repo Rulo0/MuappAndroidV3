@@ -124,8 +124,9 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onStart() {
-        clearRecyclers();
         super.onStart();
+        clearRecyclers();
+        Log.wtf("chatReference", "Listener added");
         chatReference.addChildEventListener(this);
         if (listenerHashMap.size() > 0) {
             for (Map.Entry entry : listenerHashMap.entrySet()) {

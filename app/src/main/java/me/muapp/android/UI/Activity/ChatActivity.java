@@ -102,6 +102,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     private static final int REQUEST_GALLERY_PERMISSIONS = 470;
     private static final int REQUEST_MIC_PERMISSIONS = 471;
     private static final float SLIDE_TO_CANCEL_ALPHA_MULTIPLIER = 2.5f;
+    Boolean isShowingDialog = false;
     private File thisFile;
     HoldingButtonLayout input_holder;
     ConversationItem conversationItem = null;
@@ -287,7 +288,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             @Override
             public void run() {
                 long difference = expirationDate.getTime().getTime() - Calendar.getInstance().getTime().getTime();
-                if (difference < 0) {
+                if (difference > 0) {
                     final long hh = (int) (TimeUnit.MILLISECONDS.toHours(difference));
                     final long mm = (int) (TimeUnit.MILLISECONDS.toMinutes(difference) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(difference)));
                     runOnUiThread(new Runnable() {
@@ -298,13 +299,15 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                     });
                 } else {
                     remainingTimer.cancel();
-                    new CrushExpiredDialogFragment().newInstance(conversationItem).show(getSupportFragmentManager(), conversationItem.getKey());
+                    if (!isShowingDialog)
+                        new CrushExpiredDialogFragment().newInstance(conversationItem).show(getSupportFragmentManager(), conversationItem.getKey());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             txt_remaining_time.setText(String.format(getString(R.string.format_remaining_time), "00:00"));
                         }
                     });
+                    isShowingDialog = true;
                 }
 
             }
