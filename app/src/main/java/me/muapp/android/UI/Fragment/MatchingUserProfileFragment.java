@@ -90,6 +90,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         imFemale = (User.Gender.getGender(new UserHelper(getContext()).getLoggedUser().getGender()) == User.Gender.Female);
         adapter = new MatchingUserContentAdapter(getContext(), matchingUser);
         adapter.setShowMenuButton(false);
+
         adapter.setFragmentManager(getChildFragmentManager());
         adapter.setOnProfileScrollListener(onProfileScrollListener);
         userReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(matchingUser.getId()));
