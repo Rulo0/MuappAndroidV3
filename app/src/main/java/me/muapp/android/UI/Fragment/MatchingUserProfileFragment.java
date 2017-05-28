@@ -98,7 +98,6 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<MuappQuote> quoteList = new ArrayList<>();
                 try {
-
                     for (DataSnapshot s : dataSnapshot.getChildren()) {
                         MuappQuote q = s.getValue(MuappQuote.class);
                         if (q != null) {
