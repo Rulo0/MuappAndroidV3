@@ -88,7 +88,6 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
             matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);
         }
         imFemale = (User.Gender.getGender(new UserHelper(getContext()).getLoggedUser().getGender()) == User.Gender.Female);
-
         adapter = new MatchingUserContentAdapter(getContext(), matchingUser);
         adapter.setShowMenuButton(false);
         adapter.setFragmentManager(getChildFragmentManager());
