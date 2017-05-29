@@ -3,7 +3,6 @@ package me.muapp.android.UI.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -144,7 +143,6 @@ public class AddSpotifyDetailActivity extends BaseActivity implements MediaPlaye
             m.setAttachment(thisContent);
             myConversation.child("conversation").child(myConversation.push().getKey()).setValue(m);
             yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m);
-            m.setReaded(false);
             myConversation.child("lastMessage").setValue(m);
             yourConversation.child("lastMessage").setValue(m);
             setResult(RESULT_OK);

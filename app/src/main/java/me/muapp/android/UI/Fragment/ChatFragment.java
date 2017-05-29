@@ -260,7 +260,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         Conversation conversation = dataSnapshot.getValue(Conversation.class);
         if (conversation != null) {
             conversation.setKey(dataSnapshot.getKey());
-            if (conversation.getCrush()) {
+            if (conversation.getCrush() != null && conversation.getCrush()) {
                 crushesAdapter.removeConversation(conversation.getKey());
             } else {
                 matchesAdapter.removeConversation(conversation.getKey());

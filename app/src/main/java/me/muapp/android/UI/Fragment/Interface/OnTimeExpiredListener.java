@@ -10,4 +10,6 @@ public interface OnTimeExpiredListener {
     void onExpiredNoMuapp();
 
     void onExpiredCancel();
+
+    void onPictureClicked();
 }

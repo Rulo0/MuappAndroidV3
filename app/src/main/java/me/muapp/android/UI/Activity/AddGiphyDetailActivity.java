@@ -1,7 +1,6 @@
 package me.muapp.android.UI.Activity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -106,7 +105,6 @@ public class AddGiphyDetailActivity extends BaseActivity {
             m.setAttachment(thisContent);
             myConversation.child("conversation").child(myConversation.push().getKey()).setValue(m);
             yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m);
-            m.setReaded(false);
             myConversation.child("lastMessage").setValue(m);
             yourConversation.child("lastMessage").setValue(m);
             hideProgressDialog();

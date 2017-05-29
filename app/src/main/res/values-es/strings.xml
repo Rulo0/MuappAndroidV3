@@ -177,4 +177,5 @@
     <string name="lbl_time_over">¡El tiempo se ha terminado!</string>
     <string name="format_time_to_choose">Es momento de decidir si %s es el match ideal.</string>
     <string name="notif_crush">%s ha tenido un crush contigo</string>
+    <string name="lbl_conversations_last_24">Otras conversaciones en las que ha participado en las últimas 24 horas.</string>
 </resources>

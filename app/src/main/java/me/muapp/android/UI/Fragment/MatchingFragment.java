@@ -218,6 +218,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         currentFragment = frag;
         if (frag instanceof GetMatchingUsersFragment)
             showControls(false);
+        else showControls(true);
         ft.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_up);
         ft.replace(R.id.content_matching_profiles, frag);
         ft.commit();
@@ -326,13 +327,14 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     private void generateCrush() {
         showControls(false);
         final int opponentId = matchingFragmentList.get(0).getMatchingUser().getId();
+        new APIService(getContext()).crushUser(opponentId);
         DatabaseReference myConversations = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
                 .child(String.valueOf(user.getId()));
         final DatabaseReference yourConversations = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
                 .child(String.valueOf(opponentId));
-        String opponentCrushId = yourConversations.push().getKey();
+        final String opponentCrushId = yourConversations.push().getKey();
         final String myCrushId = myConversations.push().getKey();
         final Conversation crush = new Conversation();
         crush.setCreationDate(new Date().getTime());
@@ -346,7 +348,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             public void onSuccess(Void aVoid) {
                 crush.setOpponentConversationId(myCrushId);
                 crush.setOpponentId(user.getId());
-                yourConversations.setValue(crush).addOnSuccessListener(new OnSuccessListener<Void>() {
+                yourConversations.child(opponentCrushId).setValue(crush).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("users").child(String.valueOf(opponentId)).addListenerForSingleValueEvent(new ValueEventListener() {

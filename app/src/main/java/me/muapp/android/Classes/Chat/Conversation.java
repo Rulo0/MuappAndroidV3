@@ -114,21 +114,6 @@ public class Conversation implements Parcelable {
     }
 
     @Override
-    public String toString() {
-        return "Conversation{" +
-                "key='" + key + '\'' +
-                ", crush=" + crush +
-                ", likeByMe=" + likeByMe +
-                ", likeByOpponent=" + likeByOpponent +
-                ", lastMessage=" + lastMessage +
-                ", creationDate=" + creationDate +
-                ", opponentConversationId='" + opponentConversationId + '\'' +
-                ", opponentId=" + opponentId +
-                ", lastSeenByOpponent=" + lastSeenByOpponent +
-                '}';
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(key);
         if (crush == null) {
@@ -161,8 +146,21 @@ public class Conversation implements Parcelable {
             dest.writeByte((byte) (0x01));
             dest.writeLong(lastSeenByOpponent);
         }
+    }
 
-
+    @Override
+    public String toString() {
+        return "Conversation{" +
+                "key='" + key + '\'' +
+                ", crush=" + crush +
+                ", likeByMe=" + likeByMe +
+                ", likeByOpponent=" + likeByOpponent +
+                ", lastMessage=" + lastMessage +
+                ", creationDate=" + creationDate +
+                ", opponentConversationId='" + opponentConversationId + '\'' +
+                ", opponentId=" + opponentId +
+                ", lastSeenByOpponent=" + lastSeenByOpponent +
+                '}';
     }
 
     @SuppressWarnings("unused")

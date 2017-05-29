@@ -27,8 +27,8 @@ import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
 import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.MatchingResult;
+import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
-import me.muapp.android.Classes.Internal.MuappUser;
 import me.muapp.android.Classes.Internal.QualificationResult;
 import me.muapp.android.Classes.Internal.ReportResult;
 import me.muapp.android.Classes.Internal.User;
@@ -640,7 +640,7 @@ public class APIService {
                             JSONObject serverResponse = new JSONObject(responseString);
                             if (serverResponse.has("user")) {
                                 Gson gson = new Gson();
-                                MuappUser u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), MuappUser.class);
+                                MatchingUser u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), MatchingUser.class);
                                 if (u != null) {
                                     Log.wtf("getFullUser", u.toString());
                                     if (handler != null)
@@ -750,6 +750,70 @@ public class APIService {
             }
         } catch (Exception x) {
             Log.d("getMatchingUsers", x.getMessage());
+            x.printStackTrace();
+        }
+    }
+
+
+
+    public void crushUser(int userId) {
+        try {
+            String url = BASE_URL + String.format("users/%s/crush", userId);
+            PreferenceHelper helper = new PreferenceHelper(mContext);
+            if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(RequestBody.create(null, new byte[0]))
+                        .build();
+                Log.i("crushUser", url);
+                client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String responseString = response.body().string();
+                        Log.wtf("crushUser", responseString.toString());
+                    }
+                });
+            } else {
+
+            }
+        } catch (Exception x) {
+            Log.wtf("crushUser", x.getMessage());
+            x.printStackTrace();
+        }
+    }
+
+    public void blockUser(int userId) {
+        try {
+            String url = BASE_URL + String.format("users/%s/block", userId);
+            PreferenceHelper helper = new PreferenceHelper(mContext);
+            if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(RequestBody.create(null, new byte[0]))
+                        .build();
+                Log.i("blockUser", url);
+                client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String responseString = response.body().string();
+                        Log.wtf("blockUser", responseString.toString());
+                    }
+                });
+            } else {
+
+            }
+        } catch (Exception x) {
+            Log.wtf("blockUser", x.getMessage());
             x.printStackTrace();
         }
     }

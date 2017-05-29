@@ -16,6 +16,13 @@
         android:background="@color/color_chat_bg"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <include
+            layout="@layout/messages_empty_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="@dimen/activity_horizontal_margin" />
+
         <View
             android:layout_width="1dp"
             android:layout_height="1dp"

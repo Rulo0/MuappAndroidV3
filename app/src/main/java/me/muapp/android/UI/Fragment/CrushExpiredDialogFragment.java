@@ -3,7 +3,6 @@ package me.muapp.android.UI.Fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -22,10 +21,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.R;
-import me.muapp.android.UI.Activity.ProfileViewActivity;
 import me.muapp.android.UI.Fragment.Interface.OnTimeExpiredListener;
-
-import static me.muapp.android.UI.Activity.ProfileViewActivity.USER_ID;
 
 /**
  * Created by rulo on 9/05/17.
@@ -109,9 +105,7 @@ public class CrushExpiredDialogFragment extends DialogFragment implements View.O
                 this.dismiss();
                 break;
             case R.id.img_photo_expired:
-                Intent profileIntent = new Intent(getContext(), ProfileViewActivity.class);
-                profileIntent.putExtra(USER_ID, conversationItem.getConversation().getOpponentId());
-                startActivity(profileIntent);
+                onTimeExpiredListener.onPictureClicked();
                 break;
         }
     }

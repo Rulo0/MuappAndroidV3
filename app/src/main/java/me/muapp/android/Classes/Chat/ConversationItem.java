@@ -15,10 +15,6 @@ public class ConversationItem implements Parcelable {
     Conversation conversation;
     String pushToken;
 
-    public String getFullName() {
-        return String.format("%s %s", name, lastName);
-    }
-
     public ConversationItem() {
     }
 
@@ -68,6 +64,10 @@ public class ConversationItem implements Parcelable {
 
     public void setPushToken(String pushToken) {
         this.pushToken = pushToken;
+    }
+
+    public String getFullName() {
+        return this.name + " " + this.lastName;
     }
 
     protected ConversationItem(Parcel in) {

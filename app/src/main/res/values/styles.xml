@@ -49,6 +49,7 @@
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
+        <item name="colorControlHighlight">#ff666e</item>
         <item name="windowNoTitle">true</item>
     </style>
 
@@ -67,66 +68,6 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <!-- Text chat styles -->
-
-    <style name="LeftBubbleVoiceTheme" parent="AppTheme">
-        <item name="colorAccent">#ff38ab91</item>
-    </style>
-
-    <style name="RightBubbleVoiceTheme" parent="AppTheme">
-        <item name="colorAccent">#fffca9ad</item>
-    </style>
-
-    <style name="LeftBubbleStyle">
-        <item name="android:layout_marginBottom">10dp</item>
-        <item name="android:layout_marginLeft">10dp</item>
-        <item name="android:background">@drawable/bk_chat_bubble_other</item>
-        <item name="android:paddingLeft">20dp</item>
-        <item name="android:paddingRight">15dp</item>
-        <item name="android:paddingBottom">5dp</item>
-        <item name="android:paddingTop">5dp</item>
-    </style>
-
-    <style name="RightBubbleStyle">
-        <item name="android:layout_marginBottom">10dp</item>
-        <item name="android:layout_marginRight">10dp</item>
-        <item name="android:background">@drawable/bk_chat_bubble_you</item>
-        <item name="android:paddingRight">20dp</item>
-        <item name="android:paddingLeft">15dp</item>
-        <item name="android:paddingBottom">5dp</item>
-        <item name="android:paddingTop">5dp</item>
-        <item name="android:layout_alignParentRight">true</item>
-        <item name="android:gravity">right</item>
-    </style>
-
-    <style name="MatchParent">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-    </style>
-
-    <style name="WrapContent">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="MatchWidth">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="MatchHeight">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">match_parent</item>
-    </style>
-
-    <style name="WeightWidth">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1</item>
-    </style>
-
-    <style name="WeightHeight">
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_weight">1</item>
-    </style>
 
     <style name="FullscreenTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
