@@ -8,7 +8,7 @@
     <!--Menu sections-->
     <string name="lbl_menu_discover">Discover</string>
     <string name="lbl_menu_waiting">Waiting</string>
-    <string name="lbl_menu_chats">Chats</string>
+    <string name="lbl_menu_chats">Messages</string>
     <string name="lbl_menu_profile">My Profile</string>
     <string name="lbl_menu_rewards">Muappis</string>
     <!--Login-->

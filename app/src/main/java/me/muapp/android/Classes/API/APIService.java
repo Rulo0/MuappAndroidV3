@@ -13,8 +13,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import me.muapp.android.Classes.API.Handlers.CandidatesHandler;
 import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
 import me.muapp.android.Classes.API.Handlers.LikeUserHandler;
 import me.muapp.android.Classes.API.Handlers.MatchingUsersHandler;
@@ -24,6 +26,7 @@ import me.muapp.android.Classes.API.Handlers.UserQualificationHandler;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
 import me.muapp.android.Classes.API.Handlers.UserReportHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
+import me.muapp.android.Classes.Internal.CandidatesResult;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
 import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.MatchingResult;
@@ -206,7 +209,6 @@ public class APIService {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    //TODO Remove demoMatch
                     String responseString = response.body().string();
                     Log.wtf("LikeResult", responseString);
                     try {
@@ -755,7 +757,6 @@ public class APIService {
     }
 
 
-
     public void crushUser(int userId) {
         try {
             String url = BASE_URL + String.format("users/%s/crush", userId);
@@ -869,15 +870,62 @@ public class APIService {
 
     }
 
+    public void getCandidates(int page, final CandidatesHandler handler) {
+        String url = BASE_URL + "user/candidates/" + page;
+        PreferenceHelper helper = new PreferenceHelper(mContext);
+        if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .get()
+                    .build();
+            Log.i("getCandidates", url);
+            client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    if (handler != null)
+                        handler.onFailure(false, e.getMessage());
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String responseString = response.body().string();
+                    Log.wtf("getCandidates", responseString);
+                    try {
+                        Gson gson = new Gson();
+                        CandidatesResult result = gson.fromJson(serializeMatchingUsers(responseString), CandidatesResult.class);
+                        if (result != null) {
+                            Log.wtf("getCandidates", result.toString());
+                            if (handler != null)
+                                handler.onSuccess(response.code(), result);
+                        } else {
+                            Log.wtf("getUserProfile", "user is null");
+                        }
+                    } catch (Exception x) {
+                     /*   if (handler != null)
+                            handler.onSuccess(response.code(), responseString);*/
+                        Log.wtf("getCandidates", x.getMessage());
+                        x.printStackTrace();
+                    }
+
+                }
+            });
+        } else {
+            /*if (handler != null)
+                handler.onFailure(false, "User not logged");*/
+        }
+    }
+
     private Request addAuthHeaders(Request mainRequest) {
         PreferenceHelper helper = new PreferenceHelper(mContext);
         String authCredentials = String.format("Token token=%s,expires_in=%s,provider=\"facebook\"", helper.getFacebookToken(), dateFormat.format(new Date(helper.getFacebookTokenExpiration())));
         Request r = mainRequest.newBuilder()
                 .addHeader("authorization", authCredentials)
-                .addHeader("accept-language", "es")
+                .addHeader("accept-language", Locale.getDefault().getLanguage())
                 .addHeader("qb", "version=1")
                 .addHeader("muappapi", "version=3")
                 .build();
+
         Log.i("authorization", authCredentials);
         Log.i("accept-language", "es");
         Log.i("qb", "version=1");

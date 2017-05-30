@@ -157,7 +157,6 @@ public class Utils {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public static void animViewScale(Context context, final View v, final boolean show) {
         if (((show && v.getVisibility() == View.GONE) || (!show && v.getVisibility() == View.VISIBLE)) && !isAnimating) {
-            isAnimating = true;
             Animation scaleAnim = AnimationUtils.loadAnimation(context,
                     show ? R.anim.scale_up : R.anim.scale_down);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
@@ -166,12 +165,13 @@ public class Utils {
                 scaleAnim.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-
+                        isAnimating = true;
                     }
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         v.setVisibility(show ? View.VISIBLE : View.GONE);
+                        v.clearAnimation();
                         isAnimating = false;
                     }
 

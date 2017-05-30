@@ -94,6 +94,7 @@ import okhttp3.Response;
 
 import static android.os.Build.VERSION_CODES.M;
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
+import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_CRUSH;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_ID;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_NAME;
 
@@ -1026,6 +1027,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         Intent profileIntent = new Intent(this, ViewProfileActivity.class);
         profileIntent.putExtra(USER_ID, conversationItem.getConversation().getOpponentId());
         profileIntent.putExtra(USER_NAME, conversationItem.getFullName());
+        profileIntent.putExtra(FROM_CRUSH, conversationItem.getConversation().getCrush());
         startActivityForResult(profileIntent, PROFILE_VIEW_CODE);
     }
 }

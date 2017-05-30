@@ -2,7 +2,6 @@ package me.muapp.android.UI.Activity;
 
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -10,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,10 +25,13 @@ import me.muapp.android.UI.Fragment.ViewUserProfileFragment;
 public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHandler, OnFragmentInteractionListener, OnProfileScrollListener {
     public static final String USER_ID = "USER_ID";
     public static final String USER_NAME = "USER_NAME";
+    public static final String FROM_CRUSH = "FROM_CRUSH";
     MatchingUser user;
     TextView txt_profile_view_name;
     ImageView img_profile_view_verified;
     RelativeLayout container_actions_profile;
+    Boolean fromCrush;
+    ProgressBar view_profile_progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,6 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
         setContentView(R.layout.activity_view_profile);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile_view);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Fucker");
         txt_profile_view_name = (TextView) findViewById(R.id.txt_profile_view_name);
         img_profile_view_verified = (ImageView) findViewById(R.id.img_profile_view_verified);
         container_actions_profile = (RelativeLayout) findViewById(R.id.container_actions_profile);
@@ -44,7 +46,9 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
         if (userId < 0)
             finish();
         txt_profile_view_name.setText(getIntent().getStringExtra(USER_NAME));
+        fromCrush = getIntent().getBooleanExtra(FROM_CRUSH, false);
         new APIService(this).getFullUser(userId, this);
+        view_profile_progress = (ProgressBar) findViewById(R.id.view_profile_progress);
     }
 
     @Override
@@ -63,17 +67,19 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
     }
 
     @Override
-    public void onSuccess(int responseCode, MatchingUser muappuser) {
+    public void onSuccess(int responseCode, final MatchingUser muappuser) {
         user = muappuser;
-        if (user.getFakeAccount()) {
 
-        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                img_profile_view_verified.setImageResource(R.drawable.ic_verified_profile);
+                if (muappuser.getFakeAccount()) {
+                    img_profile_view_verified.setImageResource(R.drawable.ic_verified_profile);
+                }
                 img_profile_view_verified.setVisibility(View.VISIBLE);
                 img_profile_view_verified.setPadding(0, 0, dpToPx(4), 0);
+                showControls(true);
+                Utils.animViewFade(view_profile_progress, false);
             }
         });
 
@@ -100,24 +106,25 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
     }
 
     private void showControls(final Boolean show) {
-        Handler mainHandler = new Handler(getMainLooper());
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                Utils.animViewScale(ViewProfileActivity.this, container_actions_profile, show);
-            }
-        };
-        mainHandler.post(myRunnable);
-
+        if (fromCrush) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Utils.animViewScale(ViewProfileActivity.this, container_actions_profile, show);
+                }
+            });
+        }
     }
 
     @Override
     public void onScrollToTop() {
+        Log.wtf("VIEW PROFILE", "Scroll top");
         showControls(true);
     }
 
     @Override
     public void onScroll() {
+        Log.wtf("VIEW PROFILE", "Scroll");
         showControls(false);
     }
 }

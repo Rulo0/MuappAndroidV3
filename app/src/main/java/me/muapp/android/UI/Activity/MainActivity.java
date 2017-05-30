@@ -70,6 +70,7 @@ import me.muapp.android.ResultReceivers.AddressResultReceiver;
 import me.muapp.android.Services.FetchAddressIntentService;
 import me.muapp.android.UI.Fragment.AddContentDialogFragment;
 import me.muapp.android.UI.Fragment.ChatFragment;
+import me.muapp.android.UI.Fragment.GateFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import me.muapp.android.UI.Fragment.MatchingFragment;
 import me.muapp.android.UI.Fragment.ProfileFragment;
@@ -99,6 +100,13 @@ public class MainActivity extends BaseActivity implements
     private static final String LOCATION_KEY = "LOCATION";
     private static final String LAST_UPDATED_TIME_STRING_KEY = "LAST_TIME_UPDATED";
     AHBottomNavigation bottomNavigation;
+
+    private enum BottomItem {
+        ITEM_MATCHING,
+        ITEM_GATE,
+        ITEM_CHAT,
+        ITEM_PROFILE
+    }
 
     public Location getCurrentLocation() {
         return mCurrentLocation;
@@ -164,21 +172,18 @@ public class MainActivity extends BaseActivity implements
 
 
             // Create items
-            AHBottomNavigationItem item1 = new AHBottomNavigationItem(R.string.title_home, R.drawable.ic_discover, R.color.colorAccent);
-            AHBottomNavigationItem item2 = new AHBottomNavigationItem(R.string.title_dashboard, R.drawable.ic_chat, R.color.colorAccent);
-            AHBottomNavigationItem item3 = new AHBottomNavigationItem(R.string.title_notifications, R.drawable.ic_profile, R.color.colorAccent);
+            AHBottomNavigationItem itemMatching = new AHBottomNavigationItem(R.string.lbl_menu_discover, R.drawable.ic_discover, R.color.colorAccent);
+            AHBottomNavigationItem itemGate = new AHBottomNavigationItem(R.string.lbl_menu_waiting, R.drawable.ic_gate, R.color.colorAccent);
+            AHBottomNavigationItem itemChat = new AHBottomNavigationItem(R.string.lbl_menu_chats, R.drawable.ic_chat, R.color.colorAccent);
+            AHBottomNavigationItem itemProfile = new AHBottomNavigationItem(R.string.lbl_menu_profile, R.drawable.ic_profile, R.color.colorAccent);
 
 // Add items
-            bottomNavigation.addItem(item1);
-            bottomNavigation.addItem(item2);
-            bottomNavigation.addItem(item3);
+            bottomNavigation.addItem(itemMatching);
+            if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female)
+                bottomNavigation.addItem(itemGate);
+            bottomNavigation.addItem(itemChat);
+            bottomNavigation.addItem(itemProfile);
 
-            AHNotification notification = new AHNotification.Builder()
-                    .setText("1")
-                    .setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
-                    .setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
-                    .build();
-            bottomNavigation.setNotification(notification, 1);
 
             bottomNavigation.setAccentColor(ContextCompat.getColor(this, R.color.colorAccent));
             bottomNavigation.setInactiveColor(ContextCompat.getColor(this, R.color.color_inactive_bnv));
@@ -220,10 +225,24 @@ public class MainActivity extends BaseActivity implements
         /*    fragmentHashMap.put(R.id.navigation_home, MatchingFragment.newInstance(loggedUser));
             fragmentHashMap.put(R.id.navigation_dashboard, ChatFragment.newInstance(loggedUser));
             fragmentHashMap.put(R.id.navigation_profile, ProfileFragment.newInstance(loggedUser));*/
+            AHNotification notification = new AHNotification.Builder()
+                    .setText("1")
+                    .setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
+                    .setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
+                    .build();
 
-            fragmentHashMap.put(0, MatchingFragment.newInstance(loggedUser));
-            fragmentHashMap.put(1, ChatFragment.newInstance(loggedUser));
-            fragmentHashMap.put(2, ProfileFragment.newInstance(loggedUser));
+            if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female) {
+                fragmentHashMap.put(0, MatchingFragment.newInstance(loggedUser));
+                fragmentHashMap.put(1, GateFragment.newInstance(loggedUser));
+                fragmentHashMap.put(2, ChatFragment.newInstance(loggedUser));
+                fragmentHashMap.put(3, ProfileFragment.newInstance(loggedUser));
+                bottomNavigation.setNotification(notification, 2);
+            } else {
+                fragmentHashMap.put(0, MatchingFragment.newInstance(loggedUser));
+                fragmentHashMap.put(1, ChatFragment.newInstance(loggedUser));
+                fragmentHashMap.put(2, ProfileFragment.newInstance(loggedUser));
+                bottomNavigation.setNotification(notification, 1);
+            }
 
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
