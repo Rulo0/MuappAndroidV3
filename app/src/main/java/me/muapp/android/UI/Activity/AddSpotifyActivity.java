@@ -141,6 +141,7 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder()
                         .url(url)
+                        .addHeader("authorization", "Bearer BQB3vZ_KZRnOyulhd7eGRS1REm2v_cAvGM3juC1BLvFq-9_yPn959jqYfIm1V1FXrAiYs9dtgZXG62CqarpWlg_RyN_Av8gIR1HLxrNdjDBIfZFKGFq68XPp2MZ9dyYDkzR2")
                         .get()
                         .build();
                 Response response = client.newCall(request).execute();

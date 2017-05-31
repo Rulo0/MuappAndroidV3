@@ -59,6 +59,11 @@ public class Utils {
                 user.put(jsonUseInvitation, false);
         } catch (Exception x) {
         }
+        try {
+            user.put("audio_id", -1);
+        } catch (Exception x) {
+
+        }
         Log.v("serializeUser", user.toString());
         return user.toString();
     }
@@ -69,6 +74,11 @@ public class Utils {
             JSONArray matchingUserArray = matchingUsers.getJSONArray("users");
             for (int i = 0; i < matchingUserArray.length(); i++) {
                 JSONObject user = matchingUserArray.getJSONObject(i);
+                try {
+                    user.put("audio_id", -1);
+                } catch (Exception ex) {
+
+                }
                 try {
                     int has_use_invitation = user.getInt(jsonUseInvitation);
                     if (has_use_invitation > 0)

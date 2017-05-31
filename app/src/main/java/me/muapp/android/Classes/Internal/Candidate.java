@@ -7,7 +7,11 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+
+import me.muapp.android.Classes.Util.Utils;
 
 public class Candidate implements Parcelable {
 
@@ -393,6 +397,22 @@ public class Candidate implements Parcelable {
         dest.writeValue(lastSeen);
         dest.writeValue(birthday);
         dest.writeValue(quickbloxId);
+    }
+
+    public Date getBirthdayDate() {
+        Date result = null;
+        if (birthday != null) {
+            try {
+                result = new SimpleDateFormat("yyyy-MM-dd").parse(birthday);
+            } catch (Exception x) {
+            }
+        }
+        return result;
+    }
+
+    public int getAge() {
+        if (getBirthdayDate() == null) return 0;
+        return Utils.getDiffYears(getBirthdayDate(), new Date());
     }
 
     public int describeContents() {

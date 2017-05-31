@@ -50,6 +50,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -350,14 +351,15 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 for (DataSnapshot s : dataSnapshot.getChildren()) {
                     Log.wtf("Conversations", s.getKey());
                     Conversation c = s.getValue(Conversation.class);
-                    if (c != null && !s.getKey().equals(conversationItem.getKey())) {
+                    if (c != null && !s.getKey().equals(conversationItem.getKey()) && !TextUtils.isEmpty(c.getOpponentConversationId())) {
                         Log.wtf("Conversations", c.toString());
                         Log.wtf("Conversations", searchingDay + "");
                         Long timeConversation = 0L;
                         if (c.getLastMessage() != null) {
-                            Log.wtf("Conversations", c.getLastMessage().getTimeStamp() + "");
+                            Log.wtf("Conversations", "LastMessage " + c.getLastMessage().getTimeStamp());
                             timeConversation = c.getLastMessage().getTimeStamp();
                         } else {
+                            Log.wtf("Conversations", "CreationDate " + c.getCreationDate());
                             timeConversation = c.getCreationDate();
                         }
                         Log.wtf("Conversations", "timeConversation " + timeConversation + "");
@@ -423,7 +425,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
     private void updateYourConversationLastSeen() {
-        yourConversation.child("lastSeenByOpponent").setValue(new Date().getTime());
+        Log.wtf("Updating", yourConversation.getRef().toString() + "/lastSeenByOpponent");
+        yourConversation.child("lastSeenByOpponent").setValue(ServerValue.TIMESTAMP);
     }
 
     @Override
@@ -474,7 +477,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
         if (container_empty_messages.getVisibility() == View.VISIBLE)
             container_empty_messages.setVisibility(View.GONE);
-
         updateYourConversationLastSeen();
         Message m = dataSnapshot.getValue(Message.class);
         if (m != null)
@@ -515,10 +517,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             if (content != null)
                 m.setAttachment(content);
             etMessage.setText("");
-            conversationReference.child(conversationReference.push().getKey()).setValue(m);
-            yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m);
-            myConversation.child("lastMessage").setValue(m);
-            yourConversation.child("lastMessage").setValue(m);
+            conversationReference.child(conversationReference.push().getKey()).setValue(m.toMap());
+            yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m.toMap());
+            myConversation.child("lastMessage").setValue(m.toMap());
+            yourConversation.child("lastMessage").setValue(m.toMap());
             sendPushMessage();
         }
     }
@@ -635,6 +637,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 if (cursor.moveToFirst()) {
                     filePath = cursor.getString(columnIndex);
                     Log.v("filePath", filePath);
+                    f = new File(filePath);
                     compressAndUpload(f);
                 } else {
                 }
@@ -667,7 +670,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
     private void compressAndUpload(File f) {
         final UserContent thisContent = new UserContent();
-        Log.wtf("selected", f.getAbsolutePath());
+        Log.wtf("selected", f.exists() + "");
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), options);

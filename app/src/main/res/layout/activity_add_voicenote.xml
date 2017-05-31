@@ -98,7 +98,7 @@
                 android:adjustViewBounds="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_play" />
+                app:srcCompat="@drawable/ic_play" />
 
             <ImageButton
                 android:id="@+id/voicenote_drop"
@@ -108,7 +108,7 @@
                 android:adjustViewBounds="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_delete" />
+                app:srcCompat="@drawable/ic_delete" />
         </RelativeLayout>
 
         <ImageButton
@@ -119,7 +119,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="12dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_mic_green" />
+            app:srcCompat="@drawable/ic_mic_green" />
 
         <com.eralp.circleprogressview.CircleProgressView
             android:id="@+id/circle_progress_view"
@@ -128,7 +128,6 @@
             android:layout_centerInParent="true"
             app:cpv_circle_color="@color/color_muap_green"
             app:cpv_circle_width="8dp"
-
             app:cpv_text_size="0" />
 
     </RelativeLayout>

@@ -3,6 +3,11 @@ package me.muapp.android.Classes.Chat;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.ServerValue;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import me.muapp.android.Classes.Internal.UserContent;
 
 /**
@@ -108,5 +113,15 @@ public class Message implements Parcelable {
                 ", timeStamp=" + timeStamp +
                 ", attachment=" + attachment +
                 '}';
+    }
+
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("content", content);
+        result.put("senderId", senderId);
+        result.put("timeStamp", ServerValue.TIMESTAMP);
+        result.put("attachment", attachment);
+        return result;
     }
 }

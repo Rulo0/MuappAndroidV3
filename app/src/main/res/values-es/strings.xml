@@ -178,4 +178,6 @@
     <string name="format_time_to_choose">Es momento de decidir si %s es el match ideal.</string>
     <string name="notif_crush">%s ha tenido un crush contigo</string>
     <string name="lbl_conversations_last_24">Otras conversaciones en las que ha participado en las últimas 24 horas.</string>
+    <string name="lbl_rate_them">¡Califícalos!</string>
+    <string name="lbl_vote_for_the_guys">Vota por los chicos que crees que deberían formar parte de Muapp.</string>
 </resources>

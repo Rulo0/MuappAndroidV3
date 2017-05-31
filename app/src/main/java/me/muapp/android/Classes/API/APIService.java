@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import me.muapp.android.BuildConfig;
 import me.muapp.android.Classes.API.Handlers.CandidatesHandler;
 import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
 import me.muapp.android.Classes.API.Handlers.LikeUserHandler;
@@ -62,7 +63,7 @@ public class APIService {
             .build();
     Context mContext;
     SimpleDateFormat dateFormat;
-    private static final String BASE_URL = "http://dev.muapp.me/";
+    private static final String BASE_URL = BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
 
     public APIService(Context mContext) {
         this.mContext = mContext;

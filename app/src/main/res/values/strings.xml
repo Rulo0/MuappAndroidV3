@@ -310,4 +310,6 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="lbl_rate_them">Rate them!</string>
+    <string name="lbl_vote_for_the_guys">Vote for the guys you think should be part of Muapp!</string>
 </resources>

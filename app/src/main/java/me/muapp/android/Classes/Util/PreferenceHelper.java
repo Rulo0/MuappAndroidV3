@@ -19,6 +19,7 @@ public class PreferenceHelper {
     private final String LAST_SENT_MESSAGE_TIMESTAMP = "last_sent";
     private final String LATITUDE = "latitude";
     private final String LONGITUDE = "longitude";
+    private final String TUTORIAL_CANDIDATES = "tutorial_candidates";
     Context context;
 
     public PreferenceHelper(Context context) {
@@ -116,6 +117,16 @@ public class PreferenceHelper {
         l.setLatitude(Double.longBitsToDouble(preferences.getLong(LATITUDE, 0)));
         l.setLongitude(Double.longBitsToDouble(preferences.getLong(LONGITUDE, 0)));
         return l;
+    }
+
+    public void putCandidatesTutorialDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(TUTORIAL_CANDIDATES, false);
+        edit.apply();
+    }
+
+    public boolean getCandidatesTutorial() {
+        return preferences.getBoolean(TUTORIAL_CANDIDATES, true);
     }
 
 }

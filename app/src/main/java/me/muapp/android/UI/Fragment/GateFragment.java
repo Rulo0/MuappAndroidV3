@@ -1,10 +1,12 @@
 package me.muapp.android.UI.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,16 +17,19 @@ import me.muapp.android.Classes.API.Handlers.CandidatesHandler;
 import me.muapp.android.Classes.Internal.Candidate;
 import me.muapp.android.Classes.Internal.CandidatesResult;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+import me.muapp.android.UI.Adapter.CandidatesAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
 
 public class GateFragment extends Fragment implements OnFragmentInteractionListener, CandidatesHandler {
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
-
+    CandidatesAdapter candidatesAdapter;
     private User user;
     RecyclerView recycler_candidates;
     private OnFragmentInteractionListener mListener;
+    StaggeredGridLayoutManager slm;
 
     public GateFragment() {
         // Required empty public constructor
@@ -44,11 +49,24 @@ public class GateFragment extends Fragment implements OnFragmentInteractionListe
         if (getArguments() != null) {
             user = getArguments().getParcelable(ARG_CURRENT_USER);
         }
+
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        candidatesAdapter = new CandidatesAdapter(getContext());
+        slm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recycler_candidates.setLayoutManager(slm);
+        recycler_candidates.setAdapter(candidatesAdapter);
+        recycler_candidates.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+               // int lastVisibleItem = slm.findLastVisibleItemPositions()
+
+            }
+        });
         new APIService(getContext()).getCandidates(1, this);
     }
 
@@ -95,9 +113,28 @@ public class GateFragment extends Fragment implements OnFragmentInteractionListe
     }
 
     @Override
-    public void onSuccess(int responseCode, CandidatesResult result) {
-        for (Candidate c : result.getCandidates()) {
-            Log.wtf("Candidate",c.toString());
+    public void onSuccess(int responseCode, final CandidatesResult result) {
+        if (result.getCurrentPage() == 1) {
+            if (new PreferenceHelper(getContext()).getCandidatesTutorial()) {
+                Candidate tutorialCandidate = new Candidate();
+                tutorialCandidate.setId(-1);
+                result.getCandidates().add(1, tutorialCandidate);
+            }
         }
+
+
+        ((Activity) getContext()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (Candidate c : result.getCandidates()) {
+                    Log.wtf("Candidate", c.toString());
+                    candidatesAdapter.addCandidate(c);
+                }
+            }
+        });
+      /*  for (Candidate c : result.getCandidates()) {
+            Log.wtf("Candidate", c.toString());
+            candidatesAdapter.addCandidate(c);
+        }*/
     }
 }

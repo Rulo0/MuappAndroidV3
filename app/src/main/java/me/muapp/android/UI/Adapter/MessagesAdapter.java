@@ -27,7 +27,6 @@ import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
-import com.google.firebase.database.ServerValue;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -872,7 +871,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
                 @Override
                 public void onInitializationFailure(YouTubeThumbnailView youTubeThumbnailView, YouTubeInitializationResult youTubeInitializationResult) {
-               
+
                 }
             });
             youtube_thumbnail_receiver.setOnClickListener(this);
