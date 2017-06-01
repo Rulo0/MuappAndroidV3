@@ -111,7 +111,7 @@ public class UserFBAlbumsAdapter extends RecyclerView.Adapter<UserFBAlbumsAdapte
 
         public void bind(final FacebookAlbum album) {
             this.album = album;
-            Glide.with(mContext).load(String.format(ALBUM_PHOTO_FORMAT, album.getFirstPhotoId(), userFBToken)).placeholder(R.drawable.ic_logo_muapp_no_caption).centerCrop().into(img_fb_album);
+            Glide.with(mContext).load(String.format(ALBUM_PHOTO_FORMAT, album.getFirstPhotoId(), userFBToken)).placeholder(R.drawable.ic_placeholder).centerCrop().into(img_fb_album);
             txt_fb_album_name.setText(album.getName());
             album_container.setOnClickListener(this);
         }

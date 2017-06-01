@@ -105,7 +105,7 @@ public class AddDevicePhotosAdapter extends RecyclerView.Adapter<AddDevicePhotos
 
         public void bind(final UserMedia image) {
             this.currentPhoto = image;
-            Glide.with(mContext).load(image.getPath()).placeholder(R.drawable.ic_logo_muapp_no_caption).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
+            Glide.with(mContext).load(image.getPath()).placeholder(R.drawable.ic_placeholder).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
             itemView.setOnClickListener(this);
         }
 

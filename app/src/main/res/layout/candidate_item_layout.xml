@@ -159,6 +159,7 @@
                 app:layout_constraintTop_toBottomOf="@id/img_photo_candidate">
 
                 <ImageButton
+                    android:id="@+id/btn_candidate_unlike"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -178,6 +179,7 @@
                 </LinearLayout>
 
                 <ImageButton
+                    android:id="@+id/btn_candidate_like"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

@@ -135,7 +135,7 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
 
         public void bind(ConversationItem item) {
             thisConversation = item;
-            Glide.with(mContext).load(item.getProfilePicture()).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(mContext)).into(img_crush_photo);
+            Glide.with(mContext).load(item.getProfilePicture()).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(img_crush_photo);
             txt_crush_name.setText(item.getName());
             img_crush_overlay.setVisibility(View.GONE);
             img_crush_notification.setVisibility(View.GONE);
@@ -256,7 +256,7 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
         }
 
         public void bind(DialogCacheObject dialog) {
-            Glide.with(mContext).load(dialog.getOpponentPhoto()).placeholder(R.drawable.ic_logo_muapp_no_caption).centerCrop().bitmapTransform(new CropCircleTransformation(mContext)).into(img_crush_photo);
+            Glide.with(mContext).load(dialog.getOpponentPhoto()).placeholder(R.drawable.ic_placeholder).centerCrop().bitmapTransform(new CropCircleTransformation(mContext)).into(img_crush_photo);
             txt_crush_name.setText(getFirstWord(dialog.getOpponentName()));
             img_crush_overlay.setVisibility(View.GONE);
             if ((dialog.getUnreadMessageCount() != null && dialog.getUnreadMessageCount() > 0)) {

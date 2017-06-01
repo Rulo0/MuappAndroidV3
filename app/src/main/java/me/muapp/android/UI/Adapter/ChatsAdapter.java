@@ -201,7 +201,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatsViewHol
             super.bind(conversation);
             thisConversation = conversation;
             match_item_container.setOnClickListener(this);
-            Glide.with(mContext).load(conversation.getProfilePicture()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(mContext)).into(matchImage);
+            Glide.with(mContext).load(conversation.getProfilePicture()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(matchImage);
             matchLine1.setText(conversation.getFullName());
             matchLine2.setText(conversation.getConversation().getLastMessage().getContent());
         }

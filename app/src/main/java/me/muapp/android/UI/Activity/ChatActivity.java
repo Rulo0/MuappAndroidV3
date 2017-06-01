@@ -257,7 +257,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         txt_name_empty_messages.setText(String.format("%s %s", conversationItem.getName(), conversationItem.getLastName()));
 
         txt_created_empty_messages.setText((conversationItem.getConversation().getCrush() ? "Crush " : "Match ") + DateUtils.getRelativeTimeSpanString(conversationItem.getConversation().getCreationDate(), Calendar.getInstance().getTimeInMillis(), DateUtils.MINUTE_IN_MILLIS).toString().toLowerCase());
-        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(this)).into(img_empty_messages);
+        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(this)).into(img_empty_messages);
         img_empty_messages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -320,7 +320,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recycler_conversation.setLayoutManager(llm);
         recycler_conversation.setAdapter(messagesAdapter);
-        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(this)).diskCacheStrategy(DiskCacheStrategy.ALL).into(toolbar_opponent_photo);
+        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(this)).diskCacheStrategy(DiskCacheStrategy.ALL).into(toolbar_opponent_photo);
         toolbar_opponent_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -383,6 +383,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
     private void setupRemainingTime() {
+
+
         final Calendar expirationDate = Calendar.getInstance();
         expirationDate.setTimeInMillis(conversationItem.getConversation().getCreationDate());
         expirationDate.add(Calendar.DATE, 1);

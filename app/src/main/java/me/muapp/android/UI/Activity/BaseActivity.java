@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.zplesac.connectionbuddy.ConnectionBuddy;
@@ -33,6 +34,7 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
     ProgressDialog dialog;
     User loggedUser;
     PreferenceHelper preferenceHelper;
+    FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,7 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
         }
         loggedUser = new UserHelper(this).getLoggedUser();
         preferenceHelper = new PreferenceHelper(this);
-
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //for FirebasePresence
         if (loggedUser != null && loggedUser.getId() != null) {
             DatabaseReference usrPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("online");

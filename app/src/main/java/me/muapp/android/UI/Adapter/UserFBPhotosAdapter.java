@@ -81,7 +81,7 @@ public class UserFBPhotosAdapter extends RecyclerView.Adapter<UserFBPhotosAdapte
 
         public void bind(final String photoId) {
             photoUrl = String.format(ALBUM_PHOTO_FORMAT, photoId, userFBToken);
-            Glide.with(mContext).load(photoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).centerCrop().into(img_photo_fb_item);
+            Glide.with(mContext).load(photoUrl).placeholder(R.drawable.ic_placeholder).centerCrop().into(img_photo_fb_item);
             itemView.setOnClickListener(this);
         }
 

@@ -158,7 +158,7 @@
         <activity
             android:name=".UI.Activity.ViewProfileActivity"
             android:label="@string/title_activity_view_profile"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

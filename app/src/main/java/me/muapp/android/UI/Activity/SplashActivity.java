@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -21,6 +22,7 @@ import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.LoginHelper;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 
@@ -33,6 +35,7 @@ public class SplashActivity extends BaseActivity {
     ImageView img_kiss1;
     ImageView img_kiss2;
     AnimatorSet kissFrontLaunch;
+    String pendingMatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,11 @@ public class SplashActivity extends BaseActivity {
         getSupportActionBar().hide();
         img_kiss1 = (ImageView) findViewById(R.id.img_kiss1);
         img_kiss2 = (ImageView) findViewById(R.id.img_kiss2);
+
+        if (!TextUtils.isEmpty(pendingMatch = getIntent().getStringExtra("dialog_key"))) {
+            new PreferenceHelper(this).putPendingMatch(pendingMatch);
+        }
+
     }
 
     @Override

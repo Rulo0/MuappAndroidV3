@@ -46,8 +46,11 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -60,6 +63,9 @@ import java.util.HashMap;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.Chat.Conversation;
+import me.muapp.android.Classes.Chat.ConversationItem;
+import me.muapp.android.Classes.Internal.LikeUserMatchUser;
 import me.muapp.android.Classes.Internal.SelectedNavigationElement;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
@@ -77,6 +83,8 @@ import me.muapp.android.UI.Fragment.ProfileFragment;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.R.id.btn_add_youtube;
+import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_CONVERSATION;
+import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_USER;
 
 public class MainActivity extends BaseActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
@@ -133,6 +141,7 @@ public class MainActivity extends BaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_male);
+        preparePendingMatch(preferenceHelper.getPendingMatch());
 /*        //noinspection RestrictedApi
         getSupportActionBar().setShowHideAnimationEnabled(false);*/
         disableABCShowHideAnimation(getSupportActionBar());
@@ -257,6 +266,56 @@ public class MainActivity extends BaseActivity implements
             requestPermissions();
         }
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
+    }
+
+    private void preparePendingMatch(final String pendingMatch) {
+        if (!TextUtils.isEmpty(pendingMatch)) {
+            DatabaseReference pendingMatchReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
+                    .child("conversations")
+                    .child(String.valueOf(loggedUser.getId())).child(pendingMatch);
+            Log.wtf("conversationReference", pendingMatchReference.toString());
+            pendingMatchReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    final Conversation c = dataSnapshot.getValue(Conversation.class);
+                    if (c != null) {
+                        FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("users").child(String.valueOf(c.getOpponentId())).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                ConversationItem conversationItem = dataSnapshot.getValue(ConversationItem.class);
+                                if (conversationItem != null) {
+                                    conversationItem.setKey(pendingMatch);
+                                    conversationItem.setConversation(c);
+                                    LikeUserMatchUser likeUserMatchUser = new LikeUserMatchUser();
+                                    likeUserMatchUser.setFirstName(conversationItem.getName());
+                                    likeUserMatchUser.setId(conversationItem.getConversation().getOpponentId());
+                                    likeUserMatchUser.setPhoto(conversationItem.getProfilePicture());
+                                    Intent matchIntent = new Intent(MainActivity.this, MatchActivity.class);
+                                    matchIntent.putExtra(MATCHING_USER, likeUserMatchUser);
+                                    matchIntent.putExtra(MATCHING_CONVERSATION, conversationItem);
+                                    startActivity(matchIntent);
+                                } else {
+                                    Log.wtf("ConversationItem", "isNull");
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+            preferenceHelper.cleatPendingMatch();
+        }
+
+
     }
 
     public static void disableABCShowHideAnimation(ActionBar actionBar) {

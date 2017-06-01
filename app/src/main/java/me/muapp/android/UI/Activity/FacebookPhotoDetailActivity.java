@@ -26,7 +26,7 @@ public class FacebookPhotoDetailActivity extends AppCompatActivity {
         if (getIntent().hasExtra(PHOTO_URL)) {
             photoUrl = getIntent().getStringExtra(PHOTO_URL);
             if (!TextUtils.isEmpty(photoUrl)) {
-                Glide.with(this).load(photoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).fitCenter().into(img_photo_detail);
+                Glide.with(this).load(photoUrl).placeholder(R.drawable.ic_placeholder).fitCenter().into(img_photo_detail);
             } else {
                 finish();
             }

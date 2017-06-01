@@ -381,7 +381,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             super.bind(message);
             itemContent = message.getAttachment();
             txt_time_sender_voicenote.setReferenceTime(message.getTimeStamp());
-            Glide.with(context).load(myPhotoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(context)).into(img_sender_audio_face);
+            Glide.with(context).load(myPhotoUrl).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(context)).into(img_sender_audio_face);
             btn_sender_audio_play_pause.setOnClickListener(this);
         }
 
@@ -444,7 +444,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             super.bind(message);
             itemContent = message.getAttachment();
             txt_time_receiver_voicenote.setReferenceTime(message.getTimeStamp());
-            Glide.with(context).load(yourPhotoUrl).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(context)).into(img_receiver_audio_face);
+            Glide.with(context).load(yourPhotoUrl).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(context)).into(img_receiver_audio_face);
             btn_receiver_audio_play_pause.setOnClickListener(this);
         }
 
@@ -517,10 +517,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 float aspectRatio;
                 if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
                     aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_sender);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_sender);
                 } else {
                     aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_sender);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_sender);
                 }
             } catch (Exception x) {
                 x.printStackTrace();
@@ -553,10 +553,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 float aspectRatio;
                 if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
                     aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_receiver);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_receiver);
                 } else {
                     aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_receiver);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_receiver);
                 }
             } catch (Exception x) {
                 x.printStackTrace();
@@ -581,7 +581,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         public void bind(Message message) {
             super.bind(message);
             txt_time_sender_image.setReferenceTime(message.getTimeStamp());
-            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_sender_image);
+            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_sender_image);
         }
     }
 
@@ -602,7 +602,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             } catch (Exception x) {
 
             }
-            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_receiver_image);
+            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_receiver_image);
         }
     }
 

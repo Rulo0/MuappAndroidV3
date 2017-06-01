@@ -20,6 +20,7 @@ public class PreferenceHelper {
     private final String LATITUDE = "latitude";
     private final String LONGITUDE = "longitude";
     private final String TUTORIAL_CANDIDATES = "tutorial_candidates";
+    private final String PENDING_MATCH = "pendingMatch";
     Context context;
 
     public PreferenceHelper(Context context) {
@@ -46,6 +47,23 @@ public class PreferenceHelper {
     public void putFirstTimeChatDisabled() {
         SharedPreferences.Editor edit = preferences.edit();
         edit.putBoolean(FIRST_TIME_CHAT, false);
+        edit.apply();
+    }
+
+    public void putPendingMatch(String pendingMatch) {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putString(PENDING_MATCH, pendingMatch);
+        edit.apply();
+    }
+
+    public String getPendingMatch() {
+        return preferences.getString(PENDING_MATCH, "");
+    }
+
+
+    public void cleatPendingMatch() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.remove(PENDING_MATCH);
         edit.apply();
     }
 

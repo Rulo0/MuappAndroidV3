@@ -27,7 +27,7 @@ public class ProfilePicturesAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View v = mInflater.inflate(R.layout.profile_picture_item_layout, container, false);
         ImageView img_profile_picture_big = (ImageView) v.findViewById(R.id.img_profile_picture_big);
-        Glide.with(context).load(userAlbum.get(position)).centerCrop().placeholder(R.drawable.ic_logo_muapp_no_caption).into(img_profile_picture_big);
+        Glide.with(context).load(userAlbum.get(position)).centerCrop().placeholder(R.drawable.ic_placeholder).into(img_profile_picture_big);
         container.addView(v);
         return v;
     }

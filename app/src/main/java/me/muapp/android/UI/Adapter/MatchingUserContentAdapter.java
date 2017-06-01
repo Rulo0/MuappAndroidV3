@@ -578,7 +578,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         @Override
         public void bind(UserContent c) {
             super.bind(c);
-            Glide.with(context).load(c.getContentUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_picture_content);
+            Glide.with(context).load(c.getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_picture_content);
             if (!TextUtils.isEmpty(c.getComment())) {
                 txt_image_comment.setText(c.getComment());
                 txt_image_comment.setVisibility(View.VISIBLE);
@@ -607,7 +607,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         @Override
         public void bind(UserContent c) {
             super.bind(c);
-            Glide.with(context).load(c.getThumbUrl()).placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_video_content);
+            Glide.with(context).load(c.getThumbUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_video_content);
             if (!TextUtils.isEmpty(c.getComment())) {
                 txt_video_comment.setText(c.getComment());
                 txt_video_comment.setVisibility(View.VISIBLE);
@@ -662,10 +662,10 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                 float aspectRatio;
                 if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
                     aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_content);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_content);
                 } else {
                     aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_logo_muapp_no_caption).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
                 }
             } catch (Exception x) {
 

@@ -180,4 +180,5 @@
     <string name="lbl_conversations_last_24">Otras conversaciones en las que ha participado en las últimas 24 horas.</string>
     <string name="lbl_rate_them">¡Califícalos!</string>
     <string name="lbl_vote_for_the_guys">Vota por los chicos que crees que deberían formar parte de Muapp.</string>
+    <string name="lbl_gate_load_title">ESTÁN ESPERANDO A ENTRAR EN MUAPP ¡ACÉPTALES!</string>
 </resources>

@@ -20,6 +20,7 @@ import java.util.List;
 import me.muapp.android.Classes.Internal.Candidate;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+import me.muapp.android.UI.Fragment.Interface.OnCandidateInteractionListener;
 
 /**
  * Created by rulo on 28/03/17.
@@ -31,11 +32,16 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
     private Context mContext;
     private static final int TYPE_TUTORIAL = -1;
     private static final int TYPE_CANDIDATE = 0;
+    OnCandidateInteractionListener candidateInteractionListener;
 
     public CandidatesAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
         this.candidates = new ArrayList<>();
         this.mContext = context;
+    }
+
+    public void setCandidateInteractionListener(OnCandidateInteractionListener candidateInteractionListener) {
+        this.candidateInteractionListener = candidateInteractionListener;
     }
 
     public void addCandidate(Candidate candidate) {
@@ -113,6 +119,8 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
         TextView txt_candidate_progress;
         View itemView;
         CircleProgressView candidate_progress;
+        ImageButton btn_candidate_unlike;
+        ImageButton btn_candidate_like;
 
         ImageButton btn_candidate_clear;
 
@@ -127,10 +135,13 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
             this.txt_candidate_progress = (TextView) itemView.findViewById(R.id.txt_candidate_progress);
             this.candidate_progress = (CircleProgressView) itemView.findViewById(R.id.candidate_progress);
             this.btn_candidate_clear = (ImageButton) itemView.findViewById(R.id.btn_candidate_clear);
+            this.btn_candidate_unlike = (ImageButton) itemView.findViewById(R.id.btn_candidate_unlike);
+            btn_candidate_like = (ImageButton) itemView.findViewById(R.id.btn_candidate_like);
         }
 
         @Override
         public void bind(final Candidate candidate) {
+            super.bind(candidate);
             try {
                 candidate_progress.setProgress(candidate.getPercentage().floatValue());
                 txt_candidate_progress.setText(candidate.getPercentage() + "%");
@@ -138,8 +149,10 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
                 txt_candidate_friends.setText(String.valueOf(candidate.getCommonFriendships()));
                 txt_candidate_name.setText(candidate.getFirstName());
                 txt_candidate_age.setText(String.format(mContext.getString(R.string.format_user_years), candidate.getAge()));
-                Glide.with(mContext).load(candidate.getPhoto()).asBitmap().centerCrop().placeholder(R.drawable.ic_logo_muapp_no_caption).diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_candidate);
+                Glide.with(mContext).load(candidate.getPhoto()).asBitmap().centerCrop().placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_candidate);
                 btn_candidate_clear.setOnClickListener(this);
+                btn_candidate_like.setOnClickListener(this);
+                btn_candidate_unlike.setOnClickListener(this);
             } catch (Exception x) {
                 x.printStackTrace();
             }
@@ -167,6 +180,18 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
 
         @Override
         public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.btn_candidate_clear:
+                case R.id.btn_candidate_unlike:
+                    if (candidateInteractionListener != null)
+                        candidateInteractionListener.onUnlike(currentCandidate);
+                    break;
+                case R.id.btn_candidate_like:
+                    if (candidateInteractionListener != null)
+                        candidateInteractionListener.onLike(currentCandidate);
+                    break;
+            }
+
             candidates.remove(getAdapterPosition());
             notifyItemRemoved(getAdapterPosition());
         }

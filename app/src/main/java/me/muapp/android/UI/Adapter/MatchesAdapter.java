@@ -139,7 +139,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
         public void bind(ConversationItem conversation) {
             thisConversation = conversation;
             match_item_container.setOnClickListener(this);
-            Glide.with(mContext).load(conversation.getProfilePicture()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(mContext)).into(matchImage);
+            Glide.with(mContext).load(conversation.getProfilePicture()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(matchImage);
             matchLine1.setText(conversation.getFullName());
             if (conversation.getConversation().getLastMessage() != null)
                 matchLine2.setText(conversation.getConversation().getLastMessage().getContent());

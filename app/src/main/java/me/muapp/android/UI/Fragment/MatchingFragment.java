@@ -151,7 +151,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
 
     private void getMatchingUsers() {
         new APIService(getContext()).getMatchingUsers(matchingUsersPage, ((MainActivity) getContext()).getCurrentLocation(), this);
-        matchingUsersPage++;
     }
 
     @Override
@@ -173,6 +172,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onSuccess(int responseCode, MatchingResult result) {
         if (result.getMatchingUsers().size() > 0) {
+            matchingFragmentList.clear();
             for (final MatchingUser user : result.getMatchingUsers()) {
                 if (!TextUtils.isEmpty(user.getDescription()))
                     uploadDescriptionToFirebase(user.getId(), user.getDescription());
@@ -182,7 +182,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                 matchingFragmentList.add(fragment);
             }
             onAllUsersLoaded();
-            matchingUsersPage++;
         }
     }
 
@@ -315,6 +314,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                 if (matchingFragmentList.size() > 0) {
                     replaceFragment(matchingFragmentList.get(0));
                 } else {
+                    matchingUsersPage++;
                     showControls(false);
                     replaceFragment(GetMatchingUsersFragment.newInstance(user));
                     getMatchingUsers();
@@ -326,8 +326,8 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
 
     private void generateCrush() {
         showControls(false);
+        matchingUsersPage = 1;
         final int opponentId = matchingFragmentList.get(0).getMatchingUser().getId();
-        new APIService(getContext()).crushUser(opponentId);
         DatabaseReference myConversations = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
                 .child(String.valueOf(user.getId()));
@@ -351,6 +351,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                 yourConversations.child(opponentCrushId).setValue(crush).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        new APIService(getContext()).crushUser(opponentId);
                         FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("users").child(String.valueOf(opponentId)).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {

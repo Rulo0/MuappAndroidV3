@@ -46,7 +46,7 @@ public class AddGiphyDetailActivity extends BaseActivity {
         img_giphy_detail = (ImageView) findViewById(R.id.img_giphy_detail);
         et_giphy_comment = (EditText) findViewById(R.id.et_giphy_comment);
         if ((currentGiphy = getIntent().getParcelableExtra(CURRENT_GIPHY)) != null) {
-            Glide.with(this).load(currentGiphy.getImages().getOriginal().getUrl()).asGif().priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).placeholder(R.drawable.ic_logo_muapp_no_caption).fitCenter().into(img_giphy_detail);
+            Glide.with(this).load(currentGiphy.getImages().getOriginal().getUrl()).asGif().priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).placeholder(R.drawable.ic_placeholder).fitCenter().into(img_giphy_detail);
         }
     }
 

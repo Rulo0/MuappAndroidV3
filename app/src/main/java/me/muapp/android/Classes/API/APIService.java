@@ -720,9 +720,10 @@ public class APIService {
                     location.put("longitude", userLocation != null ? userLocation.getLongitude() : 0);
                     sendObject.put("user", location);
                 } catch (Exception x) {
-                    Log.d("getMatchingUsers", x.getMessage());
+                    Log.wtf("getMatchingUsers", x.getMessage());
                 }
-                Log.d("getMatchingUsers", sendObject.toString());
+                Log.wtf("getMatchingUsers", url);
+                Log.wtf("getMatchingUsers", sendObject.toString());
                 RequestBody body = RequestBody.create(mediaType, sendObject.toString());
                 Request request = new Request.Builder()
                         .url(url)
@@ -752,7 +753,7 @@ public class APIService {
                     handler.onFailure(false, "User not logged");
             }
         } catch (Exception x) {
-            Log.d("getMatchingUsers", x.getMessage());
+            Log.wtf("getMatchingUsers", x.getMessage());
             x.printStackTrace();
         }
     }
@@ -916,6 +917,36 @@ public class APIService {
                 handler.onFailure(false, "User not logged");*/
         }
     }
+
+    public void likeCandidate(int candidateId) {
+        String url = BASE_URL + String.format("users/%s/candidate_like", candidateId);
+        PreferenceHelper helper = new PreferenceHelper(mContext);
+        if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(RequestBody.create(null, new byte[0]))
+                    .build();
+            Log.wtf("likeCandidate", url);
+            try {
+                client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.wtf("likeCandidate", "Error " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        Log.wtf("likeCandidate", response.body().string());
+                    }
+                });
+            } catch (Exception x) {
+                Log.wtf("likeCandidate", "Error " + x.getMessage());
+                x.printStackTrace();
+            }
+        }
+
+    }
+
 
     private Request addAuthHeaders(Request mainRequest) {
         PreferenceHelper helper = new PreferenceHelper(mContext);
