@@ -73,7 +73,7 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (muappuser.getFakeAccount()) {
+                if (muappuser.getFakeAccount() != null && muappuser.getFakeAccount()) {
                     img_profile_view_verified.setImageResource(R.drawable.ic_verified_profile);
                 }
                 img_profile_view_verified.setVisibility(View.VISIBLE);

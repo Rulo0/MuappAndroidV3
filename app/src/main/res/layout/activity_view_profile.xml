@@ -47,6 +47,8 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@id/img_profile_view_verified"
+                    android:ellipsize="end"
+                    android:lines="1"
                     android:text="FUCKER !"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Title" />
             </RelativeLayout>

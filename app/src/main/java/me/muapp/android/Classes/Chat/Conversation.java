@@ -17,6 +17,7 @@ public class Conversation implements Parcelable {
     String opponentConversationId;
     int opponentId;
     Long lastSeenByOpponent;
+    Boolean seen;
 
     public Conversation() {
     }
@@ -93,6 +94,14 @@ public class Conversation implements Parcelable {
         this.lastSeenByOpponent = lastSeenByOpponent;
     }
 
+    public Boolean getSeen() {
+        return seen;
+    }
+
+    public void setSeen(Boolean seen) {
+        this.seen = seen;
+    }
+
     protected Conversation(Parcel in) {
         key = in.readString();
         byte crushVal = in.readByte();
@@ -106,6 +115,8 @@ public class Conversation implements Parcelable {
         opponentConversationId = in.readString();
         opponentId = in.readInt();
         lastSeenByOpponent = in.readByte() == 0x00 ? null : in.readLong();
+        byte seenVal = in.readByte();
+        seen = seenVal == 0x02 ? null : seenVal != 0x00;
     }
 
     @Override
@@ -146,21 +157,11 @@ public class Conversation implements Parcelable {
             dest.writeByte((byte) (0x01));
             dest.writeLong(lastSeenByOpponent);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Conversation{" +
-                "key='" + key + '\'' +
-                ", crush=" + crush +
-                ", likeByMe=" + likeByMe +
-                ", likeByOpponent=" + likeByOpponent +
-                ", lastMessage=" + lastMessage +
-                ", creationDate=" + creationDate +
-                ", opponentConversationId='" + opponentConversationId + '\'' +
-                ", opponentId=" + opponentId +
-                ", lastSeenByOpponent=" + lastSeenByOpponent +
-                '}';
+        if (seen == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (seen ? 0x01 : 0x00));
+        }
     }
 
     @SuppressWarnings("unused")
@@ -175,4 +176,20 @@ public class Conversation implements Parcelable {
             return new Conversation[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "Conversation{" +
+                "key='" + key + '\'' +
+                ", crush=" + crush +
+                ", likeByMe=" + likeByMe +
+                ", likeByOpponent=" + likeByOpponent +
+                ", lastMessage=" + lastMessage +
+                ", creationDate=" + creationDate +
+                ", opponentConversationId='" + opponentConversationId + '\'' +
+                ", opponentId=" + opponentId +
+                ", lastSeenByOpponent=" + lastSeenByOpponent +
+                ", seen=" + seen +
+                '}';
+    }
 }

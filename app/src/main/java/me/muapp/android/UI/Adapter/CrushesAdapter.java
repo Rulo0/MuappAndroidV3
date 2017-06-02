@@ -84,6 +84,14 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
         }
     }
 
+    public boolean isConversationCrush(String key) {
+        for (int i = 0; i < conversations.size(); i++) {
+            if (conversations.get(i).getKey().equals(key))
+                return true;
+        }
+        return false;
+    }
+
     public void clearConversations() {
         conversations.clear();
     }
@@ -138,7 +146,11 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
             Glide.with(mContext).load(item.getProfilePicture()).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(img_crush_photo);
             txt_crush_name.setText(item.getName());
             img_crush_overlay.setVisibility(View.GONE);
-            img_crush_notification.setVisibility(View.GONE);
+            if (item.getConversation().getSeen() != null) {
+                img_crush_notification.setVisibility(item.getConversation().getSeen() ? View.GONE : View.VISIBLE);
+            } else {
+                img_crush_notification.setVisibility(View.VISIBLE);
+            }
             try {
                 final Calendar expirationDate = Calendar.getInstance();
                 expirationDate.setTime(new Date(item.getConversation().getCreationDate()));

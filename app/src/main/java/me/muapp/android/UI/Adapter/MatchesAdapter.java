@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,6 +140,12 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
         public void bind(ConversationItem conversation) {
             thisConversation = conversation;
             match_item_container.setOnClickListener(this);
+            Log.w("Binding", conversation.toString());
+            if (conversation.getConversation().getSeen() != null) {
+                matchIndicator.setVisibility(conversation.getConversation().getSeen() ? View.GONE : View.VISIBLE);
+            } else {
+                matchIndicator.setVisibility(View.VISIBLE);
+            }
             Glide.with(mContext).load(conversation.getProfilePicture()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(matchImage);
             matchLine1.setText(conversation.getFullName());
             if (conversation.getConversation().getLastMessage() != null)

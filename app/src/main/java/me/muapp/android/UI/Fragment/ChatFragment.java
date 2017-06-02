@@ -105,6 +105,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -250,6 +251,8 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         Log.wtf("Child", "Changed");
         Conversation conversation = dataSnapshot.getValue(Conversation.class);
         conversation.setKey(dataSnapshot.getKey());
+        if (crushesAdapter.isConversationCrush(dataSnapshot.getKey()) && !conversation.getCrush())
+            crushesAdapter.removeConversation(conversation.getKey());
         Log.wtf("CHAT", conversation.toString());
         prepareConversation(conversation);
     }

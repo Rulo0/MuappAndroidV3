@@ -368,6 +368,10 @@ public class Candidate implements Parcelable {
         this.quickbloxId = quickbloxId;
     }
 
+    public String getFullName() {
+        return String.format("%s %s", firstName, lastName);
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(id);
         dest.writeValue(firstName);

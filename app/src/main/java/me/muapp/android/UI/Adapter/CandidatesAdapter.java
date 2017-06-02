@@ -1,6 +1,7 @@
 package me.muapp.android.UI.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,7 +21,12 @@ import java.util.List;
 import me.muapp.android.Classes.Internal.Candidate;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+import me.muapp.android.UI.Activity.ViewProfileActivity;
 import me.muapp.android.UI.Fragment.Interface.OnCandidateInteractionListener;
+
+import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_CRUSH;
+import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_ID;
+import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_NAME;
 
 /**
  * Created by rulo on 28/03/17.
@@ -153,6 +159,7 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
                 btn_candidate_clear.setOnClickListener(this);
                 btn_candidate_like.setOnClickListener(this);
                 btn_candidate_unlike.setOnClickListener(this);
+                img_photo_candidate.setOnClickListener(this);
             } catch (Exception x) {
                 x.printStackTrace();
             }
@@ -190,10 +197,17 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
                     if (candidateInteractionListener != null)
                         candidateInteractionListener.onLike(currentCandidate);
                     break;
+                case R.id.img_photo_candidate:
+                    Intent profileIntent = new Intent(mContext, ViewProfileActivity.class);
+                    profileIntent.putExtra(USER_ID, currentCandidate.getId());
+                    profileIntent.putExtra(USER_NAME, currentCandidate.getFullName());
+                    mContext.startActivity(profileIntent);
+                    break;
             }
-
-            candidates.remove(getAdapterPosition());
-            notifyItemRemoved(getAdapterPosition());
+            if (v.getId() != R.id.img_photo_candidate) {
+                candidates.remove(getAdapterPosition());
+                notifyItemRemoved(getAdapterPosition());
+            }
         }
     }
 }

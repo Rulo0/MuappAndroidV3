@@ -50,6 +50,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -88,7 +89,7 @@ import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_USER;
 
 public class MainActivity extends BaseActivity implements
         BottomNavigationView.OnNavigationItemSelectedListener,
-        OnFragmentInteractionListener, SearchView.OnQueryTextListener, AddContentDialogFragment.Listener, AHBottomNavigation.OnTabSelectedListener {
+        OnFragmentInteractionListener, SearchView.OnQueryTextListener, AddContentDialogFragment.Listener, AHBottomNavigation.OnTabSelectedListener, ValueEventListener {
     private static final int PHONE_REQUEST_CODE = 79;
     public static final String TAG = "MainActivity";
     // private CurrentNavigationElement navigationElement;
@@ -108,6 +109,27 @@ public class MainActivity extends BaseActivity implements
     private static final String LOCATION_KEY = "LOCATION";
     private static final String LAST_UPDATED_TIME_STRING_KEY = "LAST_TIME_UPDATED";
     AHBottomNavigation bottomNavigation;
+    Query badgeQuery;
+    int notificationPos;
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        bottomNavigation.setNotification("", notificationPos);
+        if (dataSnapshot.getChildrenCount() > 0) {
+            AHNotification notification = new AHNotification.Builder()
+                    .setText("1")
+                    .setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
+                    .setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
+                    .build();
+            bottomNavigation.setNotification(notification, notificationPos);
+        }
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
+    }
+
 
     private enum BottomItem {
         ITEM_MATCHING,
@@ -234,23 +256,17 @@ public class MainActivity extends BaseActivity implements
         /*    fragmentHashMap.put(R.id.navigation_home, MatchingFragment.newInstance(loggedUser));
             fragmentHashMap.put(R.id.navigation_dashboard, ChatFragment.newInstance(loggedUser));
             fragmentHashMap.put(R.id.navigation_profile, ProfileFragment.newInstance(loggedUser));*/
-            AHNotification notification = new AHNotification.Builder()
-                    .setText("1")
-                    .setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
-                    .setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
-                    .build();
 
+            notificationPos = User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female ? 2 : 1;
             if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female) {
                 fragmentHashMap.put(0, MatchingFragment.newInstance(loggedUser));
                 fragmentHashMap.put(1, GateFragment.newInstance(loggedUser));
                 fragmentHashMap.put(2, ChatFragment.newInstance(loggedUser));
                 fragmentHashMap.put(3, ProfileFragment.newInstance(loggedUser));
-                bottomNavigation.setNotification(notification, 2);
             } else {
                 fragmentHashMap.put(0, MatchingFragment.newInstance(loggedUser));
                 fragmentHashMap.put(1, ChatFragment.newInstance(loggedUser));
                 fragmentHashMap.put(2, ProfileFragment.newInstance(loggedUser));
-                bottomNavigation.setNotification(notification, 1);
             }
 
 
@@ -266,6 +282,7 @@ public class MainActivity extends BaseActivity implements
             requestPermissions();
         }
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
+        badgeQuery = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).orderByChild("seen").equalTo(false);
     }
 
     private void preparePendingMatch(final String pendingMatch) {
@@ -648,12 +665,14 @@ public class MainActivity extends BaseActivity implements
         if (selectedNavigationElement != null && selectedNavigationElement.getFrag() instanceof ProfileFragment)
             getSupportActionBar().setTitle(loggedUser.getFullName());
         super.onStart();
+        badgeQuery.addValueEventListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         stopLocationUpdates();
+        badgeQuery.removeEventListener(this);
     }
 
     @Override

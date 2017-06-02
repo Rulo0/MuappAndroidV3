@@ -340,6 +340,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             }
         });
         setupVoicenote();
+        updateMyConversationSeen();
     }
 
     private void getRecentsConversations() {
@@ -431,6 +432,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         yourConversation.child("lastSeenByOpponent").setValue(ServerValue.TIMESTAMP);
     }
 
+    private void updateMyConversationSeen() {
+        myConversation.child("seen").setValue(true);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -480,6 +485,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         if (container_empty_messages.getVisibility() == View.VISIBLE)
             container_empty_messages.setVisibility(View.GONE);
         updateYourConversationLastSeen();
+        updateMyConversationSeen();
         Message m = dataSnapshot.getValue(Message.class);
         if (m != null)
             m.setKey(dataSnapshot.getKey());
@@ -523,6 +529,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m.toMap());
             myConversation.child("lastMessage").setValue(m.toMap());
             yourConversation.child("lastMessage").setValue(m.toMap());
+            yourConversation.child("seen").setValue(false);
             sendPushMessage();
         }
     }
@@ -1004,6 +1011,12 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     @Override
     public void onExpiredMuapp() {
         Log.wtf("Expired", "Muapp");
+        txt_remaining_time.setVisibility(View.GONE);
+
+      /*  FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).child(conversationItem.getKey()).removeValue();
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child(conversationItem.getConversation().getOpponentConversationId()).removeValue();
+*/
+
     }
 
     @Override

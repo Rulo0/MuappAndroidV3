@@ -341,6 +341,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         crush.setLikeByMe(false);
         crush.setLikeByOpponent(false);
         crush.setCrush(true);
+        crush.setSeen(false);
         crush.setOpponentConversationId(opponentCrushId);
         crush.setOpponentId(opponentId);
         myConversations.child(myCrushId).setValue(crush).addOnSuccessListener(new OnSuccessListener<Void>() {
