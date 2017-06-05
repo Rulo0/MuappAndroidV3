@@ -21,6 +21,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.widget.CardView;
@@ -96,6 +97,7 @@ import okhttp3.Response;
 import static android.os.Build.VERSION_CODES.M;
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_CRUSH;
+import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_MATCH;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_ID;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_NAME;
 
@@ -133,7 +135,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     CardView container_empty_messages;
     TextView txt_name_empty_messages, txt_conversation_count_empty_messages, txt_created_empty_messages;
     ImageView img_empty_messages;
-
+    public static final String PROFILE_VIEW_RESULT = "PROFILE_VIEW_RESULT";
     ValueEventListener presenceListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -330,7 +332,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         chatSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attempSend(null);
+                attemptSend(null);
             }
         });
         chatAddAttachmentButton.setOnClickListener(new View.OnClickListener() {
@@ -371,7 +373,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
                 }
                 Log.wtf("Conversations", conversationsCount + " in last 24 hours");
-                txt_conversation_count_empty_messages.setText(String.valueOf(conversationsCount - 1));
+                txt_conversation_count_empty_messages.setText(String.valueOf(conversationsCount - 1 >= 0 ? conversationsCount : "0"))
+                ;
             }
 
             @Override
@@ -405,8 +408,9 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                     });
                 } else {
                     remainingTimer.cancel();
-                    if (!isShowingDialog)
+                    if (!isShowingDialog) {
                         new CrushExpiredDialogFragment().newInstance(conversationItem).show(getSupportFragmentManager(), conversationItem.getKey());
+                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -515,7 +519,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
     }
 
-    private void attempSend(UserContent content) {
+    private void attemptSend(UserContent content) {
         if (!TextUtils.isEmpty(etMessage.getText().toString()) || content != null) {
             Log.wtf("Sending message", "");
             Message m = new Message();
@@ -622,8 +626,18 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                     Log.wtf("attach", "picture started");
                     onSelectFromGalleryResult(data);
                     break;
-                default:
-                    sendPushMessage();
+                case PROFILE_VIEW_CODE:
+                    Boolean hasMuapp = data.getBooleanExtra(PROFILE_VIEW_RESULT, false);
+                    Log.wtf("ViewProfile", "Returned OK + Muapp? " + hasMuapp);
+                    if (hasMuapp) {
+                        Fragment f = getSupportFragmentManager().findFragmentByTag(conversationItem.getKey());
+                        if (f != null) {
+                            android.support.v4.app.DialogFragment df = (android.support.v4.app.DialogFragment) f;
+                            df.dismiss();
+                        }
+                        onExpiredMuapp();
+                    } else
+                        onExpiredNoMuapp();
                     break;
             }
         }
@@ -697,7 +711,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                     thisContent.setCatContent("contentPic");
                     thisContent.setContentUrl(downloadUrl.toString());
                     thisContent.setStorageName(imageReference.getPath());
-                    attempSend(thisContent);
+                    attemptSend(thisContent);
                 }
             }
         });
@@ -830,7 +844,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
             @Override
             public void onExpand() {
+            if(checkAndRequestMicPermissions())
                 startRecording();
+
+
             }
 
             @Override
@@ -996,7 +1013,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                             thisContent.setContentUrl(downloadUrl.toString());
                             thisContent.setStorageName(audioReference.getPath());
                             Log.wtf("Sending complete", thisContent.toString());
-                            attempSend(thisContent);
+                            attemptSend(thisContent);
                             f.delete();
                             thisFile = null;
                         }
@@ -1010,12 +1027,13 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
     @Override
     public void onExpiredMuapp() {
-        Log.wtf("Expired", "Muapp");
         txt_remaining_time.setVisibility(View.GONE);
-
-      /*  FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).child(conversationItem.getKey()).removeValue();
+        Log.wtf("Expired", "Muapp");
+        Log.wtf("Expired", txt_remaining_time.getId() + " Must be gone");
+        /*
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).child(conversationItem.getKey()).removeValue();
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child(conversationItem.getConversation().getOpponentConversationId()).removeValue();
-*/
+        */
 
     }
 
@@ -1046,8 +1064,11 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         profileIntent.putExtra(USER_ID, conversationItem.getConversation().getOpponentId());
         profileIntent.putExtra(USER_NAME, conversationItem.getFullName());
         profileIntent.putExtra(FROM_CRUSH, conversationItem.getConversation().getCrush());
+        profileIntent.putExtra(FROM_MATCH, !conversationItem.getConversation().getCrush());
         startActivityForResult(profileIntent, PROFILE_VIEW_CODE);
     }
+
+
 }
 
 

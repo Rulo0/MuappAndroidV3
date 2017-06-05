@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import me.muapp.android.Classes.API.APIService;
-import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.R;
 import me.muapp.android.UI.Fragment.Interface.OnUserReportedListener;
 
@@ -26,8 +25,8 @@ import me.muapp.android.UI.Fragment.Interface.OnUserReportedListener;
  */
 
 public class ReportUserDialogFragment extends DialogFragment implements View.OnClickListener {
-    MatchingUser matchingUser;
-    static final String ARG_MATCHING_USER = "ARG_CONVERSATION_CRUSH";
+    int userId;
+    static final String ARG_REPORT_USER_ID = "ARG_REPORT_USER_ID";
     OnUserReportedListener onUserReportedListener;
     Button btn_cancel_report, btn_report_user;
     ListView list_report_reasons;
@@ -41,7 +40,7 @@ public class ReportUserDialogFragment extends DialogFragment implements View.OnC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);
+            userId = getArguments().getInt(ARG_REPORT_USER_ID);
         }
     }
 
@@ -49,10 +48,10 @@ public class ReportUserDialogFragment extends DialogFragment implements View.OnC
         this.onUserReportedListener = onUserReportedListener;
     }
 
-    public static ReportUserDialogFragment newInstance(MatchingUser user) {
+    public static ReportUserDialogFragment newInstance(int userId) {
         ReportUserDialogFragment fragment = new ReportUserDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_MATCHING_USER, user);
+        args.putInt(ARG_REPORT_USER_ID, userId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -113,7 +112,7 @@ public class ReportUserDialogFragment extends DialogFragment implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_report_user:
-                new APIService(getContext()).reportUser(matchingUser.getId(), selectedReason, null);
+                new APIService(getContext()).reportUser(userId, selectedReason, null);
                 if (onUserReportedListener != null)
                     onUserReportedListener.onReport();
             case R.id.btn_cancel_report:

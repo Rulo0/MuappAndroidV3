@@ -36,7 +36,7 @@
     </style>
 
     <style name="color_button_green" parent="ThemeOverlay.AppCompat.Light">
-        <item name="colorButtonNormal">@color/color_muap_green</item>
+        <item name="colorButtonNormal">@color/color_muapp_green</item>
     </style>
 
     <style name="dark_button_layout_style">

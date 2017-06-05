@@ -134,49 +134,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(matchingUser.getId())).child("profilePicture").setValue(matchingUser.getAlbum().get(0));
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(matchingUser.getId())).child("name").setValue(matchingUser.getFirstName());
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(matchingUser.getId())).child("lastName").setValue(matchingUser.getLastName());
-
-      /*  User user = new UserHelper(getContext()).getLoggedUser();
-        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(user.getId())).child("name").setValue(matchingUser.getFirstName());
-        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(user.getId())).child("lastName").setValue(matchingUser.getLastName());
-        DatabaseReference chatReference = FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("conversations").child(String.valueOf(user.getId()));
-        DatabaseReference opponentChat = FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("conversations").child(String.valueOf(matchingUser.getId()));
-        List<Message> messages = new ArrayList<>();
-        Conversation conversation = new Conversation();
-        conversation.setCreationDate(new Date().getTime());
-        conversation.setCrush(Math.random() < 0.5);
-        conversation.setLikeByMe(false);
-        conversation.setLikeByOpponent(false);
-        List<Integer> myMessagesIds = new ArrayList<>();
-        for (int i = 0; i <= 25; i++) {
-            Message m = new Message();
-            m.setContent(Utils.generateRandomString());
-            m.setSenderId(Math.random() < 0.5 ? matchingUser.getId() : user.getId());
-            if (m.getSenderId() == user.getId())
-                myMessagesIds.add(i);
-            m.setTimeStamp(new Date().getTime() + 3000);
-            m.setReaded(Math.random() < 0.5);
-            messages.add(m);
-        }
-        conversation.setLastMessage(messages.get(messages.size() - 1));
-        String chatReferenceKey = chatReference.push().getKey();
-        conversation.setOpponentConversationId(chatReferenceKey);
-        conversation.setOpponentId(matchingUser.getId());
-        chatReference.child(chatReferenceKey).setValue(conversation);
-        conversation.setOpponentId(user.getId());
-        opponentChat.child(chatReferenceKey).setValue(conversation);
-
-        int lastSentPosition = myMessagesIds.get(new Random().nextInt(myMessagesIds.size()));
-        int i = 0;
-        for (Message msg : messages) {
-            String myChatKey = chatReference.push().getKey();
-            chatReference.child(chatReferenceKey).child("conversation").child(myChatKey).setValue(msg);
-            opponentChat.child(chatReferenceKey).child("conversation").child(opponentChat.push().getKey()).setValue(msg);
-            if (i == lastSentPosition) {
-                chatReference.child(chatReferenceKey).child("lastMessageReadedId").setValue(myChatKey);
-            }
-            i++;
-        }*/
-
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(matchingUser.getId())).child("online").setValue(false);
     }
 
     @Override
@@ -218,7 +176,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         btn_matching_report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ReportUserDialogFragment reportUserDialogFragment = ReportUserDialogFragment.newInstance(matchingUser);
+                ReportUserDialogFragment reportUserDialogFragment = ReportUserDialogFragment.newInstance(matchingUser.getId());
                 reportUserDialogFragment.setOnUserReportedListener(MatchingUserProfileFragment.this);
                 reportUserDialogFragment.show(getChildFragmentManager(), "");
             }

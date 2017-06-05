@@ -29,6 +29,7 @@ import java.util.Set;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.Errors.Login.LoginError;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
@@ -101,6 +102,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void onClick(View v) {
                 loginButton.performClick();
+                mFirebaseAnalytics.logEvent(Analytics.Login.LOGIN_EVENTS.Login_FB.name(), null);
             }
         });
 
@@ -171,25 +173,31 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private void validateError(LoginError le) {
         Intent errorIntent = new Intent(LoginActivity.this, ErrorActivity.class);
+        Bundle params = new Bundle();
         switch (le.getErrorType()) {
             case NoPhoto:
+                params.putString(Analytics.Login.LOGIN_TYPE.Type.name(), Analytics.Login.LOGIN_ERROR_TYPE.Photo.name());
                 Log.wtf(TAG, "NoPhoto");
                 errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_profile_picture));
                 break;
             case Underage:
+                params.putString(Analytics.Login.LOGIN_TYPE.Type.name(), Analytics.Login.LOGIN_ERROR_TYPE.Minor.name());
                 Log.wtf(TAG, "Underage");
                 errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_minor));
                 break;
             case NoFriends:
+                params.putString(Analytics.Login.LOGIN_TYPE.Type.name(), Analytics.Login.LOGIN_ERROR_TYPE.Friends.name());
                 Log.wtf(TAG, "NoFriends");
                 errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_real_person));
                 errorIntent.putExtra(ERROR_SHOW_EMAIL, true);
                 break;
             case Expelled:
+                params.putString(Analytics.Login.LOGIN_TYPE.Type.name(), Analytics.Login.LOGIN_ERROR_TYPE.FBPermissions.name());
                 Log.wtf(TAG, "Expelled");
                 errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_requirements));
                 break;
             case FBPermissions:
+                params.putString(Analytics.Login.LOGIN_TYPE.Type.name(), Analytics.Login.LOGIN_ERROR_TYPE.FBPermissions.name());
                 Log.wtf(TAG, "FBPermissions");
                 errorIntent.putExtra(ERROR_EXTRA, getString(R.string.lbl_error_permissions));
                 break;
@@ -197,6 +205,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 Log.wtf(TAG, "U");
                 break;
         }
+        mFirebaseAnalytics.logEvent(Analytics.Login.LOGIN_EVENTS.Login_Error.name(), params);
         startActivity(errorIntent);
     }
 

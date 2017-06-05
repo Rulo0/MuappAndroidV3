@@ -222,6 +222,12 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 loggedUser.setAgeRange(userSettings.getAgeRange());
                 loggedUser.setDistance(userSettings.getDistance());
                 saveUser(loggedUser);
+                if (mainUserSetting.getAgeRange().get1() != userSettings.getAgeRange().get1() ||
+                        mainUserSetting.getAgeRange().get2() != userSettings.getAgeRange().get2() ||
+                        mainUserSetting.getDistance() != userSettings.getDistance()) {
+                    Log.wtf("SearchInfo", "Changed!");
+                    preferenceHelper.putSearchPreferencesChanged();
+                }
                 try {
                     new APIService(this).patchUser(new JSONObject(new Gson().toJson(userSettings)), new UserInfoHandler() {
                         @Override

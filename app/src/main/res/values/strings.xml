@@ -313,4 +313,6 @@
     <string name="lbl_rate_them">Rate them!</string>
     <string name="lbl_vote_for_the_guys">Vote for the guys you think should be part of Muapp!</string>
     <string name="lbl_gate_load_title">THEY ARE WAITING TO ENTER MUAPP. LET THEM IN!</string>
+    <string name="lbl_undo_match">Unmatch</string>
+    <string name="lbl_undo_crush">Uncrush</string>
 </resources>

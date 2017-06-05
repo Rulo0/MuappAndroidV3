@@ -19,7 +19,7 @@
                 android:layout_width="0dp"
                 android:layout_height="220dp"
                 android:scaleType="centerCrop"
-                android:src="@color/color_muap_green"
+                android:src="@color/color_muapp_green"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -114,7 +114,7 @@
                         android:layout_height="40dp"
                         android:layout_centerInParent="true"
                         app:cpv_background_circle_width="3dp"
-                        app:cpv_circle_color="@color/color_muap_green"
+                        app:cpv_circle_color="@color/color_muapp_green"
                         app:cpv_circle_width="3dp"
                         app:cpv_text_size="0" />
                 </RelativeLayout>
@@ -146,7 +146,7 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="45dp"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
@@ -161,9 +161,11 @@
                 <ImageButton
                     android:id="@+id/btn_candidate_unlike"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="45dp"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
                     app:srcCompat="@drawable/ic_thumb_down" />
 
                 <LinearLayout
@@ -181,9 +183,11 @@
                 <ImageButton
                     android:id="@+id/btn_candidate_like"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="45dp"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
                     app:srcCompat="@drawable/ic_thumb_up" />
             </LinearLayout>
 

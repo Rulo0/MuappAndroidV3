@@ -15,6 +15,7 @@ public class PreferenceHelper {
     private final String FB_USER_ID = "facebookId";
     private final String GCM_TOKEN = "gcm_token";
     private final String FIRST_LOGIN = "first_login";
+    private final String SEARCH_PREFERENCES_CHANGED = "search_preferences_changed";
     private final String FIRST_TIME_CHAT = "fist_time_chat";
     private final String LAST_SENT_MESSAGE_TIMESTAMP = "last_sent";
     private final String LATITUDE = "latitude";
@@ -38,6 +39,22 @@ public class PreferenceHelper {
         SharedPreferences.Editor edit = preferences.edit();
         edit.putBoolean(FIRST_LOGIN, false);
         edit.apply();
+    }
+
+    public void putSearchPreferencesChanged() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(SEARCH_PREFERENCES_CHANGED, true);
+        edit.apply();
+    }
+
+    public void putSearchPreferencesChangedDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(SEARCH_PREFERENCES_CHANGED, false);
+        edit.apply();
+    }
+
+    public Boolean getSeachPreferencesChanged() {
+        return preferences.getBoolean(SEARCH_PREFERENCES_CHANGED, false);
     }
 
     public String getdialogsLastSentMessageTimestamp() {

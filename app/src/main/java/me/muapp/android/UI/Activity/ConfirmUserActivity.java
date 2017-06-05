@@ -39,6 +39,7 @@ import java.util.Date;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.LoginHelper;
@@ -270,6 +271,7 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
 
     private void confirmUser() {
         showProgressDialog();
+        mFirebaseAnalytics.logEvent(Analytics.Login.LOGIN_EVENTS.Login_Confirm_Confirm.name(), null);
         new APIService(this).confirmUser(loggedUser, new PreferenceHelper(this).getLocation(), new UserInfoHandler() {
             @Override
             public void onSuccess(int responseCode, String userResponse) {
@@ -320,6 +322,7 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void syncUser() {
+        mFirebaseAnalytics.logEvent(Analytics.Login.LOGIN_EVENTS.Login_Confirm_Synchronise.name(), null);
         new APIService(this).loginToMuapp(new UserInfoHandler() {
             @Override
             public void onSuccess(int responseCode, String userResponse) {

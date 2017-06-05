@@ -411,6 +411,8 @@ public class MainActivity extends BaseActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile_menu, menu);
+        for (int i = 0; i < menu.size(); i++)
+            menu.getItem(i).setVisible(selectedNavigationElement.getFrag() instanceof ProfileFragment);
         return super.onCreateOptionsMenu(menu);
     }
 

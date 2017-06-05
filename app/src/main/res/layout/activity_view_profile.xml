@@ -111,7 +111,7 @@
         app:layout_anchorGravity="bottom">
 
         <ImageButton
-            android:id="@+id/btn_muapp_matching"
+            android:id="@+id/btn_muapp_profile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -120,7 +120,7 @@
             app:srcCompat="@drawable/ic_muapp" />
 
         <ImageButton
-            android:id="@+id/btn_no_muapp_matching"
+            android:id="@+id/btn_no_muapp_profile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -129,5 +129,65 @@
             app:srcCompat="@drawable/ic_no_muapp" />
 
 
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/container_gate_thumbs_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="6dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_anchor="@id/profile_srl_container"
+        app:layout_anchorGravity="bottom">
+
+        <RelativeLayout
+            android:id="@+id/candidates_progress_container"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="4dp"
+            android:background="@drawable/back_white_circle">
+
+            <TextView
+                android:id="@+id/txt_candidate_profile_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="99%"
+                android:textSize="20dp" />
+
+            <com.eralp.circleprogressview.CircleProgressView
+                android:id="@+id/candidate_profile_progress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                app:cpv_background_circle_width="4dp"
+                app:cpv_circle_color="@color/color_muapp_green"
+                app:cpv_circle_width="4dp"
+                app:cpv_text_size="0" />
+        </RelativeLayout>
+
+        <ImageButton
+            android:id="@+id/btn_profile_gate_accept"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="-16dp"
+            android:background="@drawable/back_thumb_up"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_thumb_up" />
+
+        <ImageButton
+            android:id="@+id/btn_profile_gate_deny"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="-16dp"
+            android:background="@drawable/back_thumb_down"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_thumb_down" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

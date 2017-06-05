@@ -22,11 +22,15 @@ import me.muapp.android.Classes.Internal.Candidate;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.ViewProfileActivity;
+import me.muapp.android.UI.Fragment.GateFragment;
 import me.muapp.android.UI.Fragment.Interface.OnCandidateInteractionListener;
 
-import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_CRUSH;
+import static me.muapp.android.UI.Activity.ViewProfileActivity.CANDIDATE_PROGRESS;
+import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_GATE;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_ID;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_NAME;
+import static me.muapp.android.UI.Fragment.GateFragment.CANDIDATE_PROFILE_CODE;
+
 
 /**
  * Created by rulo on 28/03/17.
@@ -39,11 +43,26 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
     private static final int TYPE_TUTORIAL = -1;
     private static final int TYPE_CANDIDATE = 0;
     OnCandidateInteractionListener candidateInteractionListener;
+    GateFragment gateFragment;
+
+    public void setGateFragment(GateFragment gateFragment) {
+        this.gateFragment = gateFragment;
+    }
 
     public CandidatesAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
         this.candidates = new ArrayList<>();
         this.mContext = context;
+    }
+
+    public void removeCandidate(int candidateId) {
+        for (int i = 0; i < candidates.size(); i++) {
+            if (candidates.get(i).getId() == candidateId) {
+                candidates.remove(i);
+                notifyItemRemoved(i);
+                break;
+            }
+        }
     }
 
     public void setCandidateInteractionListener(OnCandidateInteractionListener candidateInteractionListener) {
@@ -198,10 +217,16 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
                         candidateInteractionListener.onLike(currentCandidate);
                     break;
                 case R.id.img_photo_candidate:
-                    Intent profileIntent = new Intent(mContext, ViewProfileActivity.class);
-                    profileIntent.putExtra(USER_ID, currentCandidate.getId());
-                    profileIntent.putExtra(USER_NAME, currentCandidate.getFullName());
-                    mContext.startActivity(profileIntent);
+                    try {
+                        Intent profileIntent = new Intent(mContext, ViewProfileActivity.class);
+                        profileIntent.putExtra(USER_ID, currentCandidate.getId());
+                        profileIntent.putExtra(USER_NAME, currentCandidate.getFullName());
+                        profileIntent.putExtra(FROM_GATE, true);
+                        profileIntent.putExtra(CANDIDATE_PROGRESS, currentCandidate.getPercentage());
+                        gateFragment.startActivityForResult(profileIntent, CANDIDATE_PROFILE_CODE);
+                    } catch (Exception x) {
+                        x.printStackTrace();
+                    }
                     break;
             }
             if (v.getId() != R.id.img_photo_candidate) {

@@ -181,4 +181,6 @@
     <string name="lbl_rate_them">¡Califícalos!</string>
     <string name="lbl_vote_for_the_guys">Vota por los chicos que crees que deberían formar parte de Muapp.</string>
     <string name="lbl_gate_load_title">ESTÁN ESPERANDO A ENTRAR EN MUAPP ¡ACÉPTALES!</string>
+    <string name="lbl_undo_match">Deshacer match</string>
+    <string name="lbl_undo_crush">Deshacer crush</string>
 </resources>

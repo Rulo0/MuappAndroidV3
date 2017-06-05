@@ -165,7 +165,6 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         LinearLayoutManager linearLayoutManagerHorizontal = new LinearLayoutManager(getContext());
         linearLayoutManagerHorizontal.setOrientation(LinearLayoutManager.HORIZONTAL);
         linearLayoutManagerHorizontal.setStackFromEnd(true);
-        linearLayoutManagerHorizontal.setReverseLayout(true);
         recycler_crushes.setLayoutManager(linearLayoutManagerHorizontal);
         recycler_crushes.setAdapter(crushesAdapter);
         LinearLayoutManager verticalLLM = new LinearLayoutManager(getContext());
@@ -215,9 +214,10 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
                     conversationItem.setKey(conversation.getKey());
                     conversationItem.setConversation(conversation);
                     Log.w("ConversationItem", conversationItem.toString());
-                    if (conversationItem.getConversation().getCrush())
+                    if (conversationItem.getConversation().getCrush()) {
                         crushesAdapter.addConversation(conversationItem);
-                    else
+                        recycler_crushes.scrollToPosition(0);
+                    } else
                         matchesAdapter.addConversation(conversationItem);
                     progressUtil.showProgress(false);
                     listenerHashMap.put(conversation.getKey(), new ChatItemObject(conversationItem.getProfilePicture(), conversation.getKey(), conversation.getCrush(), userInfoReference));

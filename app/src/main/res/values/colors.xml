@@ -11,7 +11,7 @@
     <color name="color_muapp_dark">#3e4c5c</color>
     <color name="color_muapp_dark_sub">#929292</color>
     <color name="color_muapp_button_light">#9fa6ae</color>
-    <color name="color_muap_green">#50e3c2</color>
+    <color name="color_muapp_green">#50e3c2</color>
     <color name="color_muapp_divider">#d8e0e9</color>
     <color name="color_muapp_light_grey">#ececee</color>
     <color name="chat_text_you">@android:color/white</color>

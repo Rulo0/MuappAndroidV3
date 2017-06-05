@@ -158,7 +158,7 @@
             android:theme="@style/AppTheme.NoActionBarMatching" />
         <activity
             android:name=".UI.Activity.ViewProfileActivity"
-            android:label="@string/title_activity_view_profile"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

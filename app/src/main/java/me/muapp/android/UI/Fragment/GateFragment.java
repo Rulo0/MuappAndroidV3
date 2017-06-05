@@ -2,6 +2,7 @@ package me.muapp.android.UI.Fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,12 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.CandidatesHandler;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.Candidate;
 import me.muapp.android.Classes.Internal.CandidatesResult;
 import me.muapp.android.Classes.Internal.User;
@@ -28,6 +32,8 @@ import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.CandidatesAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnCandidateInteractionListener;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
+
+import static android.app.Activity.RESULT_OK;
 
 
 public class GateFragment extends Fragment implements OnFragmentInteractionListener, CandidatesHandler, OnCandidateInteractionListener {
@@ -41,6 +47,9 @@ public class GateFragment extends Fragment implements OnFragmentInteractionListe
     int candidatesPage = 1;
     ProgressUtil progressUtil;
     LinearLayout container_candidates_layout;
+    public static final int CANDIDATE_PROFILE_CODE = 951;
+    public static final String CANDIDATE_PROFILE_VIEW_RESULT = "CANDIDATE_PROFILE_VIEW_RESULT";
+    public static final String CANDIDATE_KEY_RESULT = "CANDIDATE_KEY_RESULT";
 
     public GateFragment() {
         // Required empty public constructor
@@ -68,6 +77,7 @@ public class GateFragment extends Fragment implements OnFragmentInteractionListe
 
         candidatesAdapter = new CandidatesAdapter(getContext());
         candidatesAdapter.setCandidateInteractionListener(this);
+        candidatesAdapter.setGateFragment(this);
         slm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recycler_candidates.setLayoutManager(slm);
         recycler_candidates.setAdapter(candidatesAdapter);
@@ -167,12 +177,39 @@ public class GateFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onLike(Candidate candidate) {
         Log.wtf("Candidate", "Like " + candidate);
+        Bundle params = new Bundle();
+        params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.name(), Analytics.Muapp.MUAPP_TYPE.Button.name());
+        params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.name(), Analytics.Muapp.MUAPP_SCREEN.Gate_Woman.name());
+        FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Muapp.name(), params);
         new APIService(getContext()).likeCandidate(candidate.getId());
     }
 
     @Override
     public void onUnlike(Candidate candidate) {
         Log.wtf("Candidate", "Unlike " + candidate);
+        Bundle params = new Bundle();
+        params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.name(), Analytics.Muapp.MUAPP_TYPE.Button.name());
+        params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.name(), Analytics.Muapp.MUAPP_SCREEN.Gate_Woman.name());
+        FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Dismiss.name(), params);
         new APIService(getContext()).dislikeUser(candidate.getId(), null);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CANDIDATE_PROFILE_CODE && resultCode == RESULT_OK) {
+            int returnedCandidateId = data.getIntExtra(CANDIDATE_KEY_RESULT, -1);
+            candidatesAdapter.removeCandidate(returnedCandidateId);
+            Bundle muappBundleProfile = new Bundle();
+            muappBundleProfile.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.name(), Analytics.Muapp.MUAPP_TYPE.Button.name());
+            muappBundleProfile.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.name(), Analytics.Muapp.MUAPP_SCREEN.User_Profile_New.name());
+            if (data.getBooleanExtra(CANDIDATE_PROFILE_VIEW_RESULT, false)) {
+                FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Muapp.name(), muappBundleProfile);
+                new APIService(getContext()).likeCandidate(returnedCandidateId);
+            } else {
+                FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Dismiss.name(), muappBundleProfile);
+                new APIService(getContext()).dislikeUser(returnedCandidateId, null);
+            }
+        }
     }
 }

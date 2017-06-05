@@ -109,7 +109,7 @@
             android:layout_height="280dp"
             android:layout_centerInParent="true"
             app:back_width="10dp"
-            app:front_color1="@color/color_muap_green"
+            app:front_color1="@color/color_muapp_green"
             app:front_width="10dp"
             app:max_value="100"
             app:total_engle="270" />

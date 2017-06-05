@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,11 +33,13 @@ import me.muapp.android.Classes.API.Handlers.LikeUserHandler;
 import me.muapp.android.Classes.API.Handlers.MatchingUsersHandler;
 import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Chat.ConversationItem;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.MatchingResult;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
@@ -64,9 +67,10 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     List<MatchingUserProfileFragment> matchingFragmentList = new ArrayList<>();
     RelativeLayout container_actions_matching;
     ImageButton btn_muapp_matching, btn_crush_matching, btn_no_muapp_matching;
-    Boolean b = true;
     View content_matching_profiles;
     private Fragment currentFragment;
+    PreferenceHelper preferenceHelper;
+
 
     public MatchingFragment() {
 
@@ -90,6 +94,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         if (getArguments() != null) {
             user = getArguments().getParcelable(ARG_CURRENT_USER);
         }
+        preferenceHelper = new PreferenceHelper(getContext());
     }
 
     @Override
@@ -140,9 +145,10 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if (((MainActivity) getContext()).getCurrentLocation() != null)
+                if (((MainActivity) getContext()).getCurrentLocation() != null) {
                     getMatchingUsers();
-                else
+                    preferenceHelper.putSearchPreferencesChangedDisabled();
+                } else
                     handler.postDelayed(this, waitTime);
             }
         };
@@ -204,6 +210,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     public void onReportedUser() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.lbl_thank_you)
+                .setCancelable(false)
                 .setMessage(R.string.lbl_your_report_will_be_analized)
                 .setPositiveButton(android.R.string.ok, null);
         builder.create().show();
@@ -293,11 +300,18 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onClick(View v) {
         try {
+            Bundle params = new Bundle();
             switch (v.getId()) {
                 case R.id.btn_muapp_matching:
+                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.name(), Analytics.Muapp.MUAPP_TYPE.Button.name());
+                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.name(), Analytics.Muapp.MUAPP_SCREEN.Matching.name());
+                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Muapp.name(), params);
                     new APIService(getContext()).likeUser(matchingFragmentList.get(0).getMatchingUser().getId(), null, this);
                     break;
                 case R.id.btn_no_muapp_matching:
+                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.name(), Analytics.Muapp.MUAPP_TYPE.Button.name());
+                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.name(), Analytics.Muapp.MUAPP_SCREEN.Matching.name());
+                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Dismiss.name(), params);
                     new APIService(getContext()).dislikeUser(matchingFragmentList.get(0).getMatchingUser().getId(), null);
                     break;
                 case R.id.btn_crush_matching:
