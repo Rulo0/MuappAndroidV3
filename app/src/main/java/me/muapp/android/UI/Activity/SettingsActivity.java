@@ -259,7 +259,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-        intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.colorAccent));
         intentBuilder.setShowTitle(true);
         intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, android.R.color.white));
         intentBuilder.setStartAnimations(this, android.R.anim.slide_in_left, android.R.anim.slide_out_right);

@@ -67,7 +67,7 @@
 
 
             <Button
-                android:id="@+id/btn_dialog_know_more"
+                android:id="@+id/btn_dialog_more_info"
                 style="@style/main_button_layout_style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

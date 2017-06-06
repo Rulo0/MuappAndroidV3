@@ -17,7 +17,8 @@ public class MuappDialog implements Parcelable {
     Boolean showCancelButton;
     String showInSection;
     String title;
-
+    String extraButtonTitle;
+String dialogExternalUrl;
 
     public MuappDialog() {
     }
@@ -58,6 +59,14 @@ public class MuappDialog implements Parcelable {
         return title;
     }
 
+    public String getExtraButtonTitle() {
+        return extraButtonTitle;
+    }
+
+    public String getDialogExternalUrl() {
+        return dialogExternalUrl;
+    }
+
     protected MuappDialog(Parcel in) {
         byte activeVal = in.readByte();
         active = activeVal == 0x02 ? null : activeVal != 0x00;
@@ -71,6 +80,8 @@ public class MuappDialog implements Parcelable {
         showCancelButton = showCancelButtonVal == 0x02 ? null : showCancelButtonVal != 0x00;
         showInSection = in.readString();
         title = in.readString();
+        extraButtonTitle = in.readString();
+        dialogExternalUrl = in.readString();
     }
 
     @Override
@@ -101,6 +112,8 @@ public class MuappDialog implements Parcelable {
         }
         dest.writeString(showInSection);
         dest.writeString(title);
+        dest.writeString(extraButtonTitle);
+        dest.writeString(dialogExternalUrl);
     }
 
     @SuppressWarnings("unused")
@@ -128,6 +141,8 @@ public class MuappDialog implements Parcelable {
                 ", showCancelButton=" + showCancelButton +
                 ", showInSection='" + showInSection + '\'' +
                 ", title='" + title + '\'' +
+                ", extraButtonTitle='" + extraButtonTitle + '\'' +
+                ", dialogExternalUrl='" + dialogExternalUrl + '\'' +
                 '}';
     }
 }

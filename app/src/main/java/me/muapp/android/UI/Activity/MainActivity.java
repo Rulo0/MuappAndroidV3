@@ -292,12 +292,12 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void getLastDialog() {
-        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("muappDialogs").orderByKey().limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("muappDialogs").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot c : dataSnapshot.getChildren()) {
                     MuappDialog dlg = c.getValue(MuappDialog.class);
-                    if (dlg != null) {
+                    if (dlg != null && dlg.getActive()) {
                         Log.wtf("dialog", c.getChildrenCount() + " childs");
                         Log.wtf("dialog", c.getRef().toString());
                         Log.wtf("dialog", dlg.toString());
