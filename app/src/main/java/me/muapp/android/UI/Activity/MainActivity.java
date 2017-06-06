@@ -286,11 +286,24 @@ public class MainActivity extends BaseActivity implements
         }
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
         badgeQuery = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).orderByChild("seen").equalTo(false);
+
+        getLastDialog();
+
+    }
+
+    private void getLastDialog() {
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("muappDialogs").orderByKey().limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                MuappDialog dlg = dataSnapshot.getValue(MuappDialog.class);
-                if (dlg != null) {
+                for (DataSnapshot c : dataSnapshot.getChildren()) {
+                    MuappDialog dlg = c.getValue(MuappDialog.class);
+                    if (dlg != null) {
+                        Log.wtf("dialog", c.getChildrenCount() + " childs");
+                        Log.wtf("dialog", c.getRef().toString());
+                        Log.wtf("dialog", dlg.toString());
+                        MuappPopupDialogFragment.newInstance(dlg).show(getSupportFragmentManager(), c.getKey());
+                    }
+                    break;
                 }
             }
 
@@ -299,7 +312,6 @@ public class MainActivity extends BaseActivity implements
 
             }
         });
-        MuappPopupDialogFragment.newInstance(null).show(getSupportFragmentManager(), "popup");
     }
 
     private void preparePendingMatch(final String pendingMatch) {

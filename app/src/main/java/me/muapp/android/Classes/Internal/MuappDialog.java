@@ -115,4 +115,19 @@ public class MuappDialog implements Parcelable {
             return new MuappDialog[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "MuappDialog{" +
+                "active=" + active +
+                ", contentImageUrl='" + contentImageUrl + '\'' +
+                ", contentText='" + contentText + '\'' +
+                ", dialogInternalSection='" + dialogInternalSection + '\'' +
+                ", headerIconUrl='" + headerIconUrl + '\'' +
+                ", showAlways=" + showAlways +
+                ", showCancelButton=" + showCancelButton +
+                ", showInSection='" + showInSection + '\'' +
+                ", title='" + title + '\'' +
+                '}';
+    }
 }

@@ -55,14 +55,16 @@ public class MuappPopupDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dialog_muapp_dialog, container, false);
-
+        txt_dialog_title = (TextView) v.findViewById(R.id.txt_dialog_title);
+        txt_dialog_content = (TextView) v.findViewById(R.id.txt_dialog_content);
         return v;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        txt_dialog_title.setText(muappDialog.getTitle());
+        txt_dialog_content.setText(muappDialog.getContentText());
     }
 
     private void dismissDialog() {
