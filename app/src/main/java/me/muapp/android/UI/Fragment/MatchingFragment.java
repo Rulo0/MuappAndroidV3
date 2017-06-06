@@ -53,6 +53,7 @@ import me.muapp.android.UI.Fragment.Interface.OnProfileScrollListener;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.UI.Activity.ChatActivity.CONVERSATION_EXTRA;
+import static me.muapp.android.UI.Activity.MatchActivity.FROM_MATCH;
 import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_CONVERSATION;
 import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_USER;
 
@@ -372,6 +373,10 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 ConversationItem conversationItem = dataSnapshot.getValue(ConversationItem.class);
                                 if (conversationItem != null) {
+                                    Bundle params = new Bundle();
+                                    params.putString(Analytics.Crush.CRUSH_PROPERTY.Screen.name(), Analytics.Crush.CRUSH_SCREEN.Matching.name());
+                                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Crush.CRUSH_EVENT.Crush.name(), params);
+
                                     new APIService(getContext()).sendPushNotification(conversationItem.getPushToken(), conversationItem.getKey(), null, "notif_crush", new String[]{new UserHelper(getContext()).getLoggedUser().getFirstName()});
                                     conversationItem.setKey(myCrushId);
                                     conversationItem.setConversation(crush);
@@ -406,6 +411,9 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     public void onSuccess(int responseCode, final LikeUserResult result) {
         Log.wtf("LikeResult", result.toString());
         if (result.getLikeUserMatch() != null) {
+            Bundle matchBundle = new Bundle();
+            matchBundle.putString(Analytics.Match.MATCH_PROPERTY.Type.name(), Analytics.Match.MATCH_TYPE.New.name());
+            FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Match.MATCH_EVENT.Match.name(), matchBundle);
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                     .child("conversations")
                     .child(String.valueOf(user.getId())).child(result.getDialogKey());
@@ -425,6 +433,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                                     Intent matchIntent = new Intent(getContext(), MatchActivity.class);
                                     matchIntent.putExtra(MATCHING_USER, result.getLikeUserMatch().getLikeUserMatchUser());
                                     matchIntent.putExtra(MATCHING_CONVERSATION, conversationItem);
+                                    matchIntent.putExtra(FROM_MATCH, true);
                                     startActivity(matchIntent);
                                     replaceFragment(GetMatchingUsersFragment.newInstance(user));
                                 } else {

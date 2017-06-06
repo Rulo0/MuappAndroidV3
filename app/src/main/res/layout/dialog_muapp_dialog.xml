@@ -15,7 +15,8 @@
         android:elevation="5dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.0">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -27,50 +28,45 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="45dp"
+                android:text="HERE COMES THE TITLE"
                 android:textAlignment="center"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textColor="@color/color_muapp_dark"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/txt_rating_subtitle"
+            <ImageView
+                android:id="@+id/img_dialog_content"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/lbl_help_your_friend"
-                android:textAlignment="center"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                android:textColor="@color/color_muapp_dark"
-                app:layout_constraintHorizontal_bias="0.468"
+                android:layout_height="220dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginTop="5dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_dialog_title" />
+                app:layout_constraintTop_toBottomOf="@+id/txt_dialog_title"
+                app:srcCompat="@mipmap/bg_login" />
 
-            <RatingBar
+            <TextView
                 android:id="@+id/txt_dialog_content"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="16dp"
-                android:numStars="5"
-                android:progressBackgroundTint="@color/color_score_inactive"
-                android:progressTint="@color/color_score_active"
-                android:rating="0"
-                android:secondaryProgressTint="@color/color_score_active"
-                android:stepSize="1"
+                android:layout_marginTop="8dp"
+                android:text="here comes all the content"
+                android:textAlignment="center"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_rating_subtitle" />
+                app:layout_constraintTop_toBottomOf="@+id/img_dialog_content" />
 
 
             <Button
-                android:id="@+id/btn_rating_dialog"
+                android:id="@+id/btn_dialog_know_more"
                 style="@style/main_button_layout_style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -78,7 +74,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="8dp"
-                android:text="@string/lbl_rate"
+                android:text="Le Button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -141,7 +137,7 @@
         app:srcCompat="@drawable/bg_muapp_dialog_round_red" />
 
     <ImageView
-        android:id="@+id/imb_dialog_container"
+        android:id="@+id/imb_dialog_icon"
         android:layout_width="85dp"
         android:layout_height="85dp"
         android:layout_marginBottom="8dp"
@@ -160,7 +156,7 @@
         app:srcCompat="@drawable/ic_star_filled_white" />
 
     <ImageButton
-        android:id="@+id/btn_dismiss_dialog"
+        android:id="@+id/btn_dismiss_muapp_dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"

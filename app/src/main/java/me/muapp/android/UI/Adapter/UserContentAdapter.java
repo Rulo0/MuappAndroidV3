@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.FragmentManager;
@@ -41,6 +42,7 @@ import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.rd.PageIndicatorView;
@@ -54,6 +56,7 @@ import java.util.Locale;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.muapp.android.Application.MuappApplication;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQuote;
@@ -293,9 +296,11 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         public UserContentHolder(View itemView) {
             super(itemView);
         }
+
         ImageButton btnMenu;
         PopupMenu menu;
         UserContent itemContent;
+
         public void setBtnMenu(ImageButton btnMenu) {
             this.btnMenu = btnMenu;
             if (showMenuButton)
@@ -784,6 +789,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             super.onClick(v);
             if (v.getId() == btn_audio_content.getId())
                 try {
+                    Bundle params = new Bundle();
+                    params.putString(Analytics.VoiceNote.VOICENOTE_PROPERTY.Screen.name(), Analytics.VoiceNote.VOICENOTE_SCREEN.My_Profile.name());
+                    FirebaseAnalytics.getInstance(context).logEvent(Analytics.VoiceNote.VOICENOTE_EVENT.Voice_Note_Listening.name(), params);
+
                     if (!currentPlaying.equals(itemContent.getContentUrl())) {
                         if (previewPlayedButton != null) {
                             previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));

@@ -16,6 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -35,10 +40,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.UI.Activity.AddSpotifyDetailActivity.SPOTIFY_REQUEST_CODE;
 import static me.muapp.android.UI.Activity.ChatActivity.CONTENT_FROM_CHAT;
 
-public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQueryTextListener {
+public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQueryTextListener, ValueEventListener {
     public static String TAG = "AddSpotifyActivity";
     RecyclerView recycler_spotify;
     LinearLayout placeholder_spotify;
@@ -46,10 +52,14 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
     SpotifyAdapter ada;
     ProgressUtil progressUtil;
     ChatReferences chatReferences;
+    String spotifyToken;
+    DatabaseReference spotifyReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        spotifyReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("spotify").child("accessToken");
+        spotifyReference.keepSynced(true);
         ada = new SpotifyAdapter(this);
         setContentView(R.layout.activity_spotify_search);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -62,6 +72,18 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
         recycler_spotify.setLayoutManager(new LinearLayoutManager(this));
         recycler_spotify.setAdapter(ada);
         progressUtil = new ProgressUtil(this, recycler_spotify, progress_spotify);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        spotifyReference.addValueEventListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        spotifyReference.removeEventListener(this);
     }
 
     @Override
@@ -106,6 +128,17 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
         Utils.animViewFade(placeholder_spotify, true);
     }
 
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        spotifyToken = dataSnapshot.getValue(String.class);
+        Log.wtf("spotifyToken", spotifyToken);
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
+    }
+
     private class SpotifySearchTask extends AsyncTask<String, Void, List<Song>> {
         @Override
         protected void onPreExecute() {
@@ -141,7 +174,7 @@ public class AddSpotifyActivity extends BaseActivity implements SearchView.OnQue
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder()
                         .url(url)
-                        .addHeader("authorization", "Bearer BQB3vZ_KZRnOyulhd7eGRS1REm2v_cAvGM3juC1BLvFq-9_yPn959jqYfIm1V1FXrAiYs9dtgZXG62CqarpWlg_RyN_Av8gIR1HLxrNdjDBIfZFKGFq68XPp2MZ9dyYDkzR2")
+                        .addHeader("authorization", spotifyToken)
                         .get()
                         .build();
                 Response response = client.newCall(request).execute();

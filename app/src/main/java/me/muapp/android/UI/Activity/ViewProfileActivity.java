@@ -219,6 +219,18 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
 
     @Override
     public void onReport() {
+
+        String reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_New.name();
+        if (fromCrush) {
+            reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_Crushed.name();
+        } else if (fromMatch) {
+            reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_Matched.name();
+        }
+
+        Bundle reportBundle = new Bundle();
+        reportBundle.putString(Analytics.Report.REPORT_PROPERTY.Screen.name(), reportScreen);
+        mFirebaseAnalytics.logEvent(Analytics.Report.REPORT_EVENT.Report.name(), reportBundle);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.lbl_thank_you)
                 .setCancelable(false)

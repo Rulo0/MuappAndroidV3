@@ -66,7 +66,9 @@ import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Chat.ConversationItem;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.LikeUserMatchUser;
+import me.muapp.android.Classes.Internal.MuappDialog;
 import me.muapp.android.Classes.Internal.SelectedNavigationElement;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
@@ -80,6 +82,7 @@ import me.muapp.android.UI.Fragment.ChatFragment;
 import me.muapp.android.UI.Fragment.GateFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import me.muapp.android.UI.Fragment.MatchingFragment;
+import me.muapp.android.UI.Fragment.MuappPopupDialogFragment;
 import me.muapp.android.UI.Fragment.ProfileFragment;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
@@ -283,6 +286,20 @@ public class MainActivity extends BaseActivity implements
         }
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
         badgeQuery = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).orderByChild("seen").equalTo(false);
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("muappDialogs").orderByKey().limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                MuappDialog dlg = dataSnapshot.getValue(MuappDialog.class);
+                if (dlg != null) {
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        MuappPopupDialogFragment.newInstance(null).show(getSupportFragmentManager(), "popup");
     }
 
     private void preparePendingMatch(final String pendingMatch) {
@@ -389,7 +406,9 @@ public class MainActivity extends BaseActivity implements
             @Override
             public void onSuccess(Account account) {
                 Log.wtf(TAG, account.getId() + " " + account.getPhoneNumber());
-
+                Bundle phoneBundle = new Bundle();
+                phoneBundle.putString(Analytics.Phone.PHONE_PROPERTY.Screen.name(), Analytics.Phone.PHONE_SCREEN.Login.name());
+                mFirebaseAnalytics.logEvent(Analytics.Phone.PHONE_EVENT.Phone.name(), phoneBundle);
                 loggedUser.setFakeAccount(true);
                 saveUser(loggedUser);
                 try {

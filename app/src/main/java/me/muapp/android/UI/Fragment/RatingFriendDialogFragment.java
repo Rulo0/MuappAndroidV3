@@ -61,8 +61,8 @@ public class RatingFriendDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dialog_rating_friend, container, false);
-        txt_rating_title = (TextView) v.findViewById(R.id.txt_rating_title);
-        rating_user = (RatingBar) v.findViewById(R.id.rating_user);
+        txt_rating_title = (TextView) v.findViewById(R.id.txt_dialog_title);
+        rating_user = (RatingBar) v.findViewById(R.id.txt_dialog_content);
         btn_dismiss_dialog = (ImageButton) v.findViewById(R.id.btn_dismiss_dialog);
         btn_rating_dialog = (Button) v.findViewById(R.id.btn_rating_dialog);
         return v;

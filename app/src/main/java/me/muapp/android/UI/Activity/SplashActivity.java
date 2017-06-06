@@ -40,17 +40,15 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mFirebaseAnalytics.logEvent(Analytics.Login.LOGIN_EVENTS.Login_Loading.name(), null);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         getSupportActionBar().hide();
         img_kiss1 = (ImageView) findViewById(R.id.img_kiss1);
         img_kiss2 = (ImageView) findViewById(R.id.img_kiss2);
-
         if (!TextUtils.isEmpty(pendingMatch = getIntent().getStringExtra("dialog_key"))) {
             new PreferenceHelper(this).putPendingMatch(pendingMatch);
         }
-
+        mFirebaseAnalytics.logEvent(Analytics.Login.LOGIN_EVENTS.Login_Loading.name(), null);
     }
 
     @Override

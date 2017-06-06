@@ -37,6 +37,7 @@ import org.json.JSONObject;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.AgeRange;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserSettings;
@@ -189,6 +190,9 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
             @Override
             public void onSuccess(Account account) {
+                Bundle phoneBundle = new Bundle();
+                phoneBundle.putString(Analytics.Phone.PHONE_PROPERTY.Screen.name(), Analytics.Phone.PHONE_SCREEN.Settings.name());
+                mFirebaseAnalytics.logEvent(Analytics.Phone.PHONE_EVENT.Phone.name(), phoneBundle);
                 Log.wtf(TAG, account.getId() + " " + account.getPhoneNumber());
                 loggedUser.setFakeAccount(true);
                 saveUser(loggedUser);
