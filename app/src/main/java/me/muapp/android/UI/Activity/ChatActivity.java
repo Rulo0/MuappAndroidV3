@@ -193,6 +193,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         if (conversationItem == null)
             finish();
 
+        preferenceHelper.putCurrentActiveChat(conversationItem.getKey());
         Log.wtf("Entering item", conversationItem.toString());
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
@@ -480,6 +481,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        preferenceHelper.clearCurrentActiveChat();
         if (messagesAdapter != null)
             messagesAdapter.clearMediaPlayer();
     }
@@ -548,6 +550,9 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 sendObject.put("collapse_key", conversationItem.getKey());
                 sendObject.put("priority", "high");
                 sendObject.put("content_available", true);
+                JSONObject data = new JSONObject();
+                data.put("message_dialog_key", conversationItem.getConversation().getOpponentConversationId());
+                sendObject.put("data", data);
                 JSONObject notification = new JSONObject();
                 notification.put("tag", conversationItem.getKey());
                 notification.put("title", getString(R.string.app_name));
@@ -844,8 +849,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
             @Override
             public void onExpand() {
-            if(checkAndRequestMicPermissions())
-                startRecording();
+                if (checkAndRequestMicPermissions())
+                    startRecording();
 
 
             }

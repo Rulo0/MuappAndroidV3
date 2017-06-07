@@ -22,6 +22,7 @@ public class PreferenceHelper {
     private final String LONGITUDE = "longitude";
     private final String TUTORIAL_CANDIDATES = "tutorial_candidates";
     private final String PENDING_MATCH = "pendingMatch";
+    private final String ACTIVE_CHAT = "activeChat";
     Context context;
 
     public PreferenceHelper(Context context) {
@@ -77,8 +78,22 @@ public class PreferenceHelper {
         return preferences.getString(PENDING_MATCH, "");
     }
 
+    public void putCurrentActiveChat(String activeChat){
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putString(ACTIVE_CHAT, activeChat);
+        edit.apply();
+    }
+    public void clearCurrentActiveChat(){
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.remove(ACTIVE_CHAT);
+        edit.apply();
+    }
+    public String getCurrentActiveChat(){
+        return preferences.getString(ACTIVE_CHAT,null);
+    }
 
-    public void cleatPendingMatch() {
+
+    public void clearPendingMatch() {
         SharedPreferences.Editor edit = preferences.edit();
         edit.remove(PENDING_MATCH);
         edit.apply();

@@ -31,6 +31,7 @@ import com.facebook.accountkit.ui.AccountKitActivity;
 import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
 import com.facebook.login.LoginManager;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -44,6 +45,8 @@ import me.muapp.android.Classes.Internal.UserSettings;
 import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
 public class SettingsActivity extends BaseActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     public static final String TAG = "SettingsActivity";
@@ -390,7 +393,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         } catch (Exception x) {
             x.printStackTrace();
         }
-
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("pushToken").removeValue();
         new PreferenceHelper(SettingsActivity.this).clear();
         LoginManager.getInstance().logOut();
         hideProgressDialog();
