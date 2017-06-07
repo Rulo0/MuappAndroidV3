@@ -120,9 +120,9 @@ public class MainActivity extends BaseActivity implements
         bottomNavigation.setNotification("", notificationPos);
         if (dataSnapshot.getChildrenCount() > 0) {
             AHNotification notification = new AHNotification.Builder()
-                    .setText("1")
+                    .setText(String.valueOf(dataSnapshot.getChildrenCount()))
                     .setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
-                    .setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
+                    .setTextColor(ContextCompat.getColor(this, android.R.color.white))
                     .build();
             bottomNavigation.setNotification(notification, notificationPos);
         }

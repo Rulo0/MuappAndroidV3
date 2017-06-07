@@ -1,5 +1,6 @@
 package me.muapp.android.Classes.FirebaseMessaging;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -45,18 +46,15 @@ public class MuappMessagingService extends FirebaseMessagingService {
     User loggedUser;
     PreferenceHelper preferenceHelper;
 
-    /**
-     * Called when message is received.
-     *
-     * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
-     */
-    // [START receive_message]
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.wtf(TAG, "From: " + remoteMessage.getFrom());
         loggedUser = new UserHelper(this).getLoggedUser();
         preferenceHelper = new PreferenceHelper(this);
         // Check if message contains a data payload.
+        Log.wtf(TAG, "MessageReceived");
+        Log.wtf(TAG, "Data: " + remoteMessage.getData().toString());
+        Log.wtf(TAG, "From: " + remoteMessage.getFrom());
         if (remoteMessage.getData().size() > 0) {
             if (remoteMessage.getData().containsKey(CRUSH_KEY)) {
                 processCrush(remoteMessage);
@@ -65,8 +63,6 @@ public class MuappMessagingService extends FirebaseMessagingService {
             } else if (remoteMessage.getData().containsKey(MESSAGE_KEY)) {
                 processChat(remoteMessage);
             }
-            Log.wtf(TAG, "Message data payload: " + remoteMessage.getData());
-            Log.wtf(TAG, remoteMessage.getNotification().getBodyLocalizationKey());
         }
 
     }
@@ -76,8 +72,8 @@ public class MuappMessagingService extends FirebaseMessagingService {
         DatabaseReference crushReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
                 .child(String.valueOf(loggedUser.getId())).child(crushKey);
-        Log.wtf("MuappMessagingService", "Crush " + crushReference.getRef().toString());
-        crushReference.addValueEventListener(new ValueEventListener() {
+        Log.wtf(TAG, "Crush " + crushReference.getRef().toString());
+        crushReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final Conversation c = dataSnapshot.getValue(Conversation.class);
@@ -119,8 +115,8 @@ public class MuappMessagingService extends FirebaseMessagingService {
         DatabaseReference matchReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                 .child("conversations")
                 .child(String.valueOf(loggedUser.getId())).child(matchKey);
-        Log.wtf("MuappMessagingService", "Match " + matchReference.getRef().toString());
-        matchReference.addValueEventListener(new ValueEventListener() {
+        Log.wtf(TAG, "Match " + matchReference.getRef().toString());
+        matchReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final Conversation c = dataSnapshot.getValue(Conversation.class);
@@ -134,11 +130,11 @@ public class MuappMessagingService extends FirebaseMessagingService {
                                 conversationItem.setConversation(c);
                                 Intent intent = new Intent(MuappMessagingService.this, ChatActivity.class);
                                 intent.putExtra(CONVERSATION_EXTRA, conversationItem);
-                                PendingIntent pendingIntent = PendingIntent.getActivity(MuappMessagingService.this, 789, intent,
+                                PendingIntent pendingIntent = PendingIntent.getActivity(MuappMessagingService.this, 987, intent,
                                         PendingIntent.FLAG_ONE_SHOT);
                                 sendNotification(String.format(getString(R.string.format_match_names), conversationItem.getName()), pendingIntent);
                             } else {
-                                Log.wtf("ConversationItem", "isNull");
+                                Log.wtf(TAG, "isNull");
                             }
                         }
 
@@ -160,11 +156,11 @@ public class MuappMessagingService extends FirebaseMessagingService {
     private void processChat(RemoteMessage remoteMessage) {
         final String chatKey = remoteMessage.getData().get(MESSAGE_KEY);
         if (TextUtils.isEmpty(preferenceHelper.getCurrentActiveChat()) || !chatKey.equals(preferenceHelper.getCurrentActiveChat())) {
-            DatabaseReference matchReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
+            DatabaseReference chatReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                     .child("conversations")
                     .child(String.valueOf(loggedUser.getId())).child(chatKey);
-            Log.wtf("MuappMessagingService", "Chat " + matchReference.getRef().toString());
-            matchReference.addValueEventListener(new ValueEventListener() {
+            Log.wtf(TAG, "Chat " + chatReference.getRef().toString());
+            chatReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     final Conversation c = dataSnapshot.getValue(Conversation.class);
@@ -178,11 +174,11 @@ public class MuappMessagingService extends FirebaseMessagingService {
                                     conversationItem.setConversation(c);
                                     Intent intent = new Intent(MuappMessagingService.this, ChatActivity.class);
                                     intent.putExtra(CONVERSATION_EXTRA, conversationItem);
-                                    PendingIntent pendingIntent = PendingIntent.getActivity(MuappMessagingService.this, 789, intent,
+                                    PendingIntent pendingIntent = PendingIntent.getActivity(MuappMessagingService.this, 897, intent,
                                             PendingIntent.FLAG_ONE_SHOT);
                                     sendNotification(String.format(getString(R.string.notif_sent_message), conversationItem.getName()), pendingIntent);
                                 } else {
-                                    Log.wtf("ConversationItem", "isNull");
+                                    Log.wtf(TAG, "ConversationItem isNull");
                                 }
                             }
 
@@ -191,6 +187,8 @@ public class MuappMessagingService extends FirebaseMessagingService {
 
                             }
                         });
+                    }else{
+                        Log.wtf(TAG, "Conversation isNull");
                     }
                 }
 
@@ -203,18 +201,16 @@ public class MuappMessagingService extends FirebaseMessagingService {
     }
 
     private void sendNotification(String messageBody, PendingIntent pendingIntent) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Log.wtf(TAG,messageBody);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(messageBody)
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS)
+                .setContentIntent(pendingIntent)
+                ;
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(new Random().nextInt(100), notificationBuilder.build());
     }
 }
