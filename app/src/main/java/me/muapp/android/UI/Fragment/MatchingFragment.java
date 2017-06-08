@@ -141,19 +141,27 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onStart() {
         super.onStart();
-        replaceFragment(GetMatchingUsersFragment.newInstance(user));
-        handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (((MainActivity) getContext()).getCurrentLocation() != null) {
-                    getMatchingUsers();
-                    preferenceHelper.putSearchPreferencesChangedDisabled();
-                } else
-                    handler.postDelayed(this, waitTime);
-            }
-        };
-        handler.postDelayed(runnable, waitTime);
+        if (!isHidden()) {
+            replaceFragment(GetMatchingUsersFragment.newInstance(user));
+            handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (((MainActivity) getContext()).getCurrentLocation() != null) {
+                        getMatchingUsers();
+                        preferenceHelper.putSearchPreferencesChangedDisabled();
+                    } else
+                        handler.postDelayed(this, waitTime);
+                }
+            };
+            handler.postDelayed(runnable, waitTime);
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Log.wtf("onHiddenChanged", hidden + "");
     }
 
     private void getMatchingUsers() {
@@ -183,6 +191,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             for (final MatchingUser user : result.getMatchingUsers()) {
                 if (!TextUtils.isEmpty(user.getDescription()))
                     uploadDescriptionToFirebase(user.getId(), user.getDescription());
+                Log.wtf("Matching", user.toString());
                 MatchingUserProfileFragment fragment = MatchingUserProfileFragment.newInstance(user);
                 fragment.setOnMatchingInteractionListener(this);
                 fragment.setOnProfileScrollListener(this);
@@ -304,15 +313,15 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             Bundle params = new Bundle();
             switch (v.getId()) {
                 case R.id.btn_muapp_matching:
-                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.name(), Analytics.Muapp.MUAPP_TYPE.Button.name());
-                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.name(), Analytics.Muapp.MUAPP_SCREEN.Matching.name());
-                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Muapp.name(), params);
+                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.toString(), Analytics.Muapp.MUAPP_TYPE.Button.toString());
+                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.toString(), Analytics.Muapp.MUAPP_SCREEN.Matching.toString());
+                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Muapp.toString(), params);
                     new APIService(getContext()).likeUser(matchingFragmentList.get(0).getMatchingUser().getId(), null, this);
                     break;
                 case R.id.btn_no_muapp_matching:
-                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.name(), Analytics.Muapp.MUAPP_TYPE.Button.name());
-                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.name(), Analytics.Muapp.MUAPP_SCREEN.Matching.name());
-                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Dismiss.name(), params);
+                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.toString(), Analytics.Muapp.MUAPP_TYPE.Button.toString());
+                    params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.toString(), Analytics.Muapp.MUAPP_SCREEN.Matching.toString());
+                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Dismiss.toString(), params);
                     new APIService(getContext()).dislikeUser(matchingFragmentList.get(0).getMatchingUser().getId(), null);
                     break;
                 case R.id.btn_crush_matching:
@@ -374,8 +383,8 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                                 ConversationItem conversationItem = dataSnapshot.getValue(ConversationItem.class);
                                 if (conversationItem != null) {
                                     Bundle params = new Bundle();
-                                    params.putString(Analytics.Crush.CRUSH_PROPERTY.Screen.name(), Analytics.Crush.CRUSH_SCREEN.Matching.name());
-                                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Crush.CRUSH_EVENT.Crush.name(), params);
+                                    params.putString(Analytics.Crush.CRUSH_PROPERTY.Screen.toString(), Analytics.Crush.CRUSH_SCREEN.Matching.toString());
+                                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Crush.CRUSH_EVENT.Crush.toString(), params);
 
                                     new APIService(getContext()).sendPushNotification(conversationItem.getPushToken(), conversationItem.getKey(), null, "notif_crush", new String[]{new UserHelper(getContext()).getLoggedUser().getFirstName()});
                                     conversationItem.setKey(myCrushId);
@@ -412,8 +421,8 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         Log.wtf("LikeResult", result.toString());
         if (result.getLikeUserMatch() != null) {
             Bundle matchBundle = new Bundle();
-            matchBundle.putString(Analytics.Match.MATCH_PROPERTY.Type.name(), Analytics.Match.MATCH_TYPE.New.name());
-            FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Match.MATCH_EVENT.Match.name(), matchBundle);
+            matchBundle.putString(Analytics.Match.MATCH_PROPERTY.Type.toString(), Analytics.Match.MATCH_TYPE.New.toString());
+            FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Match.MATCH_EVENT.Match.toString(), matchBundle);
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
                     .child("conversations")
                     .child(String.valueOf(user.getId())).child(result.getDialogKey());

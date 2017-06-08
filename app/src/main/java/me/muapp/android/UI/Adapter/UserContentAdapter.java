@@ -790,8 +790,8 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             if (v.getId() == btn_audio_content.getId())
                 try {
                     Bundle params = new Bundle();
-                    params.putString(Analytics.VoiceNote.VOICENOTE_PROPERTY.Screen.name(), Analytics.VoiceNote.VOICENOTE_SCREEN.My_Profile.name());
-                    FirebaseAnalytics.getInstance(context).logEvent(Analytics.VoiceNote.VOICENOTE_EVENT.Voice_Note_Listening.name(), params);
+                    params.putString(Analytics.VoiceNote.VOICENOTE_PROPERTY.Screen.toString(), Analytics.VoiceNote.VOICENOTE_SCREEN.My_Profile.toString());
+                    FirebaseAnalytics.getInstance(context).logEvent(Analytics.VoiceNote.VOICENOTE_EVENT.Voice_Note_Listening.toString(), params);
 
                     if (!currentPlaying.equals(itemContent.getContentUrl())) {
                         if (previewPlayedButton != null) {

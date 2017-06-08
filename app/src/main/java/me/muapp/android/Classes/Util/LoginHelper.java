@@ -34,10 +34,6 @@ public class LoginHelper {
 
     public void performFullLogin() {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        MuappApplication.getMixpanelAPI().getPeople().identify(String.valueOf(userHelper.getLoggedUser().getId()));
-        MuappApplication.getMixpanelAPI().getPeople().set("last_connection", dateFormat.format(new Date()));
-        MuappApplication.getMixpanelAPI().getPeople().set("location", "Enable");
-        MuappApplication.getMixpanelAPI().getPeople().set("notifications", null);
         loginToFireBase();
     }
 

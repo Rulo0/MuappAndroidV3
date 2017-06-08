@@ -133,18 +133,19 @@ public class Utils {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public static void animViewFade(final View v, final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            v.setVisibility(show ? View.VISIBLE : View.GONE);
-            v.animate().setDuration(200).alpha(
-                    !show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    v.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            v.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
+        if ((show && v.getVisibility() == View.GONE) || (!show && v.getVisibility() == View.VISIBLE))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                v.setVisibility(show ? View.VISIBLE : View.GONE);
+                v.animate().setDuration(200).alpha(
+                        !show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        v.setVisibility(show ? View.VISIBLE : View.GONE);
+                    }
+                });
+            } else {
+                v.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)

@@ -38,14 +38,17 @@ import me.muapp.android.Classes.Internal.ReportResult;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.http2.Header;
 
 import static me.muapp.android.Classes.Internal.User.getNullUser;
 import static me.muapp.android.Classes.Util.Utils.serializeMatchingUsers;
@@ -550,6 +553,7 @@ public class APIService {
         final OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .writeTimeout(60, TimeUnit.SECONDS)
+                .cache(null)
                 .readTimeout(60, TimeUnit.SECONDS).build();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM);
@@ -740,6 +744,7 @@ public class APIService {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String responseString = response.body().string();
+                        Log.wtf("getMatchingUsers", responseString);
                         MatchingResult matchingResult = new Gson().fromJson(serializeMatchingUsers(responseString), MatchingResult.class);
                         if (matchingResult != null) {
                             if (handler != null) {
@@ -955,13 +960,13 @@ public class APIService {
                 .addHeader("authorization", authCredentials)
                 .addHeader("accept-language", Locale.getDefault().getLanguage())
                 .addHeader("qb", "version=1")
-                .addHeader("muappapi", "version=3")
+                .addHeader("muappapi", "version=4")
+                .addHeader("cache-control", "no-cache")
                 .build();
 
-        Log.i("authorization", authCredentials);
-        Log.i("accept-language", "es");
-        Log.i("qb", "version=1");
-        Log.i("muappapi", "version=3");
+        for (int i = 0; i < r.headers().size(); i++) {
+            Log.wtf("Headers", r.headers().name(i) + " : " + r.headers().value(i));
+        }
         return r;
     }
 }

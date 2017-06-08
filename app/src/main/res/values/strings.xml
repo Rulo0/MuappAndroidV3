@@ -315,4 +315,6 @@
     <string name="lbl_gate_load_title">THEY ARE WAITING TO ENTER MUAPP. LET THEM IN!</string>
     <string name="lbl_undo_match">Unmatch</string>
     <string name="lbl_undo_crush">Uncrush</string>
+    <string name="lbl_no_crush">Ups! Seems you have no crushes yet.</string>
+    <string name="lbl_no_match">Ups! Seems you have no matches yet.</string>
 </resources>

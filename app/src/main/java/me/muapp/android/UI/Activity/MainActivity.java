@@ -411,8 +411,8 @@ public class MainActivity extends BaseActivity implements
             public void onSuccess(Account account) {
                 Log.wtf(TAG, account.getId() + " " + account.getPhoneNumber());
                 Bundle phoneBundle = new Bundle();
-                phoneBundle.putString(Analytics.Phone.PHONE_PROPERTY.Screen.name(), Analytics.Phone.PHONE_SCREEN.Login.name());
-                mFirebaseAnalytics.logEvent(Analytics.Phone.PHONE_EVENT.Phone.name(), phoneBundle);
+                phoneBundle.putString(Analytics.Phone.PHONE_PROPERTY.Screen.toString(), Analytics.Phone.PHONE_SCREEN.Login.toString());
+                mFirebaseAnalytics.logEvent(Analytics.Phone.PHONE_EVENT.Phone.toString(), phoneBundle);
                 loggedUser.setFakeAccount(true);
                 saveUser(loggedUser);
                 try {
@@ -552,12 +552,23 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (selectedNavigationElement.getFrag() instanceof ProfileFragment) {
+
+        } else {
+            fab_add_content.hide();
+        }
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
     /*    if (item.getItemId() == R.id.navigation_profile)
             getSupportActionBar().setTitle(loggedUser.getFullName());
         else
             getSupportActionBar().setTitle(item.getTitle());
         if (!navigationElement.getItm().equals(item)) {
+
             selectFragment(item);
         }
         return true;*/

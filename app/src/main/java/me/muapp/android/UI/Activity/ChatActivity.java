@@ -433,7 +433,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
     private void updateYourConversationLastSeen() {
-        Log.wtf("Updating", yourConversation.getRef().toString() + "/lastSeenByOpponent");
         yourConversation.child("lastSeenByOpponent").setValue(ServerValue.TIMESTAMP);
     }
 
@@ -444,6 +443,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     @Override
     protected void onResume() {
         super.onResume();
+        conversationReference.keepSynced(true);
         conversationReference.addChildEventListener(this);
         conversationReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -495,7 +495,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         Message m = dataSnapshot.getValue(Message.class);
         if (m != null)
             m.setKey(dataSnapshot.getKey());
-        Log.wtf("chat", m.toString());
         messagesAdapter.addMessage(m);
     }
 

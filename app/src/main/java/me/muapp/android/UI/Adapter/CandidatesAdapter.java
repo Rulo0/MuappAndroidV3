@@ -40,7 +40,8 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
     private final LayoutInflater mInflater;
     private List<Candidate> candidates;
     private Context mContext;
-    private static final int TYPE_TUTORIAL = -1;
+    public static final int TYPE_LOADING = -99;
+    public static final int TYPE_TUTORIAL = -1;
     private static final int TYPE_CANDIDATE = 0;
     OnCandidateInteractionListener candidateInteractionListener;
     GateFragment gateFragment;
@@ -76,12 +77,17 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
 
     @Override
     public BaseCandidateHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_CANDIDATE) {
-            View itemView = mInflater.inflate(R.layout.candidate_item_layout, parent, false);
-            return new CandidateViewHolder(itemView);
-        } else {
-            View tutorialView = mInflater.inflate(R.layout.candidate_tutorial_layout, parent, false);
-            return new TutorialViewHolder(tutorialView);
+        switch (viewType){
+            case TYPE_LOADING:
+                View loadingView = mInflater.inflate(R.layout.candidate_loading_layout, parent, false);
+                return new LoadingViewHolder(loadingView);
+            case TYPE_TUTORIAL:
+                View tutorialView = mInflater.inflate(R.layout.candidate_tutorial_layout, parent, false);
+                return new TutorialViewHolder(tutorialView);
+            default:
+                View itemView = mInflater.inflate(R.layout.candidate_item_layout, parent, false);
+                return new CandidateViewHolder(itemView);
+
         }
     }
 
@@ -97,8 +103,10 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
 
     @Override
     public int getItemViewType(int position) {
-        if (candidates.get(position).getId() == -1)
+        if (candidates.get(position).getId() == TYPE_TUTORIAL)
             return TYPE_TUTORIAL;
+        else if(candidates.get(position).getId() == TYPE_LOADING)
+            return TYPE_LOADING;
         return TYPE_CANDIDATE;
     }
 
@@ -132,6 +140,19 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
         public void onClick(View v) {
             candidates.remove(getAdapterPosition());
             notifyItemRemoved(getAdapterPosition());
+        }
+    }
+
+    public class LoadingViewHolder extends BaseCandidateHolder {
+        public LoadingViewHolder(View itemView) {
+            super(itemView);
+
+        }
+
+        @Override
+        public void bind(final Candidate candidate) {
+            super.bind(candidate);
+
         }
     }
 

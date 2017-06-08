@@ -32,4 +32,6 @@
     <color name="color_inactive_bnv">#9EA5AD</color>
     <color name="color_match_image_border">#80ffffff</color>
     <color name="color_remaining_time">#ffe07d</color>
+    <color name="color_placeholder">#CFD2D6</color>
+    <color name="color_placeholder_messages">#9FA6AE</color>
 </resources>

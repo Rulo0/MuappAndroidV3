@@ -207,9 +207,9 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
         } else {
 
             Bundle params = new Bundle();
-            params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.name(), Analytics.Muapp.MUAPP_TYPE.Button.name());
-            params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.name(), Analytics.Muapp.MUAPP_SCREEN.User_Profile_Crushed.name());
-            mFirebaseAnalytics.logEvent(v.getId() == R.id.btn_muapp_profile ? Analytics.Muapp.MUAPP_EVENT.Muapp.name() : Analytics.Muapp.MUAPP_EVENT.Dismiss.name(), params);
+            params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.toString(), Analytics.Muapp.MUAPP_TYPE.Button.toString());
+            params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.toString(), Analytics.Muapp.MUAPP_SCREEN.User_Profile_Crushed.toString());
+            mFirebaseAnalytics.logEvent(v.getId() == R.id.btn_muapp_profile ? Analytics.Muapp.MUAPP_EVENT.Muapp.toString() : Analytics.Muapp.MUAPP_EVENT.Dismiss.toString(), params);
             Intent profileReturnIntent = new Intent();
             profileReturnIntent.putExtra(PROFILE_VIEW_RESULT, v.getId() == R.id.btn_muapp_profile);
             setResult(Activity.RESULT_OK, profileReturnIntent);
@@ -220,16 +220,16 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
     @Override
     public void onReport() {
 
-        String reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_New.name();
+        String reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_New.toString();
         if (fromCrush) {
-            reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_Crushed.name();
+            reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_Crushed.toString();
         } else if (fromMatch) {
-            reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_Matched.name();
+            reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_Matched.toString();
         }
 
         Bundle reportBundle = new Bundle();
-        reportBundle.putString(Analytics.Report.REPORT_PROPERTY.Screen.name(), reportScreen);
-        mFirebaseAnalytics.logEvent(Analytics.Report.REPORT_EVENT.Report.name(), reportBundle);
+        reportBundle.putString(Analytics.Report.REPORT_PROPERTY.Screen.toString(), reportScreen);
+        mFirebaseAnalytics.logEvent(Analytics.Report.REPORT_EVENT.Report.toString(), reportBundle);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.lbl_thank_you)

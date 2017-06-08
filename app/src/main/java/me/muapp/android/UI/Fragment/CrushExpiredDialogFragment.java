@@ -98,17 +98,17 @@ public class CrushExpiredDialogFragment extends DialogFragment implements View.O
     @Override
     public void onClick(View v) {
         Bundle params = new Bundle();
-        params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.name(), Analytics.Muapp.MUAPP_TYPE.Button.name());
-        params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.name(), Analytics.Muapp.MUAPP_SCREEN.Conversation_Crush.name());
+        params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.toString(), Analytics.Muapp.MUAPP_TYPE.Button.toString());
+        params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.toString(), Analytics.Muapp.MUAPP_SCREEN.Conversation_Crush.toString());
         switch (v.getId()) {
             case R.id.imb_expired_no_muapp:
                 onTimeExpiredListener.onExpiredNoMuapp();
-                FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Dismiss.name(), params);
+                FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Dismiss.toString(), params);
                 this.dismiss();
                 break;
             case R.id.imb_expired_muapp:
                 onTimeExpiredListener.onExpiredMuapp();
-                FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Muapp.name(), params);
+                FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Muapp.toString(), params);
                 this.dismiss();
                 break;
             case R.id.img_photo_expired:

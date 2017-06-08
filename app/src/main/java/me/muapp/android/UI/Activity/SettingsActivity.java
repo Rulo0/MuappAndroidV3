@@ -194,8 +194,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onSuccess(Account account) {
                 Bundle phoneBundle = new Bundle();
-                phoneBundle.putString(Analytics.Phone.PHONE_PROPERTY.Screen.name(), Analytics.Phone.PHONE_SCREEN.Settings.name());
-                mFirebaseAnalytics.logEvent(Analytics.Phone.PHONE_EVENT.Phone.name(), phoneBundle);
+                phoneBundle.putString(Analytics.Phone.PHONE_PROPERTY.Screen.toString(), Analytics.Phone.PHONE_SCREEN.Settings.toString());
+                mFirebaseAnalytics.logEvent(Analytics.Phone.PHONE_EVENT.Phone.toString(), phoneBundle);
                 Log.wtf(TAG, account.getId() + " " + account.getPhoneNumber());
                 loggedUser.setFakeAccount(true);
                 saveUser(loggedUser);

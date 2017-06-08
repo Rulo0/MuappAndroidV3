@@ -1,5 +1,7 @@
 package me.muapp.android.Classes.FirebaseAnalytics;
 
+import me.muapp.android.BuildConfig;
+
 /**
  * Created by rulo on 5/06/17.
  */
@@ -11,7 +13,16 @@ public class Analytics {
             Login_Error,
             Login_Confirm_Confirm,
             Login_Confirm_Synchronise,
-            Login_Loading
+            Login_Loading;
+
+            @Override
+            public String toString() {
+                if (BuildConfig.DEBUG) {
+                    return "dev_" + super.toString();
+                } else {
+                    return super.toString();
+                }
+            }
         }
 
         public enum LOGIN_TYPE {
@@ -26,7 +37,16 @@ public class Analytics {
     public static class Muapp {
         public enum MUAPP_EVENT {
             Muapp,
-            Dismiss
+            Dismiss;
+
+            @Override
+            public String toString() {
+                if (BuildConfig.DEBUG) {
+                    return "dev_" + super.toString();
+                } else {
+                    return super.toString();
+                }
+            }
         }
 
         public enum MUAPP_SCREEN {
@@ -49,7 +69,16 @@ public class Analytics {
 
     public static class Crush {
         public enum CRUSH_EVENT {
-            Crush
+            Crush;
+
+            @Override
+            public String toString() {
+                if (BuildConfig.DEBUG) {
+                    return "dev_" + super.toString();
+                } else {
+                    return super.toString();
+                }
+            }
         }
 
         public enum CRUSH_SCREEN {
@@ -63,7 +92,16 @@ public class Analytics {
 
     public static class VoiceNote {
         public enum VOICENOTE_EVENT {
-            Voice_Note_Listening
+            Voice_Note_Listening;
+
+            @Override
+            public String toString() {
+                if (BuildConfig.DEBUG) {
+                    return "dev_" + super.toString();
+                } else {
+                    return super.toString();
+                }
+            }
         }
 
         public enum VOICENOTE_SCREEN {
@@ -78,7 +116,16 @@ public class Analytics {
     public static class Match {
         public enum MATCH_EVENT {
             Match,
-            Match_Notification
+            Match_Notification;
+
+            @Override
+            public String toString() {
+                if (BuildConfig.DEBUG) {
+                    return "dev_" + super.toString();
+                } else {
+                    return super.toString();
+                }
+            }
         }
 
         public enum MATCH_PROPERTY {
@@ -99,7 +146,16 @@ public class Analytics {
 
     public static class Report {
         public enum REPORT_EVENT {
-            Report
+            Report;
+
+            @Override
+            public String toString() {
+                if (BuildConfig.DEBUG) {
+                    return "dev_" + super.toString();
+                } else {
+                    return super.toString();
+                }
+            }
         }
 
         public enum REPORT_PROPERTY {
@@ -116,7 +172,16 @@ public class Analytics {
 
     public static class Phone {
         public enum PHONE_EVENT {
-            Phone
+            Phone;
+
+            @Override
+            public String toString() {
+                if (BuildConfig.DEBUG) {
+                    return "dev_" + super.toString();
+                } else {
+                    return super.toString();
+                }
+            }
         }
 
         public enum PHONE_PROPERTY {
@@ -131,7 +196,16 @@ public class Analytics {
 
     public static class RateFriend {
         public enum RATE_EVENT {
-            RateFriend
+            RateFriend;
+
+            @Override
+            public String toString() {
+                if (BuildConfig.DEBUG) {
+                    return "dev_" + super.toString();
+                } else {
+                    return super.toString();
+                }
+            }
         }
 
         public enum RATE_PROPERTY {

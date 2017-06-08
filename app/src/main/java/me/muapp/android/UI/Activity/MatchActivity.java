@@ -56,9 +56,9 @@ public class MatchActivity extends BaseActivity implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         Bundle matchBundle = new Bundle();
-        matchBundle.putString(Analytics.Match.MATCH_PROPERTY.Type.name(), fromMatch ? Analytics.Match.MATCH_TYPE.New.name() : Analytics.Match.MATCH_TYPE.Crush.name());
-        matchBundle.putString(Analytics.Match.MATCH_PROPERTY.Button.name(), v.getId() == btn_ok_match.getId() ? Analytics.Match.MATCH_BUTTON.Ok.name() : Analytics.Match.MATCH_BUTTON.Conversation.name());
-        mFirebaseAnalytics.logEvent(Analytics.Match.MATCH_EVENT.Match_Notification.name(), matchBundle);
+        matchBundle.putString(Analytics.Match.MATCH_PROPERTY.Type.toString(), fromMatch ? Analytics.Match.MATCH_TYPE.New.toString() : Analytics.Match.MATCH_TYPE.Crush.toString());
+        matchBundle.putString(Analytics.Match.MATCH_PROPERTY.Button.toString(), v.getId() == btn_ok_match.getId() ? Analytics.Match.MATCH_BUTTON.Ok.toString() : Analytics.Match.MATCH_BUTTON.Conversation.toString());
+        mFirebaseAnalytics.logEvent(Analytics.Match.MATCH_EVENT.Match_Notification.toString(), matchBundle);
 
         if (v.getId() == btn_ok_match.getId()) {
             finish();

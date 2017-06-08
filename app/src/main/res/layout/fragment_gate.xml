@@ -6,7 +6,7 @@
     tools:context="me.muapp.android.UI.Fragment.ManGateFragment">
 
     <include
-        layout="@layout/candidate_loading_layout"
+        layout="@layout/candidate_request_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
