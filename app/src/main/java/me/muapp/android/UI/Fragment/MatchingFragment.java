@@ -158,12 +158,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         }
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        Log.wtf("onHiddenChanged", hidden + "");
-    }
-
     private void getMatchingUsers() {
         new APIService(getContext()).getMatchingUsers(matchingUsersPage, ((MainActivity) getContext()).getCurrentLocation(), this);
     }
