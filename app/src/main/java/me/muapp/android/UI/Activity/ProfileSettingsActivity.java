@@ -47,6 +47,7 @@ import java.util.List;
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
@@ -125,6 +126,7 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
         final String newDescription = et_user_biography.getText().toString();
         if (!newDescription.equals(loggedUser.getDescription())) {
             try {
+                mFirebaseAnalytics.logEvent(Analytics.EditInfo.EDIT_INFO_EVENT.Edit_Info_Description.toString(), null);
                 loggedUser.setDescription(newDescription);
                 saveUser(loggedUser);
                 JSONObject descriptionObj = new JSONObject();
@@ -300,6 +302,7 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     }
 
     private void uploadPhotos(List<AlbumParam> albumParams) {
+        mFirebaseAnalytics.logEvent(Analytics.EditInfo.EDIT_INFO_EVENT.Edit_Info_Photos.toString(), null);
         showProgressDialog();
         new APIService(this).uploadPhotos(albumParams, new UserInfoHandler() {
             @Override

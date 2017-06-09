@@ -3,6 +3,7 @@ package me.muapp.android.UI.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +15,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.eralp.circleprogressview.CircleProgressView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.Candidate;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
@@ -77,7 +80,7 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
 
     @Override
     public BaseCandidateHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType){
+        switch (viewType) {
             case TYPE_LOADING:
                 View loadingView = mInflater.inflate(R.layout.candidate_loading_layout, parent, false);
                 return new LoadingViewHolder(loadingView);
@@ -105,7 +108,7 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
     public int getItemViewType(int position) {
         if (candidates.get(position).getId() == TYPE_TUTORIAL)
             return TYPE_TUTORIAL;
-        else if(candidates.get(position).getId() == TYPE_LOADING)
+        else if (candidates.get(position).getId() == TYPE_LOADING)
             return TYPE_LOADING;
         return TYPE_CANDIDATE;
     }
@@ -238,6 +241,7 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
                         candidateInteractionListener.onLike(currentCandidate);
                     break;
                 case R.id.img_photo_candidate:
+                    FirebaseAnalytics.getInstance(mContext).logEvent(Analytics.Gate_Woman.GATE_WOMAN_EVENT.Gate_Woman_Enlarge_Candidate.toString(), null);
                     try {
                         Intent profileIntent = new Intent(mContext, ViewProfileActivity.class);
                         profileIntent.putExtra(USER_ID, currentCandidate.getId());

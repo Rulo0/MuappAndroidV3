@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.muapp.android.Application.MuappApplication;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 
@@ -69,6 +70,12 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
     EditText et_voicenote_comment;
     TextView txt_hold_to_record;
     LinearLayout container_write_comment_voicenote;
+
+    private void logEvent(String bundleAction) {
+        Bundle voicenoteBundle = new Bundle();
+        voicenoteBundle.putString(Analytics.MyProfileVoiceNote.MY_PROFILE_VOICENOTE_PROPERTY.Action.toString(), bundleAction);
+        mFirebaseAnalytics.logEvent(Analytics.MyProfileVoiceNote.MY_PROFILE_VOICENOTE_EVENT.My_Profile_VoiceNote.toString(), voicenoteBundle);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,13 +114,13 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
     }
 
 
-
     private void showCommentLayout(Boolean showComment) {
         container_write_comment_voicenote.setVisibility(showComment ? View.VISIBLE : View.GONE);
         txt_hold_to_record.setVisibility(showComment ? View.GONE : View.VISIBLE);
     }
 
     private void startRecording() {
+        logEvent(Analytics.MyProfileVoiceNote.MY_PROFILE_VOICENOTE_ACTION.Record.toString());
         if (thisFile != null) {
             thisFile.delete();
         }
@@ -181,6 +188,7 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                 voicenote_drop.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        logEvent(Analytics.MyProfileVoiceNote.MY_PROFILE_VOICENOTE_ACTION.Delete.toString());
                         if (thisFile != null) {
                             thisFile.delete();
                             thisFile = null;
@@ -293,6 +301,7 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
     }
 
     private void publishVoiceNote() {
+        logEvent(Analytics.MyProfileVoiceNote.MY_PROFILE_VOICENOTE_ACTION.Publish.toString());
         final StorageReference mainReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("post-audios").child("audio" + new Date().getTime());
         if (thisFile != null) {
             int size = (int) thisFile.length();

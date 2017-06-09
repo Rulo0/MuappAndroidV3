@@ -58,6 +58,19 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     TextView txt_settings_distance_value;
     TextView txt_settings_age_value;
 
+    private void logEvent(Analytics.Settings.SETTINGS_EVENT event, Analytics.Settings.SETTINGS_STATUS status, Analytics.Settings.SETTINGS_TYPE type) {
+        Bundle settingsBundle = null;
+        if (status != null || type != null) {
+            settingsBundle = new Bundle();
+            if (status != null) {
+                settingsBundle.putString(Analytics.Settings.SETTINGS_PROPERTY.Status.toString(), status.toString());
+            }
+            if (type != null) {
+                settingsBundle.putString(Analytics.Settings.SETTINGS_PROPERTY.Type.toString(), type.toString());
+            }
+        }
+        mFirebaseAnalytics.logEvent(event.toString(), settingsBundle);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +119,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         distance_seekbar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_Distance, null, null);
                 txt_settings_distance_value.setText((Integer.parseInt(rightPinValue) == 500 ? rightPinValue + "+" : rightPinValue) + " km");
                 userSettings.setDistance(Integer.parseInt(rightPinValue));
             }
@@ -114,6 +128,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         age_seekbar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_Age, null, null);
                 txt_settings_age_value.setText(leftPinValue + " / " + (Integer.parseInt(rightPinValue) == 55 ? rightPinValue + "+ " : rightPinValue) + " " + getString(R.string.lbl_years));
                 AgeRange ageRange = new AgeRange();
                 ageRange.set1(Integer.parseInt(leftPinValue));
@@ -276,15 +291,19 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 shareApp();
                 break;
             case R.id.txt_help:
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_Help, null, null);
                 customTabsIntent.launchUrl(this, Uri.parse(Constants.URL.HELP));
                 break;
             case R.id.txt_terms:
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_Terms, null, null);
                 customTabsIntent.launchUrl(this, Uri.parse(Constants.URL.TERMS));
                 break;
             case R.id.txt_privacy:
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_Terms, null, null);
                 customTabsIntent.launchUrl(this, Uri.parse(Constants.URL.PRIVACY));
                 break;
             case R.id.txt_rate_muapp:
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_Rate, null, null);
                 Uri uri = Uri.parse("market://details?id=" + getPackageName());
                 Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
                 // To count with Play market backstack, After pressing back button,
@@ -316,12 +335,17 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 builder.create().show();
                 break;
             case R.id.btn_logout_settings:
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_LogOut, null, null);
                 exitFromApp();
                 break;
         }
     }
 
     private void shareApp() {
+        Bundle shareBundle = new Bundle();
+        shareBundle.putString(Analytics.ShareCode.SHARE_CODE_PROPERTY.Screen.toString(), Analytics.ShareCode.SHARE_CODE_SCREEN.My_Profile.toString());
+        mFirebaseAnalytics.logEvent(Analytics.ShareCode.SHARE_CODE_EVENT.ShareCode.toString(), shareBundle);
+
         if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Male) {
             String shareBody = getString(R.string.lbl_share_app_body);
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -359,6 +383,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                     dialog.dismiss();
                 }
             }).show();
+
         }
     }
 
@@ -367,17 +392,22 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         switch (buttonView.getId()) {
             case R.id.chk_studies:
                 userSettings.setVisibleEducation(isChecked);
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_PersonalInfo, isChecked ? Analytics.Settings.SETTINGS_STATUS.On : Analytics.Settings.SETTINGS_STATUS.Off, Analytics.Settings.SETTINGS_TYPE.Education);
                 break;
             case R.id.chk_job:
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_PersonalInfo, isChecked ? Analytics.Settings.SETTINGS_STATUS.On : Analytics.Settings.SETTINGS_STATUS.Off, Analytics.Settings.SETTINGS_TYPE.Work);
                 userSettings.setVisibleWork(isChecked);
                 break;
             case R.id.chk_last_name:
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_PersonalInfo, isChecked ? Analytics.Settings.SETTINGS_STATUS.On : Analytics.Settings.SETTINGS_STATUS.Off, Analytics.Settings.SETTINGS_TYPE.LastName);
                 userSettings.setVisibleLastName(isChecked);
                 break;
             case R.id.chk_matches:
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_PersonalInfo, isChecked ? Analytics.Settings.SETTINGS_STATUS.On : Analytics.Settings.SETTINGS_STATUS.Off, Analytics.Settings.SETTINGS_TYPE.Matches);
                 userSettings.setNotifyMatches(isChecked);
                 break;
             case R.id.chk_messages:
+                logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_PersonalInfo, isChecked ? Analytics.Settings.SETTINGS_STATUS.On : Analytics.Settings.SETTINGS_STATUS.Off, Analytics.Settings.SETTINGS_TYPE.Messages);
                 userSettings.setNotifyPokes(isChecked);
                 break;
         }
@@ -405,6 +435,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void deleteUserAccount() {
+        logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_DeleteAccount, null, null);
+
         showProgressDialog(getString(R.string.lbl_please_wait), getString(R.string.lbl_deleting_your_account));
         new APIService(this).deleteUser(new UserInfoHandler() {
             @Override

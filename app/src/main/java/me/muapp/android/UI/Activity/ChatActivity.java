@@ -79,6 +79,7 @@ import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Chat.Message;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
@@ -155,6 +156,14 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
         }
     };
+
+    private void logEvent(Analytics.Messages.MESSAGE_TYPE message_type) {
+        Bundle messageBundle = new Bundle();
+        messageBundle.putString(Analytics.Messages.MESSAGE_PROPERTY.Conversation.toString(), conversationItem.getConversation().getCrush() ? Analytics.Messages.MESSAGE_CONVERSATION.Crush.toString() : Analytics.Messages.MESSAGE_CONVERSATION.Match.toString());
+        messageBundle.putString(Analytics.Messages.MESSAGE_PROPERTY.Type.toString(), message_type.toString());
+        messageBundle.putBoolean(Analytics.Messages.MESSAGE_PROPERTY.First.toString(), messagesAdapter.getItemCount() == 0);
+        mFirebaseAnalytics.logEvent(Analytics.Messages.MESSAGES_EVENT.Messages.toString(), messageBundle);
+    }
 
     ValueEventListener lastSeenByOpponentListener = new ValueEventListener() {
         @Override
@@ -522,6 +531,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
     private void attemptSend(UserContent content) {
         if (!TextUtils.isEmpty(etMessage.getText().toString()) || content != null) {
+            logEvent(content != null ? content.getCatContent().equals("contentAud") ? Analytics.Messages.MESSAGE_TYPE.VoiceNote : Analytics.Messages.MESSAGE_TYPE.Photo : Analytics.Messages.MESSAGE_TYPE.Text);
             Log.wtf("Sending message", "");
             Message m = new Message();
             m.setTimeStamp(new Date().getTime());
@@ -1064,6 +1074,11 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
     private void visitUserProfile() {
+        Bundle cpBundle = new Bundle();
+        cpBundle.putString(Analytics.Conversation_Profile.CONVERSATION_PROFILE_PROPERTY.Type.toString(), conversationItem.getConversation().getCrush() ? Analytics.Conversation_Profile.CONVERSATION_PROFILE_TYPE.Crushed.toString() : Analytics.Conversation_Profile.CONVERSATION_PROFILE_TYPE.Matched.toString());
+        mFirebaseAnalytics.logEvent(Analytics.Conversation_Profile.CONVERSATION_PROFILE_EVENT.Conversation_Profile.toString(), cpBundle);
+
+
         Intent profileIntent = new Intent(this, ViewProfileActivity.class);
         profileIntent.putExtra(USER_ID, conversationItem.getConversation().getOpponentId());
         profileIntent.putExtra(USER_NAME, conversationItem.getFullName());

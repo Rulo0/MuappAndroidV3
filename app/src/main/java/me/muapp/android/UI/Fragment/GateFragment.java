@@ -99,6 +99,7 @@ public class GateFragment extends Fragment implements OnFragmentInteractionListe
 
     private void getCandidates() {
         if (!loadingCandidates) {
+            FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Gate_Woman.GATE_WOMAN_EVENT.Gate_Woman_Loading.toString(), null);
             new APIService(getContext()).getCandidates(candidatesPage, this);
             loadingCandidates = true;
         }

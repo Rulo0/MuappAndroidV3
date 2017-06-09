@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.shinelw.library.ColorArcProgressBar;
 
@@ -36,6 +37,7 @@ import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.UserHelper;
@@ -157,6 +159,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
                     btn_enter_man_gate.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
                             JSONObject userVerified = new JSONObject();
                             user.setPending(false);
                             new UserHelper(getContext()).saveUser(user);
@@ -180,6 +183,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
                                 });
                             } catch (Exception x) {
                             }
+                            FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Gate_Man.GATE_MAN_EVENT.Gate_Man_Start.toString(), null);
                             Intent i = new Intent(getContext(), Utils.hasLocationPermissions(getContext()) ? MainActivity.class : LocationCheckerActivity.class);
                             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(i);
@@ -260,7 +264,9 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
             }
         } catch (Exception x) {
         }
-
+        Bundle shareBundle = new Bundle();
+        shareBundle.putString(Analytics.ShareCode.SHARE_CODE_PROPERTY.Screen.toString(), Analytics.ShareCode.SHARE_CODE_SCREEN.Gate_Man.toString());
+        FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.ShareCode.SHARE_CODE_EVENT.ShareCode.toString(), shareBundle);
         new AlertDialog.Builder(getContext())
                 .setTitle(getString(R.string.lbl_share_dialog_title))
                 .setMessage(user.getCodeUser() + " " + String.format(getString(R.string.lbl_share_dialog_content), numberInvitation, 20)).setPositiveButton(getString(R.string.lbl_share), new DialogInterface.OnClickListener() {
@@ -351,6 +357,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
     }
 
     private void redeemCode(final String code) {
+        FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Gate_Man.GATE_MAN_EVENT.Gate_Man_Validate_Code.toString(), null);
         showProgressDialog();
         final String TAG = "REDEEM CODE";
         new APIService(getContext()).redeemInvitationCode(code, new CodeRedeemHandler() {
@@ -359,6 +366,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
                 Log.i(TAG, redeemResponse.toString());
                 hideProgressDialog();
                 if (redeemResponse.getAuthorization()) {
+                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Gate_Man.GATE_MAN_EVENT.Gate_Man_Correct_Code.toString(), null);
                     user.setHasUseInvitation(redeemResponse.getHasUseInvitation());
                     int finalPercent = user.getInvPercentage() + redeemResponse.getGotPercentage();
                     if (finalPercent > 100) {

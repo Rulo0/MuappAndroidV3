@@ -514,6 +514,12 @@ public class MainActivity extends BaseActivity implements
         try {
             Log.wtf("selectFragment", bottomNavigation.getItem(position).getTitle(this));
             Fragment frag = fragmentHashMap.get(position);
+
+            if(frag instanceof GateFragment){
+                mFirebaseAnalytics.logEvent(Analytics.Gate_Woman.GATE_WOMAN_EVENT.Gate_Woman.toString(), null);
+            }
+
+
             if (frag instanceof MatchingFragment) {
                 getSupportActionBar().hide();
             } else {

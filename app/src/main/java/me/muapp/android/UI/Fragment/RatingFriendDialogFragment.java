@@ -16,7 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import me.muapp.android.Classes.API.APIService;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.R;
 import me.muapp.android.UI.Fragment.Interface.OnUserRatedListener;
@@ -96,6 +99,9 @@ public class RatingFriendDialogFragment extends DialogFragment {
                 if (onUserRatedListener != null)
                     onUserRatedListener.onRate((int) rating_user.getRating());
                 new APIService(getContext()).setUserQualification(matchingUser.getId(), (int) rating_user.getRating(), null);
+                Bundle rateParams = new Bundle();
+                rateParams.putString(Analytics.RateFriend.RATE_PROPERTY.Screen.toString(), Analytics.RateFriend.RATE_SCREEN.Matching.toString());
+                FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.RateFriend.RATE_EVENT.RateFriend.toString(), rateParams);
                 dismissDialog();
             }
         });
