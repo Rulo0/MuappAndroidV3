@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import me.muapp.android.Application.MuappApplication;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
@@ -137,6 +138,11 @@ public class AddQuoteActivity extends BaseActivity {
     }
 
     private void publishThisQuote() {
+        Bundle publishBundle = new Bundle();
+        publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Publish.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Quote.toString());
+        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add_Type.toString(), publishBundle);
+
+
         if (!TextUtils.isEmpty(et_quote_comment.getText().toString())) {
             showProgressDialog();
             UserContent thisContent = new UserContent();

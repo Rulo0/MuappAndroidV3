@@ -419,6 +419,7 @@ public class Analytics {
     public static class My_Profile_Add {
         public enum MY_PROFILE_ADD_EVENT {
             My_Profile_Add,
+            My_Profile_Add_Type,
             My_Profile_Delete;
 
             @Override
@@ -435,6 +436,15 @@ public class Analytics {
             Type,
             Comment,
             Publish
+        }
+
+        public enum MY_PROFILE_ADD_VALUES {
+            Quote,
+            Audio,
+            Camera,
+            Gif,
+            Spotify,
+            Youtube
         }
 
     }

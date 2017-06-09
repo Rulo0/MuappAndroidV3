@@ -70,6 +70,7 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
         int userId = getIntent().getIntExtra(USER_ID, -1);
         if (userId < 0)
             finish();
+        Log.wtf("UserId", userId + "");
         txt_profile_view_name.setText(getIntent().getStringExtra(USER_NAME));
         fromCrush = getIntent().getBooleanExtra(FROM_CRUSH, false);
         fromMatch = getIntent().getBooleanExtra(FROM_MATCH, false);
@@ -140,6 +141,28 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
 
     }
 
+
+    private void showConfirmDialog(MenuItem item) {
+        new AlertDialog.Builder(this)
+                .setTitle(item.getTitle())
+                .setMessage(item.getItemId() == R.id.action_unmatch_profile ? R.string.lbl_confirm_unmatch : R.string.lbl_confirm_uncrush)
+                .setCancelable(true)
+                .setPositiveButton(
+                        android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent returnIntent = new Intent();
+                                returnIntent.putExtra(PROFILE_VIEW_RESULT, false);
+                                setResult(Activity.RESULT_OK, returnIntent);
+                                finish();
+                            }
+                        })
+                .setNegativeButton(
+                        android.R.string.cancel, null).create().show();
+
+
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -147,12 +170,8 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
                 finish();
                 break;
             case R.id.action_unmatch_profile:
-                break;
             case R.id.action_uncrush_profile:
-                Intent profileReturnIntent = new Intent();
-                profileReturnIntent.putExtra(PROFILE_VIEW_RESULT, false);
-                setResult(Activity.RESULT_OK, profileReturnIntent);
-                finish();
+                showConfirmDialog(item);
                 break;
             case R.id.action_report_profile:
                 ReportUserDialogFragment reportUserDialogFragment = ReportUserDialogFragment.newInstance(user.getId());
@@ -205,7 +224,6 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
             setResult(Activity.RESULT_OK, profileReturnIntent);
             finish();
         } else {
-
             Bundle params = new Bundle();
             params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.toString(), Analytics.Muapp.MUAPP_TYPE.Button.toString());
             params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.toString(), Analytics.Muapp.MUAPP_SCREEN.User_Profile_Crushed.toString());
@@ -219,7 +237,6 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
 
     @Override
     public void onReport() {
-
         String reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_New.toString();
         if (fromCrush) {
             reportScreen = Analytics.Report.REPORT_SCREEN.User_Profile_Crushed.toString();

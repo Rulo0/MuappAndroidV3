@@ -1,6 +1,7 @@
 package me.muapp.android.UI.Activity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -19,6 +20,7 @@ import java.util.Date;
 import me.muapp.android.Application.MuappApplication;
 import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Chat.Message;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Giphy.Data.GiphyEntry;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.UserContent;
@@ -72,7 +74,6 @@ public class AddGiphyDetailActivity extends BaseActivity {
 
     private void publishThisMedia() {
         showProgressDialog();
-
         final UserContent thisContent = new UserContent();
         thisContent.setComment(et_giphy_comment.getText().toString());
         thisContent.setCreatedAt(new Date().getTime());
@@ -85,6 +86,11 @@ public class AddGiphyDetailActivity extends BaseActivity {
         thisContent.setGiphyMeasureData(giphyMeasureData);
 
         if (chatReferences == null) {
+            Bundle publishBundle = new Bundle();
+            if (!TextUtils.isEmpty(et_giphy_comment.getText().toString()))
+                publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Comment.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Gif.toString());
+            publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Publish.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Gif.toString());
+            mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add_Type.toString(), publishBundle);
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
             String key = ref.push().getKey();
             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {

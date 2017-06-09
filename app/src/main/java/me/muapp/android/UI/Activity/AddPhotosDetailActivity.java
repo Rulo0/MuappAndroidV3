@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
 
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Internal.UserMedia;
 import me.muapp.android.R;
@@ -121,6 +123,14 @@ public class AddPhotosDetailActivity extends BaseActivity {
         thisContent.setComment(et_media_comment.getText().toString());
         thisContent.setCreatedAt(new Date().getTime());
         thisContent.setLikes(0);
+
+        Bundle publishBundle = new Bundle();
+        if (!TextUtils.isEmpty(et_media_comment.getText().toString()))
+            publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Comment.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Camera.toString());
+        publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Publish.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Camera.toString());
+        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add_Type.toString(), publishBundle);
+
+
         mainReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId()));
         if (currentMedia.getMediaType() == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
             mainReference = mainReference.child("post-images");

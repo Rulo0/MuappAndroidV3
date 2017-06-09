@@ -336,7 +336,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.btn_logout_settings:
                 logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_LogOut, null, null);
-                exitFromApp();
+                exitFromApp(false);
                 break;
         }
     }
@@ -414,16 +414,16 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         Log.d(TAG, userSettings.toString());
     }
 
-    private void exitFromApp() {
-
-        try {
-            JSONObject tokenUser = new JSONObject();
-            tokenUser.put("push_token", "");
-            new APIService(this).patchUser(tokenUser, null);
-        } catch (Exception x) {
-            x.printStackTrace();
-        }
-        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("pushToken").removeValue();
+    private void exitFromApp(Boolean isDelete) {
+        if ((!isDelete))
+            try {
+                JSONObject tokenUser = new JSONObject();
+                tokenUser.put("push_token", "");
+                new APIService(this).patchUser(tokenUser, null);
+                FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("pushToken").removeValue();
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
         new PreferenceHelper(SettingsActivity.this).clear();
         LoginManager.getInstance().logOut();
         hideProgressDialog();
@@ -436,23 +436,24 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
 
     private void deleteUserAccount() {
         logEvent(Analytics.Settings.SETTINGS_EVENT.Settings_DeleteAccount, null, null);
-
         showProgressDialog(getString(R.string.lbl_please_wait), getString(R.string.lbl_deleting_your_account));
         new APIService(this).deleteUser(new UserInfoHandler() {
             @Override
             public void onSuccess(int responseCode, String userResponse) {
                 Log.wtf("deleteUserAccount", userResponse.toString());
-                exitFromApp();
+                exitFromApp(true);
             }
 
             @Override
             public void onSuccess(int responseCode, User user) {
-
+                Log.wtf("deleteUserAccount", user.toString());
             }
 
             @Override
             public void onFailure(boolean isSuccessful, String responseString) {
                 Log.wtf("deleteUserAccount", responseString.toString());
+                if(isSuccessful)
+                    exitFromApp(true);
                 hideProgressDialog();
             }
         });

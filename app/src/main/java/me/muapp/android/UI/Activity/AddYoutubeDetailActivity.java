@@ -1,6 +1,7 @@
 package me.muapp.android.UI.Activity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ import java.util.Date;
 import me.muapp.android.Application.MuappApplication;
 import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Chat.Message;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Youtube.Data.YoutubeVideo;
 import me.muapp.android.R;
@@ -72,6 +74,12 @@ public class AddYoutubeDetailActivity extends BaseActivity implements YouTubePla
     }
 
     private void publishThisVIdeo() {
+        Bundle publishBundle = new Bundle();
+        if (!TextUtils.isEmpty(et_youtube_about.getText().toString()))
+            publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Comment.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Youtube.toString());
+        publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Publish.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Youtube.toString());
+        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add_Type.toString(), publishBundle);
+
         UserContent thisContent = new UserContent();
         thisContent.setComment(et_youtube_about.getText().toString());
         thisContent.setCreatedAt(new Date().getTime());

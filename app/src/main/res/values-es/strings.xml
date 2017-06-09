@@ -185,4 +185,10 @@
     <string name="lbl_undo_crush">Deshacer crush</string>
     <string name="lbl_no_crush">¡Vaya! Parece que aún no hay crushes por aquí.</string>
     <string name="lbl_no_match">¡Vaya! Parece que aún no hay matches por aquí.</string>
+    <string name="lbl_confirm_unmatch">Al deshacer el Match se eliminará su conversación y no podrán volver a contactar. ¿Estás segur@?</string>
+    <string name="lbl_confirm_uncrush">Al deshacer el Crush se eliminará su conversación y no podrán volver a contactar. ¿Estás segur@?</string>
+    <string name="lbl_just_talking">Sólo está hablando contigo</string>
+    <string name="format_conversations_last_24">Conversaciones últ. 24 hrs: %s</string>
+    <string name="lbl_now_be_patinent">Ahora sé paciente...</string>
+    <string name="lbl_wait_for_muapp">Para que sigas la plática espera a que %s te haga Muapp.</string>
 </resources>

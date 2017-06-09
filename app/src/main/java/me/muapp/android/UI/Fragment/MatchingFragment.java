@@ -310,7 +310,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                     params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.toString(), Analytics.Muapp.MUAPP_TYPE.Button.toString());
                     params.putString(Analytics.Muapp.MUAPP_PROPERTY.Screen.toString(), Analytics.Muapp.MUAPP_SCREEN.Matching.toString());
                     FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Muapp.MUAPP_EVENT.Muapp.toString(), params);
-                    new APIService(getContext()).likeUser(matchingFragmentList.get(0).getMatchingUser().getId(), null, this);
+                    new APIService(getContext()).likeUser(matchingFragmentList.get(0).getMatchingUser().getId(), null, this, null, null);
                     break;
                 case R.id.btn_no_muapp_matching:
                     params.putString(Analytics.Muapp.MUAPP_PROPERTY.Type.toString(), Analytics.Muapp.MUAPP_TYPE.Button.toString());
@@ -379,9 +379,11 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                                     Bundle params = new Bundle();
                                     params.putString(Analytics.Crush.CRUSH_PROPERTY.Screen.toString(), Analytics.Crush.CRUSH_SCREEN.Matching.toString());
                                     FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Crush.CRUSH_EVENT.Crush.toString(), params);
-
                                     new APIService(getContext()).sendPushNotification(conversationItem.getPushToken(), conversationItem.getKey(), null, "notif_crush", new String[]{new UserHelper(getContext()).getLoggedUser().getFirstName()});
                                     conversationItem.setKey(myCrushId);
+                                    crush.setKey(myCrushId);
+                                    crush.setOpponentConversationId(opponentCrushId);
+                                    crush.setOpponentId(opponentId);
                                     conversationItem.setConversation(crush);
                                     Intent crushIntent = new Intent(getContext(), ChatActivity.class);
                                     crushIntent.putExtra(CONVERSATION_EXTRA, conversationItem);

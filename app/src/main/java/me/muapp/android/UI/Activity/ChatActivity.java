@@ -46,6 +46,7 @@ import com.dewarder.holdinglibrary.HoldingButtonLayout;
 import com.dewarder.holdinglibrary.HoldingButtonLayoutListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -75,17 +76,20 @@ import java.util.concurrent.TimeUnit;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.API.APIService;
+import me.muapp.android.Classes.API.Handlers.LikeUserHandler;
 import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Chat.Message;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
+import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MessagesAdapter;
 import me.muapp.android.UI.Fragment.AddAttachmentDialogFragment;
 import me.muapp.android.UI.Fragment.CrushExpiredDialogFragment;
+import me.muapp.android.UI.Fragment.CrushedExpiredLikeDialogFragment;
 import me.muapp.android.UI.Fragment.Interface.OnTimeExpiredListener;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -97,12 +101,14 @@ import okhttp3.Response;
 
 import static android.os.Build.VERSION_CODES.M;
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
+import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_CONVERSATION;
+import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_USER;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_CRUSH;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_MATCH;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_ID;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_NAME;
 
-public class ChatActivity extends BaseActivity implements ChildEventListener, AddAttachmentDialogFragment.ChatAttachmentListener, OnTimeExpiredListener {
+public class ChatActivity extends BaseActivity implements ChildEventListener, AddAttachmentDialogFragment.ChatAttachmentListener, OnTimeExpiredListener, LikeUserHandler {
     public static final String CONVERSATION_EXTRA = "CONVERSATION_EXTRA";
     public static final String CONTENT_FROM_CHAT = "CONTENT_FROM_CHAT";
     private static final String AUDIO_RECORDER_FILE_EXT_M4A = ".m4a";
@@ -362,9 +368,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot s : dataSnapshot.getChildren()) {
-                    Log.wtf("Conversations", s.getKey());
+                    Log.wtf("converdeation", s.getKey() + " " + conversationItem.getConversation().getOpponentConversationId());
                     Conversation c = s.getValue(Conversation.class);
-                    if (c != null && !s.getKey().equals(conversationItem.getKey()) && !TextUtils.isEmpty(c.getOpponentConversationId())) {
+                    c.setKey(s.getKey());
+                    if (c != null && !s.getKey().equals(conversationItem.getConversation().getOpponentConversationId()) && !TextUtils.isEmpty(c.getOpponentConversationId())) {
                         Log.wtf("Conversations", c.toString());
                         Log.wtf("Conversations", searchingDay + "");
                         Long timeConversation = 0L;
@@ -383,8 +390,9 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
                 }
                 Log.wtf("Conversations", conversationsCount + " in last 24 hours");
-                txt_conversation_count_empty_messages.setText(String.valueOf(conversationsCount - 1 >= 0 ? conversationsCount : "0"))
-                ;
+                txt_conversation_count_empty_messages.setText(String.valueOf(conversationsCount));
+                if (conversationsCount > 0)
+                    chat_user_last_conversations.setText(String.format(getString(R.string.format_conversations_last_24), String.valueOf(conversationsCount)));
             }
 
             @Override
@@ -419,7 +427,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 } else {
                     remainingTimer.cancel();
                     if (!isShowingDialog) {
-                        new CrushExpiredDialogFragment().newInstance(conversationItem).show(getSupportFragmentManager(), conversationItem.getKey());
+                        if (conversationItem.getConversation().getLikeByMe() && !conversationItem.getConversation().getLikeByOpponent())
+                            new CrushedExpiredLikeDialogFragment().newInstance(conversationItem).show(getSupportFragmentManager(), conversationItem.getKey());
+                        else
+                            new CrushExpiredDialogFragment().newInstance(conversationItem).show(getSupportFragmentManager(), conversationItem.getKey());
                     }
                     runOnUiThread(new Runnable() {
                         @Override
@@ -452,7 +463,9 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     @Override
     protected void onResume() {
         super.onResume();
+
         conversationReference.keepSynced(true);
+        Log.wtf("MessageReference", "Added");
         conversationReference.addChildEventListener(this);
         conversationReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -480,6 +493,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         super.onPause();
         messagesAdapter.stopMediaPlayer();
         updateYourConversationLastSeen();
+        Log.wtf("MessageReference", "Removed");
         conversationReference.removeEventListener(this);
         myLastSeenByYou.removeEventListener(lastSeenByOpponentListener);
         yourPresence.removeEventListener(presenceListener);
@@ -502,9 +516,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         updateYourConversationLastSeen();
         updateMyConversationSeen();
         Message m = dataSnapshot.getValue(Message.class);
-        if (m != null)
+        if (m != null) {
             m.setKey(dataSnapshot.getKey());
-        messagesAdapter.addMessage(m);
+            messagesAdapter.addMessage(m);
+        }
     }
 
     @Override
@@ -516,7 +531,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     public void onChildRemoved(DataSnapshot dataSnapshot) {
         if (container_empty_messages.getVisibility() == View.GONE)
             container_empty_messages.setVisibility(View.VISIBLE);
-        updateYourConversationLastSeen();
+        // updateYourConversationLastSeen();
     }
 
     @Override
@@ -1044,6 +1059,8 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         txt_remaining_time.setVisibility(View.GONE);
         Log.wtf("Expired", "Muapp");
         Log.wtf("Expired", txt_remaining_time.getId() + " Must be gone");
+        Log.wtf("likeUser", "Sending: " + conversationItem.getConversation().getKey() + " " + conversationItem.getConversation().getOpponentConversationId());
+        new APIService(this).likeUser(conversationItem.getConversation().getOpponentId(), null, this, conversationItem.getConversation().getKey(), conversationItem.getConversation().getOpponentConversationId());
         /*
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).child(conversationItem.getKey()).removeValue();
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child(conversationItem.getConversation().getOpponentConversationId()).removeValue();
@@ -1058,7 +1075,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).child(conversationItem.getKey()).removeValue();
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child(conversationItem.getConversation().getOpponentConversationId()).removeValue();
         myStorageReference.delete();
-        FirebaseStorage.getInstance().getReference().child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("conversations").child(conversationItem.getConversation().getOpponentConversationId());
+        //  FirebaseStorage.getInstance().getReference().child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("conversations").child(conversationItem.getConversation().getOpponentConversationId());
         finish();
     }
 
@@ -1077,8 +1094,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         Bundle cpBundle = new Bundle();
         cpBundle.putString(Analytics.Conversation_Profile.CONVERSATION_PROFILE_PROPERTY.Type.toString(), conversationItem.getConversation().getCrush() ? Analytics.Conversation_Profile.CONVERSATION_PROFILE_TYPE.Crushed.toString() : Analytics.Conversation_Profile.CONVERSATION_PROFILE_TYPE.Matched.toString());
         mFirebaseAnalytics.logEvent(Analytics.Conversation_Profile.CONVERSATION_PROFILE_EVENT.Conversation_Profile.toString(), cpBundle);
-
-
+        Log.wtf("visitUserProfile", conversationItem.toString());
         Intent profileIntent = new Intent(this, ViewProfileActivity.class);
         profileIntent.putExtra(USER_ID, conversationItem.getConversation().getOpponentId());
         profileIntent.putExtra(USER_NAME, conversationItem.getFullName());
@@ -1088,6 +1104,67 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
 
+    @Override
+    public void onFailure(boolean isSuccessful, String responseString) {
+
+    }
+
+    @Override
+    public void onSuccess(final int responseCode, final LikeUserResult result) {
+        Log.wtf("LikeResult", result.toString());
+        try {
+            if (result.getLikeUserMatch() != null) {
+                Bundle matchBundle = new Bundle();
+                matchBundle.putString(Analytics.Match.MATCH_PROPERTY.Type.toString(), Analytics.Match.MATCH_TYPE.New.toString());
+                FirebaseAnalytics.getInstance(this).logEvent(Analytics.Match.MATCH_EVENT.Match.toString(), matchBundle);
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
+                        .child("conversations")
+                        .child(String.valueOf(loggedUser.getId())).child(result.getDialogKey());
+                Log.wtf("conversationReference", reference.toString());
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        final Conversation c = dataSnapshot.getValue(Conversation.class);
+                        if (c != null) {
+                            FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("users").child(String.valueOf(result.getLikeUserMatch().getMatcherId())).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    ConversationItem conversationItem = dataSnapshot.getValue(ConversationItem.class);
+                                    if (conversationItem != null) {
+                                        conversationItem.setKey(result.getDialogKey());
+                                        conversationItem.setConversation(c);
+                                        Intent matchIntent = new Intent(ChatActivity.this, MatchActivity.class);
+                                        matchIntent.putExtra(MATCHING_USER, result.getLikeUserMatch().getLikeUserMatchUser());
+                                        matchIntent.putExtra(MATCHING_CONVERSATION, conversationItem);
+                                        matchIntent.putExtra(MatchActivity.FROM_MATCH, true);
+                                        startActivity(matchIntent);
+                                    } else {
+                                        Log.wtf("ConversationItem", "isNull");
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        } else {
+                            Log.wtf("Conversation", "isNull");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            } else {
+                Log.wtf("LikeResult", "Theres not motherfucking match");
+            }
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+    }
 }
 
 

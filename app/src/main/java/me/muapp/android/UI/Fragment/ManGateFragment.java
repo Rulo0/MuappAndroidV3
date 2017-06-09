@@ -366,7 +366,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
                 Log.i(TAG, redeemResponse.toString());
                 hideProgressDialog();
                 if (redeemResponse.getAuthorization()) {
-                    FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Gate_Man.GATE_MAN_EVENT.Gate_Man_Correct_Code.toString(), null);
+                   // FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Gate_Man.GATE_MAN_EVENT.Gate_Man_Correct_Code.toString(), null);
                     user.setHasUseInvitation(redeemResponse.getHasUseInvitation());
                     int finalPercent = user.getInvPercentage() + redeemResponse.getGotPercentage();
                     if (finalPercent > 100) {

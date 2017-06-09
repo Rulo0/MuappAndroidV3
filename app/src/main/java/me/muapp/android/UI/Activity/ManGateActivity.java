@@ -24,6 +24,7 @@ import java.util.HashMap;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.CurrentNavigationElement;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
@@ -175,17 +176,21 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
 
     @Override
     public void onAddContentClicked(int buttonId) {
-        Log.wtf("AddContentClicked", buttonId + "");
+        Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES value = Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Quote;
         switch (buttonId) {
             case R.id.btn_add_voice:
                 startActivity(new Intent(ManGateActivity.this, AddVoiceNoteActivity.class));
                 break;
             case R.id.btn_add_quote:
+                value = Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Audio;
                 startActivity(new Intent(ManGateActivity.this, AddQuoteActivity.class));
                 break;
             default:
                 break;
         }
+        Bundle addTypeBundle = new Bundle();
+        addTypeBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Type.toString(), value.toString());
+        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add.toString(),addTypeBundle );
     }
 }
 

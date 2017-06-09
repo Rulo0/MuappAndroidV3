@@ -183,15 +183,21 @@ public class APIService {
         });
     }
 
-    public void likeUser(int userId, String qbDialogId, final LikeUserHandler handler) {
+    public void likeUser(int userId, String qbDialogId, final LikeUserHandler handler, String myConversationKey, String opponentConversationKey) {
         String url = BASE_URL + String.format("users/%s/like", userId);
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject sendObject = new JSONObject();
         try {
             JSONObject qbParams = new JSONObject();
-            qbParams.put("dialog_id", qbDialogId != null ? qbDialogId : "");
-            sendObject.put("quickblox", qbParams);
+         /*   qbParams.put("dialog_id", qbDialogId != null ? qbDialogId : "");
+            sendObject.put("quickblox", qbParams);*/
+            if (!TextUtils.isEmpty(myConversationKey) && !TextUtils.isEmpty(opponentConversationKey)) {
+                JSONObject firebaseParams = new JSONObject();
+                firebaseParams.put("current_user_conversation_id", myConversationKey);
+                firebaseParams.put("opponent_conversation_id", opponentConversationKey);
+                sendObject.put("firebase", firebaseParams);
+            }
         } catch (Exception x) {
         }
         RequestBody body = RequestBody.create(mediaType, sendObject.toString());
@@ -199,9 +205,9 @@ public class APIService {
                 .url(url)
                 .post(body)
                 .build();
-        Log.i("likeUser", url);
-        Log.i("likeUser", sendObject.toString());
-        final String demoMatch = "{\"match\":{\"id\":12608229,\"user_id\":30800,\"matcher_id\":52712,\"match\":true,\"created_at\":\"2017-05-17T15:16:48.301Z\",\"updated_at\":\"2017-05-17T15:16:49.267Z\",\"from_crush\":false,\"user\":{\"education\":null,\"work\":null,\"hometown\":\"Mexico City\",\"location\":null,\"audio_id\":null,\"first_name\":\"Rulo\",\"last_name\":\"Fb\",\"photo\":\"https://s3-eu-west-1.amazonaws.com/muapp-staging//900e5e04481b6d8763aefb6de300e753.jpg\",\"id\":52712,\"album\":[\"https://s3-eu-west-1.amazonaws.com/muapp-staging//900e5e04481b6d8763aefb6de300e753.jpg\"],\"common_friendships\":0,\"longitude\":\"-99.158026\",\"latitude\":\"19.426321\",\"last_seen\":\"2017-05-25T15:14:04.000Z\",\"birthday\":\"1998-03-29\",\"quickblox_id\":\"27772302\",\"active_conversations\":0,\"hours_ago\":24}},\"quickblox_dialog\":\"No existe convesación\",\"message\":\"Tu selección ha sido registrada con éxito.\"}\n";
+        Log.wtf("likeUser", url);
+        Log.wtf("likeUser", sendObject.toString());
+        final String demoMatch = "{\"dialog_key\":" + myConversationKey + ",\"message\":\"Tu selección ha sido registrada con éxito.\"}";
         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -507,7 +513,7 @@ public class APIService {
                     .url(url)
                     .delete()
                     .build();
-            Log.i("deleteUser", url);
+            Log.wtf("deleteUser", url);
             client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {

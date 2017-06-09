@@ -127,7 +127,8 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onStart() {
         super.onStart();
-        //clearRecyclers();
+        if (!isHidden())
+            clearRecyclers();
         chatReference.addValueEventListener(this);
         chatReference.addChildEventListener(this);
         if (listenerHashMap.size() > 0) {
@@ -208,6 +209,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     }
 
     private void prepareConversation(final Conversation conversation) {
+        Log.wtf("Prepare converdeation", conversation.toString());
         final DatabaseReference userInfoReference = FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("users").child(String.valueOf(conversation.getOpponentId()));
         userInfoReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -219,10 +221,10 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
                     if (conversationItem.getConversation().getCrush()) {
                         crushesAdapter.addConversation(conversationItem);
                         recycler_crushes.scrollToPosition(0);
-                        Utils.animViewFade(placeholder_no_crush,false);
+                        Utils.animViewFade(placeholder_no_crush, false);
                     } else {
                         matchesAdapter.addConversation(conversationItem);
-                        Utils.animViewFade(placeholder_no_match,false);
+                        Utils.animViewFade(placeholder_no_match, false);
                     }
                     progressUtil.showProgress(false);
                     listenerHashMap.put(conversation.getKey(), new ChatItemObject(conversationItem.getProfilePicture(), conversation.getKey(), conversation.getCrush(), userInfoReference));
@@ -242,7 +244,6 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
         Conversation conversation = dataSnapshot.getValue(Conversation.class);
         if (conversation != null) {
             conversation.setKey(dataSnapshot.getKey());
@@ -253,7 +254,6 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
         Conversation conversation = dataSnapshot.getValue(Conversation.class);
         conversation.setKey(dataSnapshot.getKey());
         if (crushesAdapter.isConversationCrush(dataSnapshot.getKey()) && !conversation.getCrush())
@@ -268,14 +268,16 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         if (conversation != null) {
             conversation.setKey(dataSnapshot.getKey());
             if (conversation.getCrush() != null && conversation.getCrush()) {
+                Log.wtf("Removing", "Crush");
                 crushesAdapter.removeConversation(conversation.getKey());
-                if(crushesAdapter.getItemCount() == 0){
-                    Utils.animViewFade(placeholder_no_crush,true);
+                if (crushesAdapter.getItemCount() == 0) {
+                    Utils.animViewFade(placeholder_no_crush, true);
                 }
             } else {
+                Log.wtf("Removing", "Match");
                 matchesAdapter.removeConversation(conversation.getKey());
-                if(matchesAdapter.getItemCount() == 0){
-                    Utils.animViewFade(placeholder_no_match,true);
+                if (matchesAdapter.getItemCount() == 0) {
+                    Utils.animViewFade(placeholder_no_match, true);
                 }
             }
         }

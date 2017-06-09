@@ -285,9 +285,7 @@ public class MainActivity extends BaseActivity implements
         }
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
         badgeQuery = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).orderByChild("seen").equalTo(false);
-
         getLastDialog();
-
     }
 
     private void getLastDialog() {
@@ -515,7 +513,7 @@ public class MainActivity extends BaseActivity implements
             Log.wtf("selectFragment", bottomNavigation.getItem(position).getTitle(this));
             Fragment frag = fragmentHashMap.get(position);
 
-            if(frag instanceof GateFragment){
+            if (frag instanceof GateFragment) {
                 mFirebaseAnalytics.logEvent(Analytics.Gate_Woman.GATE_WOMAN_EVENT.Gate_Woman.toString(), null);
             }
 
@@ -547,6 +545,7 @@ public class MainActivity extends BaseActivity implements
             fab_add_content.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add.toString(), null);
                     AddContentDialogFragment.newInstance(false).show(getSupportFragmentManager(), "dialog");
                 }
             });
@@ -593,26 +592,36 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onAddContentClicked(int buttonId) {
+        Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES value = Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Quote;
         switch (buttonId) {
             case R.id.btn_add_quote:
+                value = Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Quote;
                 startActivity(new Intent(MainActivity.this, AddQuoteActivity.class));
                 break;
             case R.id.btn_add_voice:
+                value = Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Audio;
                 startActivity(new Intent(MainActivity.this, AddVoiceNoteActivity.class));
                 break;
             case R.id.btn_add_photo:
+                value = Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Camera;
                 startActivity(new Intent(MainActivity.this, AddPhotosActivity.class));
                 break;
             case R.id.btn_add_giphy:
+                value = Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Gif;
                 startActivity(new Intent(MainActivity.this, AddGiphyActivity.class));
                 break;
             case R.id.btn_add_spotify:
+                value = Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Spotify;
                 startActivity(new Intent(MainActivity.this, AddSpotifyActivity.class));
                 break;
             case btn_add_youtube:
+                value = Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Youtube;
                 startActivity(new Intent(MainActivity.this, AddYoutubeActivity.class));
                 break;
         }
+        Bundle addTypeBundle = new Bundle();
+        addTypeBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Type.toString(), value.toString());
+        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add.toString(),addTypeBundle );
     }
 
     protected void createLocationRequest() {

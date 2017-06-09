@@ -13,6 +13,7 @@ import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -302,6 +303,12 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
 
     private void publishVoiceNote() {
         logEvent(Analytics.MyProfileVoiceNote.MY_PROFILE_VOICENOTE_ACTION.Publish.toString());
+        Bundle publishBundle = new Bundle();
+        if (!TextUtils.isEmpty(et_voicenote_comment.getText().toString()))
+            publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Comment.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Audio.toString());
+        publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Publish.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Audio.toString());
+        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add_Type.toString(), publishBundle);
+
         final StorageReference mainReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("post-audios").child("audio" + new Date().getTime());
         if (thisFile != null) {
             int size = (int) thisFile.length();

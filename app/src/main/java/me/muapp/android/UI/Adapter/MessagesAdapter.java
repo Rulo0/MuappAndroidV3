@@ -109,6 +109,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     public void addMessage(Message m) {
         messageList.add(m);
+        Log.wtf("adding", m.toString());
     }
 
     @Override
@@ -150,7 +151,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
             @Override
             public boolean areContentsTheSame(Message oldItem, Message newItem) {
-                return oldItem.toString().equals(newItem.toString());
+                return newItem.toString().equals(oldItem.toString());
             }
 
             @Override
@@ -304,6 +305,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                     this.indicatorView.setImageResource(R.drawable.ic_chat_indicator_received);
             }
         }
+
 
         @Override
         public void setIndicatorView(ImageView indicatorView) {

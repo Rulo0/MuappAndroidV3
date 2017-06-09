@@ -4,16 +4,16 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_discover"
-        android:title="@string/title_home" />
+        android:title="@string/lbl_menu_discover" />
 
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_chat"
-        android:title="@string/title_dashboard" />
+        android:title="@string/lbl_menu_chats" />
 
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profile"
-        android:title="@string/title_notifications" />
+        android:title="@string/lbl_menu_profile" />
 
 </menu>

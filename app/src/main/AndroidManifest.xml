@@ -31,16 +31,16 @@
             android:exported="false" />
 
         <service
-            android:name=".Classes.FirebaseMessaging.MuappMessagingService">
+            android:name=".Classes.FirebaseMessaging.MuappMessagingService"
+            android:stopWithTask="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <service
-            android:name=".Classes.FirebaseMessaging.MuappInstanceIDService">
+        <service android:name=".Classes.FirebaseMessaging.MuappInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 

@@ -3,6 +3,7 @@ package me.muapp.android.UI.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.muapp.android.Application.MuappApplication;
 import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Chat.Message;
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Spotify.Data.Song;
@@ -124,6 +126,11 @@ public class AddSpotifyDetailActivity extends BaseActivity implements MediaPlaye
         spotifyData.setThumb(currentSong.getAlbum().getHigherImage());
         thisContent.setSpotifyData(spotifyData);
         if (chatReferences == null) {
+            Bundle publishBundle = new Bundle();
+            if (!TextUtils.isEmpty(et_spotify_about.getText().toString()))
+                publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Comment.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Spotify.toString());
+            publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Publish.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Spotify.toString());
+            mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add_Type.toString(), publishBundle);
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
             String key = ref.push().getKey();
             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
