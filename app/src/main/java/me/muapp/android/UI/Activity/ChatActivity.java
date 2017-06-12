@@ -7,9 +7,11 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -44,6 +46,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dewarder.holdinglibrary.HoldingButtonLayout;
 import com.dewarder.holdinglibrary.HoldingButtonLayoutListener;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -81,6 +85,7 @@ import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Chat.Message;
+import me.muapp.android.Classes.Chat.MuappSticker;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.User;
@@ -91,6 +96,7 @@ import me.muapp.android.UI.Fragment.AddAttachmentDialogFragment;
 import me.muapp.android.UI.Fragment.CrushExpiredDialogFragment;
 import me.muapp.android.UI.Fragment.CrushedExpiredLikeDialogFragment;
 import me.muapp.android.UI.Fragment.Interface.OnTimeExpiredListener;
+import me.muapp.android.UI.Fragment.MuappStickerDialogFragment;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -108,7 +114,7 @@ import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_MATCH;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_ID;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_NAME;
 
-public class ChatActivity extends BaseActivity implements ChildEventListener, AddAttachmentDialogFragment.ChatAttachmentListener, OnTimeExpiredListener, LikeUserHandler {
+public class ChatActivity extends BaseActivity implements ChildEventListener, AddAttachmentDialogFragment.ChatAttachmentListener, MuappStickerDialogFragment.MuappStickerListener, OnTimeExpiredListener, LikeUserHandler {
     public static final String CONVERSATION_EXTRA = "CONVERSATION_EXTRA";
     public static final String CONTENT_FROM_CHAT = "CONTENT_FROM_CHAT";
     private static final String AUDIO_RECORDER_FILE_EXT_M4A = ".m4a";
@@ -121,6 +127,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     private static final int REQUEST_MIC_PERMISSIONS = 471;
     private static final float SLIDE_TO_CANCEL_ALPHA_MULTIPLIER = 2.5f;
     Boolean isShowingDialog = false;
+    Boolean isShowingTutorial = false;
     private File thisFile;
     HoldingButtonLayout input_holder;
     ConversationItem conversationItem = null;
@@ -361,6 +368,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         updateMyConversationSeen();
     }
 
+
     private void getRecentsConversations() {
         final Long searchingDay = Calendar.getInstance().getTimeInMillis() - DateUtils.DAY_IN_MILLIS;
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)
@@ -422,6 +430,30 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                         @Override
                         public void run() {
                             txt_remaining_time.setText(String.format(getString(R.string.format_remaining_time), getFormatedString(hh) + ":" + getFormatedString(mm)));
+                            if (!isShowingTutorial) {
+
+                                AssetManager am = ChatActivity.this.getApplicationContext().getAssets();
+                                Typeface tf = Typeface.createFromAsset(am, String.format("fonts/%s", "GelPen.ttf"));
+                                TapTargetView.showFor(ChatActivity.this,                 // `this` is an Activity
+                                        TapTarget.forView(findViewById(R.id.txt_remaining_time), "Your 24h start now", "Time left that you have to chat with your Crush.")
+                                                .outerCircleColor(R.color.colorAccent)      // Specify a color for the outer circle
+                                                .outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
+                                                .targetCircleColor(R.color.color_muapp_light_grey)   // Specify a color for the target circle
+                                                .titleTextSize(30)                  // Specify the size (in sp) of the title text
+                                                .titleTextColor(android.R.color.white)      // Specify the color of the title text
+                                                .descriptionTextSize(20)            // Specify the size (in sp) of the description text
+                                                .descriptionTextColor(android.R.color.white)  // Specify the color of the description text
+                                                .textColor(android.R.color.white)            // Specify a color for both the title and description text
+                                                .textTypeface(tf)  // Specify a typeface for the text
+                                                .dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+                                                .drawShadow(true)                   // Whether to draw a drop shadow or not
+                                                .cancelable(false)                  // Whether tapping outside the outer circle dismisses the view
+                                                .tintTarget(true)                   // Whether to tint the target view's color
+                                                .transparentTarget(true)           // Specify whether the target is transparent (displays the content underneath)
+                                                .targetRadius(60));
+                                isShowingTutorial = true;
+                            }
+
                         }
                     });
                 } else {
@@ -444,6 +476,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             }
         }, 0, 1000);//Run each minute
     }
+
 
     private String getFormatedString(long l) {
         String r = l + "";
@@ -519,6 +552,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         if (m != null) {
             m.setKey(dataSnapshot.getKey());
             messagesAdapter.addMessage(m);
+            recycler_conversation.scrollToPosition(recycler_conversation.getChildCount());
         }
     }
 
@@ -618,6 +652,9 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             case TypePicture:
                 if (checkAndRequestGalleryPermissions())
                     galleryIntent();
+                break;
+            case TypeSticker:
+                MuappStickerDialogFragment.newInstance().show(getSupportFragmentManager(), "sticker");
                 break;
             case TypeGif:
                 Intent giphyIntent = new Intent(this, AddGiphyActivity.class);
@@ -1164,6 +1201,16 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         } catch (Exception x) {
             x.printStackTrace();
         }
+    }
+
+    @Override
+    public void onMuappStickerClicked(MuappSticker sticker) {
+        final UserContent stickerContent = new UserContent();
+        stickerContent.setCreatedAt(new Date().getTime());
+        stickerContent.setLikes(0);
+        stickerContent.setCatContent("contentStkr");
+        stickerContent.setContentUrl(sticker.getImage());
+        attemptSend(stickerContent);
     }
 }
 

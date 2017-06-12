@@ -448,4 +448,33 @@ public class Analytics {
         }
 
     }
+
+    public static class UserProperties {
+        public enum Properties {
+            Age,
+            Birthday,
+            Candidate,
+            Created_At,
+            Crushes,
+            Education,
+            Email,
+            First_Name,
+            Gender,
+            Hometown,
+            Invitation_Code,
+            Last_Connection,
+            Last_Name,
+            Location,
+            Matches,
+            Muapps,
+            Notifications,
+            Phone,
+            Rate,
+            Used_Code,
+            User_ID,
+            Visits,
+            Voice_Note,
+            Work
+        }
+    }
 }

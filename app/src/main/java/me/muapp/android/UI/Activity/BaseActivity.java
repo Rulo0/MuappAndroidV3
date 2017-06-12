@@ -16,6 +16,10 @@ import com.zplesac.connectionbuddy.interfaces.ConnectivityChangeListener;
 import com.zplesac.connectionbuddy.models.ConnectivityEvent;
 import com.zplesac.connectionbuddy.models.ConnectivityState;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
@@ -66,11 +70,41 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
         if (u != null) {
             Log.d("saveUser", u.toString());
             new UserHelper(this).saveUser(u);
+            setUserProperties(u);
         } else {
             Log.d("saveUser", "log out");
             new UserHelper(this).logOut();
         }
         loggedUser = u;
+    }
+
+    private void setUserProperties(User u) {
+        try {
+            SimpleDateFormat formatText = new SimpleDateFormat("yyyy-MM-dd");
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Age.name(), String.valueOf(u.getAge()));
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Birthday.name(), u.getBirthday());
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Candidate.name(), u.getPending() ? "True" : "False");
+            //mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Created_At.name(), String.valueOf(u.getAge()));
+            //mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Crushes.name(), String.valueOf(u.getAge()));
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Education.name(), u.getEducation());
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.First_Name.name(), u.getFirstName());
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Gender.name(), User.Gender.getGender(u.getGender()) == User.Gender.Female ? "Female" : "Male");
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Invitation_Code.name(), u.getCodeUser());
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Last_Connection.name(), formatText.format(new Date()));
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Last_Name.name(), u.getLastName());
+            // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Location.name(), String.valueOf(u.getAge()));
+            // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Matches.name(), String.valueOf(u.getAge()));
+            //mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Muapps.name(), String.valueOf(u.getAge()));
+            // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Notifications.name(), String.valueOf(u.getAge()));
+            // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Phone.name(), String.valueOf(u.getAge()));
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Rate.name(), u.getAverage());
+            // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Used_Code.name(), String.valueOf(u.getAge()));
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.User_ID.name(), String.valueOf(u.getId()));
+            // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Visits.name(), String.valueOf(u.getAge()));
+            // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Voice_Note.name(), String.valueOf(u.getAge()));
+            mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Work.name(), String.valueOf(u.getWork()));
+        } catch (Exception x) {
+        }
     }
 
     @Override

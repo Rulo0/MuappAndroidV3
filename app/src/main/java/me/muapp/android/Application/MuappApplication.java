@@ -3,6 +3,7 @@ package me.muapp.android.Application;
 import android.app.Application;
 import android.util.Log;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
 import com.zplesac.connectionbuddy.ConnectionBuddy;
 import com.zplesac.connectionbuddy.ConnectionBuddyConfiguration;
@@ -20,6 +21,7 @@ public class MuappApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        FirebaseApp.initializeApp(this);
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         if (!BuildConfig.DEBUG) {
             DATABASE_REFERENCE = "prodDB";

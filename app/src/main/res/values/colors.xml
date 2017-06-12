@@ -15,6 +15,7 @@
     <color name="color_muapp_divider">#d8e0e9</color>
     <color name="color_muapp_light_grey">#ececee</color>
     <color name="chat_text_you">@android:color/white</color>
+    <color name="color_tutorial_gray">#6f7985</color>
     <color name="chat_time_you">#4d4d4d</color>
     <color name="chat_text_other">#353535</color>
     <color name="chat_time_other">#646464</color>

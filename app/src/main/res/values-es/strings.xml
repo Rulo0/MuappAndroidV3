@@ -191,4 +191,5 @@
     <string name="format_conversations_last_24">Conversaciones últ. 24 hrs: %s</string>
     <string name="lbl_now_be_patinent">Ahora sé paciente...</string>
     <string name="lbl_wait_for_muapp">Para que sigas la plática espera a que %s te haga Muapp.</string>
+    <string name="lbl_add_sticker">Sticker</string>
 </resources>

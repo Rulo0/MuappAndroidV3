@@ -94,6 +94,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         put("contentVid", 7);
         put("contentYtv", 8);
         put("contentDesc", 9);
+        put("contentStkr", 10);
     }};
     HashMap<String, Integer> viewTypeMapReceiver = new HashMap<String, Integer>() {{
         put("contentAud", -1);
@@ -105,6 +106,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         put("contentVid", -7);
         put("contentYtv", -8);
         put("contentDesc", -9);
+        put("contentStkr", -10);
     }};
 
     public void addMessage(Message m) {
@@ -118,35 +120,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         mRecyclerView = recyclerView;
     }
 
-    public MessagesAdapter(Context context) {
+
+    public MessagesAdapter(final Context context) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.mediaPlayer = new MediaPlayer();
         this.messageList = new SortedList<>(Message.class, new SortedList.Callback<Message>() {
             @Override
-            public void onInserted(int position, int count) {
-                notifyItemRangeInserted(position, count);
-                mRecyclerView.scrollToPosition(position);
-            }
-
-            @Override
-            public void onRemoved(int position, int count) {
-                notifyItemRangeRemoved(position, count);
-            }
-
-            @Override
-            public void onMoved(int fromPosition, int toPosition) {
-                notifyItemMoved(fromPosition, toPosition);
-            }
-
-            @Override
-            public int compare(Message o1, Message o2) {
-                return new Date(o1.getTimeStamp()).compareTo(new Date(o2.getTimeStamp()));
+            public int compare(Message m1, Message m2) {
+                return new Date(m1.getTimeStamp()).compareTo(new Date(m2.getTimeStamp()));
             }
 
             @Override
             public void onChanged(int position, int count) {
-                notifyItemRangeChanged(position, count);
+                notifyItemChanged(position, count);
             }
 
             @Override
@@ -157,6 +144,21 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             @Override
             public boolean areItemsTheSame(Message item1, Message item2) {
                 return item1.getKey().equals(item2.getKey());
+            }
+
+            @Override
+            public void onInserted(int position, int count) {
+                notifyItemRangeInserted(position, count);
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+                notifyItemRangeRemoved(position, count);
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+                notifyItemMoved(fromPosition, toPosition);
             }
         });
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -200,11 +202,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             //Pictures
             case 4:
                 View senderImageView = mInflater.inflate(R.layout.message_item_layout_sender_image, parent, false);
-                holder = new MyImageContentHolder(senderImageView);
+                holder = new MyStickerContentHolder(senderImageView);
                 break;
             case -4:
                 View receiverImageView = mInflater.inflate(R.layout.message_item_layout_receiver_image, parent, false);
-                holder = new YourImageContentHolder(receiverImageView);
+                holder = new YourStickerContentHolder(receiverImageView);
                 break;
             //Spotify
             case 6:
@@ -223,6 +225,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             case -8:
                 View receiverYoutubeView = mInflater.inflate(R.layout.message_item_layout_receiver_youtube, parent, false);
                 holder = new YourYoutubeContentHolder(receiverYoutubeView);
+                break;
+            //Pictures
+            case 10:
+                View senderStickerView = mInflater.inflate(R.layout.message_item_layout_sender_image, parent, false);
+                holder = new MyStickerContentHolder(senderStickerView);
+                break;
+            case -10:
+                View receiverStickerView = mInflater.inflate(R.layout.message_item_layout_receiver_image, parent, false);
+                holder = new YourStickerContentHolder(receiverStickerView);
                 break;
             default:
                 View view = mInflater.inflate(R.layout.message_item_layout_sender, parent, false);
@@ -297,7 +308,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         public void bind(Message message) {
             if (message.getAttachment() != null)
                 this.attachment = message.getAttachment();
+
+            if (message.getTimeStamp() > new Date().getTime())
+                message.setTimeStamp(new Date().getTime());
+
             this.messageTimeStamp = message.getTimeStamp();
+
+
             if (this.indicatorView != null) {
                 if (message.getTimeStamp() <= lastSeenByOpponent)
                     this.indicatorView.setImageResource(R.drawable.ic_chat_indicator_read);
@@ -885,6 +902,48 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             Intent youtubeIntent = new Intent(context, YoutubeViewActivity.class);
             youtubeIntent.putExtra("itemContent", attachment);
             context.startActivity(youtubeIntent);
+        }
+    }
+
+    public class MyStickerContentHolder extends MessageContentHolder {
+        RelativeTimeTextView txt_time_sender_image;
+        ImageView img_sender_image;
+        ImageView img_indicator_sender_image;
+
+        public MyStickerContentHolder(View itemView) {
+            super(itemView);
+            txt_time_sender_image = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_image);
+            img_sender_image = (ImageView) itemView.findViewById(R.id.img_sender_image);
+            img_indicator_sender_image = (ImageView) itemView.findViewById(R.id.img_indicator_sender_image);
+            setIndicatorView(img_indicator_sender_image);
+        }
+
+        @Override
+        public void bind(Message message) {
+            super.bind(message);
+            txt_time_sender_image.setReferenceTime(message.getTimeStamp());
+            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_sender_image);
+        }
+    }
+
+    public class YourStickerContentHolder extends MessageContentHolder {
+        RelativeTimeTextView txt_time_receiver_image;
+        ImageView img_receiver_image;
+
+        public YourStickerContentHolder(View itemView) {
+            super(itemView);
+            txt_time_receiver_image = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_receiver_image);
+            img_receiver_image = (ImageView) itemView.findViewById(R.id.img_receiver_image);
+        }
+
+        @Override
+        public void bind(Message message) {
+            try {
+                txt_time_receiver_image.setReferenceTime(message.getTimeStamp());
+            } catch (Exception x) {
+
+            }
+            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_receiver_image);
         }
     }
 

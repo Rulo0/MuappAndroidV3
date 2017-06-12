@@ -277,7 +277,7 @@ public class MainActivity extends BaseActivity implements
             ft.replace(R.id.content_main_male, fragmentHashMap.get(0));
             ft.commit();
             fab_add_content.hide();
-            //  navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
+            // navigationElement = new CurrentNavigationElement(navigation.getMenu().findItem(R.id.navigation_home), fragmentHashMap.get(R.id.navigation_home));
             selectedNavigationElement = new SelectedNavigationElement(0, fragmentHashMap.get(0));
             invalidateOptionsMenu();
         } else {
@@ -621,7 +621,7 @@ public class MainActivity extends BaseActivity implements
         }
         Bundle addTypeBundle = new Bundle();
         addTypeBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Type.toString(), value.toString());
-        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add.toString(),addTypeBundle );
+        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add.toString(), addTypeBundle);
     }
 
     protected void createLocationRequest() {
