@@ -7,11 +7,9 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -46,8 +44,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dewarder.holdinglibrary.HoldingButtonLayout;
 import com.dewarder.holdinglibrary.HoldingButtonLayoutListener;
-import com.getkeepsafe.taptargetview.TapTarget;
-import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -90,6 +86,7 @@ import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.Tutorials;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MessagesAdapter;
 import me.muapp.android.UI.Fragment.AddAttachmentDialogFragment;
@@ -431,26 +428,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                         public void run() {
                             txt_remaining_time.setText(String.format(getString(R.string.format_remaining_time), getFormatedString(hh) + ":" + getFormatedString(mm)));
                             if (!isShowingTutorial) {
-
-                                AssetManager am = ChatActivity.this.getApplicationContext().getAssets();
-                                Typeface tf = Typeface.createFromAsset(am, String.format("fonts/%s", "GelPen.ttf"));
-                                TapTargetView.showFor(ChatActivity.this,                 // `this` is an Activity
-                                        TapTarget.forView(findViewById(R.id.txt_remaining_time), "Your 24h start now", "Time left that you have to chat with your Crush.")
-                                                .outerCircleColor(R.color.colorAccent)      // Specify a color for the outer circle
-                                                .outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
-                                                .targetCircleColor(R.color.color_muapp_light_grey)   // Specify a color for the target circle
-                                                .titleTextSize(30)                  // Specify the size (in sp) of the title text
-                                                .titleTextColor(android.R.color.white)      // Specify the color of the title text
-                                                .descriptionTextSize(20)            // Specify the size (in sp) of the description text
-                                                .descriptionTextColor(android.R.color.white)  // Specify the color of the description text
-                                                .textColor(android.R.color.white)            // Specify a color for both the title and description text
-                                                .textTypeface(tf)  // Specify a typeface for the text
-                                                .dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
-                                                .drawShadow(true)                   // Whether to draw a drop shadow or not
-                                                .cancelable(false)                  // Whether tapping outside the outer circle dismisses the view
-                                                .tintTarget(true)                   // Whether to tint the target view's color
-                                                .transparentTarget(true)           // Specify whether the target is transparent (displays the content underneath)
-                                                .targetRadius(60));
+                                new Tutorials(ChatActivity.this).showTutorialForView(txt_remaining_time, false, "Your 24h start now", "Time left that you have to chat with your Crush.");
                                 isShowingTutorial = true;
                             }
 

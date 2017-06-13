@@ -64,7 +64,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-gcm'
     compile 'com.firebase:firebase-jobdispatcher:0.6.0'
-    compile 'com.getkeepsafe.taptargetview:taptargetview:1.9.1'
+    compile '©©:1.9.1'
     testCompile 'junit:junit:4.12'
 }
 configurations.all {

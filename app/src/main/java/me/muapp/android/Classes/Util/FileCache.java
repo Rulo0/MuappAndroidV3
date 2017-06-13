@@ -162,14 +162,14 @@ public class FileCache {
 
 
     public static File getExternalCacheDir(Context context) {
-//        return context.getExternalCacheDir();
+//        return activity.getExternalCacheDir();
         return Environment
                 .getExternalStoragePublicDirectory(CACHE_DIR);
 
     }
 
     public static File getInternalCacheDir(Context context) {
-//        return context.getCacheDir();
+//        return activity.getCacheDir();
         return context.getFilesDir();
     }
 }
