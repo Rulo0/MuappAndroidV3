@@ -121,9 +121,9 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
             public void run() {
                 if (muappuser.getFakeAccount() != null && muappuser.getFakeAccount()) {
                     img_profile_view_verified.setImageResource(R.drawable.ic_verified_profile);
+                    img_profile_view_verified.setVisibility(View.VISIBLE);
+                    img_profile_view_verified.setPadding(0, 0, dpToPx(4), 0);
                 }
-                img_profile_view_verified.setVisibility(View.VISIBLE);
-                img_profile_view_verified.setPadding(0, 0, dpToPx(4), 0);
                 showControls(true);
                 Utils.animViewFade(view_profile_progress, false);
             }

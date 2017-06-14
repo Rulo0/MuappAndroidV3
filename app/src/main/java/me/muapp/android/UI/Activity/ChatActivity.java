@@ -44,6 +44,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dewarder.holdinglibrary.HoldingButtonLayout;
 import com.dewarder.holdinglibrary.HoldingButtonLayoutListener;
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -86,6 +87,7 @@ import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Tutorials;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MessagesAdapter;
@@ -398,6 +400,17 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 txt_conversation_count_empty_messages.setText(String.valueOf(conversationsCount));
                 if (conversationsCount > 0)
                     chat_user_last_conversations.setText(String.format(getString(R.string.format_conversations_last_24), String.valueOf(conversationsCount)));
+
+                if (!conversationItem.getConversation().getCrush() && new PreferenceHelper(ChatActivity.this).getTutorialMatchConversation()
+                        ) {
+                    new Tutorials(ChatActivity.this).showTutorialForView(chat_user_last_conversations, true, getString(R.string.lbl_tutorial_conversation_match_title), getString(R.string.lbl_tutorial_conversation_match_content), null, new TapTargetView.Listener() {
+                        @Override
+                        public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
+                            super.onTargetDismissed(view, userInitiated);
+                            new PreferenceHelper(ChatActivity.this).putTutorialMatchConversationDisabled();
+                        }
+                    });
+                }
             }
 
             @Override
@@ -427,8 +440,14 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                         @Override
                         public void run() {
                             txt_remaining_time.setText(String.format(getString(R.string.format_remaining_time), getFormatedString(hh) + ":" + getFormatedString(mm)));
-                            if (!isShowingTutorial) {
-                                new Tutorials(ChatActivity.this).showTutorialForView(txt_remaining_time, false, "Your 24h start now", "Time left that you have to chat with your Crush.");
+                            if (!isShowingTutorial && new PreferenceHelper(ChatActivity.this).getTutorialCrushConversation()) {
+                                new Tutorials(ChatActivity.this).showTutorialForView(txt_remaining_time, true, getString(R.string.lbl_tutorial_conversation_crush_title), getString(R.string.lbl_tutorial_conversation_crush_content), null, new TapTargetView.Listener() {
+                                    @Override
+                                    public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
+                                        super.onTargetDismissed(view, userInitiated);
+                                        new PreferenceHelper(ChatActivity.this).putTutorialCrushConversationDisabled();
+                                    }
+                                });
                                 isShowingTutorial = true;
                             }
 

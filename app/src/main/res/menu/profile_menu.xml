@@ -5,11 +5,13 @@
         android:id="@+id/action_edit_profile"
         android:icon="@drawable/ic_edit"
         android:title="@string/lbl_edit"
+        android:actionViewClass="android.widget.ImageButton"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_settings_profile"
         android:icon="@drawable/ic_settings"
         android:title="@string/lbl_settings"
+        android:actionViewClass="android.widget.ImageButton"
         app:showAsAction="always" />
 </menu>

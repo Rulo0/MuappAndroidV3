@@ -7,10 +7,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,6 +30,8 @@ import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.PreferenceHelper;
+import me.muapp.android.Classes.Util.Tutorials;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.MainActivity;
@@ -44,6 +49,9 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     UserContentAdapter adapter;
     RecyclerView recycler_my_content;
     FloatingActionButton fab_add_content;
+    Toolbar toolbar_current_user_profile;
+    int counter = 1;
+    private boolean isToolbarPrepared = false;
 
     public ProfileFragment() {
     }
@@ -107,6 +115,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
+        toolbar_current_user_profile = (Toolbar) v.findViewById(R.id.toolbar_current_user_profile);
         recycler_my_content = (RecyclerView) v.findViewById(R.id.recycler_my_content);
         if (getContext() instanceof MainActivity) {
             this.fab_add_content = ((MainActivity) getContext()).getFab_add_content();
@@ -135,20 +144,106 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         return v;
     }
 
+    private void prepareToolbar() {
+        if (!isToolbarPrepared) {
+            toolbar_current_user_profile.getMenu().clear();
+            toolbar_current_user_profile.inflateMenu(R.menu.profile_menu);
+            isToolbarPrepared = true;
+        }
+        String title = "";
+        String content = "";
+        TapTargetView.Listener listener = new TapTargetView.Listener() {
+            @Override
+            public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
+                super.onTargetDismissed(view, userInitiated);
+                new PreferenceHelper(getContext()).addCounterToProfile();
+                ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
+                isToolbarPrepared = false;
+                counter++;
+            }
+        };
+        Log.wtf("Showing Option", counter + "");
+        switch (counter) {
+            case 1:
+                title = getString(R.string.lbl_tutorial_personalize);
+                content = getString(R.string.lbl_tutorial_personalize_content);
+                new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_settings_profile, title, content, 25, listener);
+                break;
+            case 2:
+                //  if (user.getFakeAccount()) {
+                title = getString(R.string.lbl_tutorial_verify);
+                content = getString(R.string.lbl_tutorial_verify_content);
+                new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_edit_profile, title, content, 25, listener);
+                //       } else {
+                new PreferenceHelper(getContext()).addCounterToProfile();
+                //     }
+                break;
+            case 3:
+                title = getString(R.string.lbl_tutorial_history);
+                content = getString(R.string.lbl_tutorial_history_content);
+                new Tutorials((MainActivity) getContext()).showTutorialForView(fab_add_content, true, title, content, 50, listener);
+                break;
+            default:
+                ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
+        }
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         recycler_my_content.setAdapter(adapter);
+        if (getContext() instanceof MainActivity) {
+            prepareToolbar();
+          /*  new Tutorials((MainActivity) getContext()).showTutorialSequence(toolbar_current_user_profile, new TapTargetSequence.Listener() {
+                        @Override
+                        public void onSequenceFinish() {
+
+                        }
+
+                        @Override
+                        public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+
+                        }
+
+                        @Override
+                        public void onSequenceCanceled(TapTarget lastTarget) {
+
+                        }
+                    }, new Tutorials.MenuItemTutorial(R.id.action_settings_profile, "tit1", "subtit1", 25),
+                    new Tutorials.MenuItemTutorial(R.id.action_edit_profile, "tit2", "subtit2", 25))
+            ;
+*/
+          /*  new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_settings_profile, "probando", "probando", 25, new TapTargetView.Listener() {
+                @Override
+                public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
+                    super.onTargetDismissed(view, userInitiated);
+                    ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
+                }
+            });*/
+
+        }
+    }
+
+
+    private void launchTutorial() {
+
+    }
+
+    public void onProfileSelected() {
+        if (getContext() instanceof MainActivity)
+            prepareToolbar();
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
+
         adapter.removeAllDescriptions();
         adapter.setUser(new UserHelper(getContext()).getLoggedUser());
         myUserReference.addChildEventListener(this);
     }
+
 
     @Override
     public void onStop() {

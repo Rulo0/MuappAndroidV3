@@ -182,7 +182,7 @@
     <string name="lbl_vote_for_the_guys">Vota por los chicos que crees que deberían formar parte de Muapp.</string>
     <string name="lbl_gate_load_title">ESTÁN ESPERANDO A ENTRAR EN MUAPP ¡ACÉPTALES!</string>
     <string name="lbl_undo_match">Deshacer match</string>
-    <string name="lbl_undo_crush">Deshacer crush</string>
+    <string name="lbl_undo_crush">Dale a Crush y se abrirá un chat durante 24h para que decidas si te gusta.</string>
     <string name="lbl_no_crush">¡Vaya! Parece que aún no hay crushes por aquí.</string>
     <string name="lbl_no_match">¡Vaya! Parece que aún no hay matches por aquí.</string>
     <string name="lbl_confirm_unmatch">Al deshacer el Match se eliminará su conversación y no podrán volver a contactar. ¿Estás segur@?</string>
@@ -192,4 +192,18 @@
     <string name="lbl_now_be_patinent">Ahora sé paciente...</string>
     <string name="lbl_wait_for_muapp">Para que sigas la plática espera a que %s te haga Muapp.</string>
     <string name="lbl_add_sticker">Sticker</string>
+    <string name="lbl_tutorial_crush_title">¡Nuevo!</string>
+    <string name="lbl_tutorial_crush_content">Haz Crush antes de hacer Match.\n\n¿Fue un flechazo y no quieres arriesgar a no volver a verlo? \n\nDale a Crush y se abrirá un chat durante 24h para que decidas si te gusta.</string>
+    <string name="lbl_tutorial_rate_title">¡Nuevo!</string>
+    <string name="lbl_tutorial_rate_content">Califica a tus amigos de Facebook para mantener una comunidad segura. ❤</string>
+    <string name="lbl_tutorial_conversation_crush_title">¡Empiezan tus 24h!🕚</string>
+    <string name="lbl_tutorial_conversation_crush_content">Tiempo restante para chatear con tu Crush.</string>
+    <string name="lbl_tutorial_conversation_match_content">Aquí verás si habla con otras chicas al mismo tiempo.</string>
+    <string name="lbl_tutorial_conversation_match_title">¡Hey! 😁</string>
+    <string name="lbl_tutorial_personalize">¡Personaliza tu perfil!</string>
+    <string name="lbl_tutorial_personalize_content">Si lo haces bien tus oportunidades de tener un match suben al 98%.</string>
+    <string name="lbl_tutorial_verify">Verifica tu perfil</string>
+    <string name="lbl_tutorial_verify_content">Tendrás más oportunidades de gustar. 👍</string>
+    <string name="lbl_tutorial_history">¡Nuevo!</string>
+    <string name="lbl_tutorial_history_content">¿Cuál es tu historia?\n\nAñade contenido en tu pefil para que te conozcan mejor.\n¡Eres mucho más que 6 fotos!</string>
 </resources>

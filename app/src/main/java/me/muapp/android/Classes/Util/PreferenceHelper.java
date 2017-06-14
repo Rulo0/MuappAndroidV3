@@ -23,6 +23,12 @@ public class PreferenceHelper {
     private final String TUTORIAL_CANDIDATES = "tutorial_candidates";
     private final String PENDING_MATCH = "pendingMatch";
     private final String ACTIVE_CHAT = "activeChat";
+
+    private final String TUTORIAL_CRUSH = "tutorialCrush";
+    private final String TUTORIAL_RATE = "tutorialRate";
+    private final String TUTORIAL_CRUSH_CONVERSATION = "tutorialCrushConversation";
+    private final String TUTORIAL_MATCH_CONVERSATION = "tutorialMatchConversation";
+    private final String TUTORIAL_PROFILE_COUNTER = "tutorialProfileCounter";
     Context context;
 
     public PreferenceHelper(Context context) {
@@ -34,6 +40,57 @@ public class PreferenceHelper {
         SharedPreferences.Editor edit = preferences.edit();
         edit.clear();
         edit.commit();
+    }
+
+    public void putTutorialCrushDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(TUTORIAL_CRUSH, false);
+        edit.apply();
+    }
+
+    public boolean getTutorialCrush() {
+        return preferences.getBoolean(TUTORIAL_CRUSH, true);
+    }
+
+    public void putTutorialRateDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(TUTORIAL_RATE, false);
+        edit.apply();
+    }
+
+    public boolean getTutorialRate() {
+        return preferences.getBoolean(TUTORIAL_RATE, true);
+    }
+
+
+    public int getTutorialProfileCounter() {
+        return preferences.getInt(TUTORIAL_PROFILE_COUNTER, 1);
+    }
+
+    public void addCounterToProfile() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putInt(TUTORIAL_PROFILE_COUNTER, getTutorialProfileCounter() + 1);
+        edit.apply();
+    }
+
+    public void putTutorialCrushConversationDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(TUTORIAL_CRUSH_CONVERSATION, false);
+        edit.apply();
+    }
+
+    public boolean getTutorialCrushConversation() {
+        return preferences.getBoolean(TUTORIAL_CRUSH_CONVERSATION, true);
+    }
+
+    public void putTutorialMatchConversationDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(TUTORIAL_MATCH_CONVERSATION, false);
+        edit.apply();
+    }
+
+    public boolean getTutorialMatchConversation() {
+        return preferences.getBoolean(TUTORIAL_MATCH_CONVERSATION, true);
     }
 
     public void putFirstLoginDisabled() {
@@ -55,6 +112,7 @@ public class PreferenceHelper {
     }
 
     public Boolean getSeachPreferencesChanged() {
+
         return preferences.getBoolean(SEARCH_PREFERENCES_CHANGED, false);
     }
 
@@ -78,18 +136,20 @@ public class PreferenceHelper {
         return preferences.getString(PENDING_MATCH, "");
     }
 
-    public void putCurrentActiveChat(String activeChat){
+    public void putCurrentActiveChat(String activeChat) {
         SharedPreferences.Editor edit = preferences.edit();
         edit.putString(ACTIVE_CHAT, activeChat);
         edit.apply();
     }
-    public void clearCurrentActiveChat(){
+
+    public void clearCurrentActiveChat() {
         SharedPreferences.Editor edit = preferences.edit();
         edit.remove(ACTIVE_CHAT);
         edit.apply();
     }
-    public String getCurrentActiveChat(){
-        return preferences.getString(ACTIVE_CHAT,null);
+
+    public String getCurrentActiveChat() {
+        return preferences.getString(ACTIVE_CHAT, null);
     }
 
 

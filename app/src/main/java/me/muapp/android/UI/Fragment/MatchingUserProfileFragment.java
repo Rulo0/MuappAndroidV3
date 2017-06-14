@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,6 +33,8 @@ import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.PreferenceHelper;
+import me.muapp.android.Classes.Util.Tutorials;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MatchingUserContentAdapter;
@@ -55,6 +58,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     ImageButton btn_matching_rate;
     ImageButton btn_matching_report;
     Boolean imFemale;
+    TapTargetView tutorialQualification;
 
     public MatchingUser getMatchingUser() {
         return matchingUser;
@@ -161,7 +165,8 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         if (matchingUser.getFakeAccount())
             toolbar_matching_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_verified_profile, 0, 0, 0);
         recycler_user_content.setAdapter(adapter);
-        if (imFemale && matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()) {
+        if (imFemale && matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()
+                ) {
             btn_matching_rate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -170,17 +175,31 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
                     ratingFriendDialogFragment.show(getChildFragmentManager(), "");
                 }
             });
+            if (new PreferenceHelper(getContext()).getTutorialRate()) {
+                tutorialQualification = new Tutorials(getActivity()).showTutorialForView(btn_matching_rate, false, getString(R.string.lbl_tutorial_rate_title), getString(R.string.lbl_tutorial_rate_content), 23, new TapTargetView.Listener() {
+                    @Override
+                    public void onTargetClick(TapTargetView view) {
+                        super.onTargetClick(view);
+                        rateFriend();
+                        new PreferenceHelper(getContext()).putTutorialRateDisabled();
+                    }
+                });
+            }
         } else {
             btn_matching_rate.setVisibility(View.GONE);
         }
         btn_matching_report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ReportUserDialogFragment reportUserDialogFragment = ReportUserDialogFragment.newInstance(matchingUser.getId());
-                reportUserDialogFragment.setOnUserReportedListener(MatchingUserProfileFragment.this);
-                reportUserDialogFragment.show(getChildFragmentManager(), "");
+                rateFriend();
             }
         });
+    }
+
+    private void rateFriend() {
+        RatingFriendDialogFragment ratingFriendDialogFragment = RatingFriendDialogFragment.newInstance(matchingUser);
+        ratingFriendDialogFragment.setOnUserRatedListener(MatchingUserProfileFragment.this);
+        ratingFriendDialogFragment.show(getChildFragmentManager(), matchingUser.getFirstName());
     }
 
     @Override
@@ -201,7 +220,12 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     @Override
     public void onDestroy() {
         super.onDestroy();
-        adapter.releaseMediaPlayer();
+        try {
+            adapter.releaseMediaPlayer();
+            if (tutorialQualification != null && tutorialQualification.isVisible())
+                tutorialQualification.dismiss(false);
+        } catch (Exception x) {
+        }
     }
 
 

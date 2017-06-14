@@ -86,6 +86,7 @@ import me.muapp.android.UI.Fragment.MuappPopupDialogFragment;
 import me.muapp.android.UI.Fragment.ProfileFragment;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
+import static me.muapp.android.R.id.action_settings_profile;
 import static me.muapp.android.R.id.btn_add_youtube;
 import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_CONVERSATION;
 import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_USER;
@@ -114,6 +115,7 @@ public class MainActivity extends BaseActivity implements
     AHBottomNavigation bottomNavigation;
     Query badgeQuery;
     int notificationPos;
+    ProfileFragment profileFragment;
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -170,7 +172,7 @@ public class MainActivity extends BaseActivity implements
 /*        //noinspection RestrictedApi
         getSupportActionBar().setShowHideAnimationEnabled(false);*/
         disableABCShowHideAnimation(getSupportActionBar());
-        getSupportActionBar().hide();
+        //  getSupportActionBar().hide();
 
     /*    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);*/
@@ -259,17 +261,19 @@ public class MainActivity extends BaseActivity implements
         /*    fragmentHashMap.put(R.id.navigation_home, MatchingFragment.newInstance(loggedUser));
             fragmentHashMap.put(R.id.navigation_dashboard, ChatFragment.newInstance(loggedUser));
             fragmentHashMap.put(R.id.navigation_profile, ProfileFragment.newInstance(loggedUser));*/
+            profileFragment = ProfileFragment.newInstance(loggedUser);
+
 
             notificationPos = User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female ? 2 : 1;
             if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female) {
                 fragmentHashMap.put(0, MatchingFragment.newInstance(loggedUser));
                 fragmentHashMap.put(1, GateFragment.newInstance(loggedUser));
                 fragmentHashMap.put(2, ChatFragment.newInstance(loggedUser));
-                fragmentHashMap.put(3, ProfileFragment.newInstance(loggedUser));
+                fragmentHashMap.put(3, profileFragment);
             } else {
                 fragmentHashMap.put(0, MatchingFragment.newInstance(loggedUser));
                 fragmentHashMap.put(1, ChatFragment.newInstance(loggedUser));
-                fragmentHashMap.put(2, ProfileFragment.newInstance(loggedUser));
+                fragmentHashMap.put(2, profileFragment);
             }
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -457,7 +461,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings_profile:
+            case action_settings_profile:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.action_edit_profile:
@@ -519,9 +523,9 @@ public class MainActivity extends BaseActivity implements
 
 
             if (frag instanceof MatchingFragment) {
-                getSupportActionBar().hide();
+                // getSupportActionBar().hide();
             } else {
-                getSupportActionBar().show();
+                // getSupportActionBar().show();
             }
 
             mSelectedItem = position;
@@ -537,24 +541,30 @@ public class MainActivity extends BaseActivity implements
                 ft.hide(selectedNavigationElement.getFrag());
                 ft.commit();
             }
-            if (frag instanceof ProfileFragment) {
-                fab_add_content.show();
-            } else {
-                fab_add_content.hide();
-            }
-            fab_add_content.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add.toString(), null);
-                    AddContentDialogFragment.newInstance(false).show(getSupportFragmentManager(), "dialog");
-                }
-            });
+
             selectedNavigationElement = new SelectedNavigationElement(position, frag);
             invalidateOptionsMenu();
+            if (frag instanceof ProfileFragment) {
+                fab_add_content.show();
+                fab_add_content.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add.toString(), null);
+                        AddContentDialogFragment.newInstance(false).show(getSupportFragmentManager(), "dialog");
+                    }
+                });
+                ((ProfileFragment) frag).onProfileSelected();
+            } else {
+                fab_add_content.hide();
+                fab_add_content.setOnClickListener(null);
+            }
+
+
         } catch (Exception x) {
             x.printStackTrace();
         }
     }
+
 
     @Override
     protected void onRestart() {
@@ -737,10 +747,11 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public boolean onTabSelected(int position, boolean wasSelected) {
-        if (position == bottomNavigation.getItemsCount() - 1)
-            getSupportActionBar().setTitle(loggedUser.getFullName());
-        else
-            getSupportActionBar().setTitle(bottomNavigation.getItem(position).getTitle(this));
+        if (position == bottomNavigation.getItemsCount() - 1) {
+            //   getSupportActionBar().setTitle(loggedUser.getFullName());}
+        } else {
+            //getSupportActionBar().setTitle(bottomNavigation.getItem(position).getTitle(this));
+        }
         if (selectedNavigationElement.getPos() != position) {
             selectFragment(position);
         }

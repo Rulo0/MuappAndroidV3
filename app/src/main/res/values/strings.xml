@@ -227,4 +227,18 @@
     <string name="lbl_now_be_patinent">Now be patient...</string>
     <string name="lbl_wait_for_muapp">To follow the conversation wait for %s to do Muapp.</string>
     <string name="lbl_add_sticker">Sticker</string>
+    <string name="lbl_tutorial_crush_title">New!</string>
+    <string name="lbl_tutorial_crush_content">Make a crush before make a match.\n\nYou\'ve had a crush and you do not want to risk never seeing him again?\n\nGive him a crush and a chat will open 24h, so you can decide if you really like him.</string>
+    <string name="lbl_tutorial_rate_title">New!</string>
+    <string name="lbl_tutorial_rate_content">Rate your Facebook friends so we are keep a safe community. ❤</string>
+    <string name="lbl_tutorial_conversation_crush_title">Your 24h start now!🕚</string>
+    <string name="lbl_tutorial_conversation_crush_content">Time left that you hace to chat whit your Crush.</string>
+    <string name="lbl_tutorial_conversation_match_content">Here you´ll see if he talks to other girls at the same time.</string>
+    <string name="lbl_tutorial_conversation_match_title">Hey! 😁</string>
+    <string name="lbl_tutorial_personalize">Personalize your profile!</string>
+    <string name="lbl_tutorial_personalize_content">If you do it right your chances of having a match go up to 98%</string>
+    <string name="lbl_tutorial_verify">Verify your profile</string>
+    <string name="lbl_tutorial_verify_content">You\'ll have more chances to be liked 👍</string>
+    <string name="lbl_tutorial_history">New!</string>
+    <string name="lbl_tutorial_history_content">Whats your history?\n\nAdd content to your profile so they can know you better\nYou are much more than 6 pics!</string>
 </resources>

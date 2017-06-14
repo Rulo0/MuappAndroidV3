@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +41,7 @@ import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.PreferenceHelper;
+import me.muapp.android.Classes.Util.Tutorials;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
@@ -71,7 +73,8 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     View content_matching_profiles;
     private Fragment currentFragment;
     PreferenceHelper preferenceHelper;
-
+    boolean isShowingTutorial = false;
+    TapTargetView crushTutorial;
 
     public MatchingFragment() {
 
@@ -158,6 +161,15 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (crushTutorial != null) {
+            crushTutorial.dismiss(false);
+            isShowingTutorial = false;
+        }
+    }
+
     private void getMatchingUsers() {
         new APIService(getContext()).getMatchingUsers(matchingUsersPage, ((MainActivity) getContext()).getCurrentLocation(), this);
     }
@@ -240,10 +252,21 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             @Override
             public void run() {
                 Utils.animViewScale(getContext(), container_actions_matching, show);
+                if (matchingUsersPage == 1 && User.Gender.getGender(user.getGender()) == User.Gender.Female && show && !isShowingTutorial && new PreferenceHelper(getContext()).getTutorialCrush()) {
+                    crushTutorial = new Tutorials(getActivity()).showTutorialForView(btn_crush_matching, false, getString(R.string.lbl_tutorial_crush_title), getString(R.string.lbl_tutorial_crush_content), null, new TapTargetView.Listener() {
+                        @Override
+                        public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
+                            super.onTargetDismissed(view, userInitiated);
+                            if (userInitiated)
+                                new PreferenceHelper(getContext()).putTutorialCrushDisabled();
+                        }
+                    });
+                    isShowingTutorial = true;
+
+                }
             }
         };
         mainHandler.post(myRunnable);
-
     }
 
     private void uploadDescriptionToFirebase(int matchingUserId, final String description) {
@@ -286,6 +309,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         });
 
     }
+
 
     @Override
     public void onAllUsersLoaded() {
