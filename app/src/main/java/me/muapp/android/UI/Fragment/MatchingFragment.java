@@ -252,13 +252,12 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             @Override
             public void run() {
                 Utils.animViewScale(getContext(), container_actions_matching, show);
-                if (matchingUsersPage == 1 && User.Gender.getGender(user.getGender()) == User.Gender.Female && show && !isShowingTutorial && new PreferenceHelper(getContext()).getTutorialCrush()) {
+                if (!isHidden() && matchingUsersPage == 1 && User.Gender.getGender(user.getGender()) == User.Gender.Female && show && !isShowingTutorial && new PreferenceHelper(getContext()).getTutorialCrush()) {
                     crushTutorial = new Tutorials(getActivity()).showTutorialForView(btn_crush_matching, false, getString(R.string.lbl_tutorial_crush_title), getString(R.string.lbl_tutorial_crush_content), null, new TapTargetView.Listener() {
                         @Override
                         public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
                             super.onTargetDismissed(view, userInitiated);
-                            if (userInitiated)
-                                new PreferenceHelper(getContext()).putTutorialCrushDisabled();
+                            new PreferenceHelper(getContext()).putTutorialCrushDisabled();
                         }
                     });
                     isShowingTutorial = true;

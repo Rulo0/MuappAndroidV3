@@ -598,7 +598,7 @@ public class User implements Parcelable {
     }
 
     public String getFullName() {
-        return String.format("%s %s", getFirstName(), getLastName().equals(HIDDEN_STRING) ? "" : getLastName());
+        return String.format("%s %s", getFirstName(), (getLastName().equals(HIDDEN_STRING) || !getVisibleLastName()) ? "" : getLastName());
     }
 
     public int describeContents() {

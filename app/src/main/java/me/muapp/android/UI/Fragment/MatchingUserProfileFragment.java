@@ -27,6 +27,7 @@ import java.util.List;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
+import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
@@ -45,7 +46,7 @@ import me.muapp.android.UI.Fragment.Interface.OnUserReportedListener;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
-public class MatchingUserProfileFragment extends Fragment implements ChildEventListener, OnUserRatedListener, OnUserReportedListener {
+public class MatchingUserProfileFragment extends Fragment implements ChildEventListener, OnUserRatedListener, OnUserReportedListener, ValueEventListener {
     private static final String ARG_MATCHING_USER = "MATCHING_USER";
     private MatchingUser matchingUser;
     private OnMatchingInteractionListener onMatchingInteractionListener;
@@ -162,7 +163,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         toolbar_matching_name.setText(matchingUser.getFullName());
-        if (matchingUser.getFakeAccount())
+        if (matchingUser.getFakeAccount() != null && matchingUser.getFakeAccount())
             toolbar_matching_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_verified_profile, 0, 0, 0);
         recycler_user_content.setAdapter(adapter);
         if (imFemale && matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()
@@ -175,7 +176,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
                     ratingFriendDialogFragment.show(getChildFragmentManager(), "");
                 }
             });
-            if (new PreferenceHelper(getContext()).getTutorialRate()) {
+            if (new PreferenceHelper(getContext()).getTutorialRate() && !isHidden()) {
                 tutorialQualification = new Tutorials(getActivity()).showTutorialForView(btn_matching_rate, false, getString(R.string.lbl_tutorial_rate_title), getString(R.string.lbl_tutorial_rate_content), 23, new TapTargetView.Listener() {
                     @Override
                     public void onTargetClick(TapTargetView view) {
@@ -208,13 +209,15 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         adapter.removeAllDescriptions();
         adapter.setUser(matchingUser);
         userReference.addChildEventListener(this);
+        userReference.addValueEventListener(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         adapter.stopMediaPlayer();
-        userReference.removeEventListener(this);
+        userReference.removeEventListener((ChildEventListener) this);
+        userReference.removeEventListener((ValueEventListener) this);
     }
 
     @Override
@@ -269,6 +272,14 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
             adapter.addContent(c);
+        }
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        ConversationItem conversationItem = dataSnapshot.getValue(ConversationItem.class);
+        if (conversationItem != null) {
+            conversationItem.getFullName();
         }
     }
 

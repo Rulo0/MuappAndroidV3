@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.firebase.database.ChildEventListener;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
+import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.User;
@@ -41,17 +43,20 @@ import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
-public class ProfileFragment extends Fragment implements OnFragmentInteractionListener, ChildEventListener {
+public class ProfileFragment extends Fragment implements OnFragmentInteractionListener, ChildEventListener, ValueEventListener {
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
     User user;
     private OnFragmentInteractionListener mListener;
-    DatabaseReference myUserReference;
+    DatabaseReference myUserContentReference;
+    DatabaseReference myUserInfoReference;
     UserContentAdapter adapter;
     RecyclerView recycler_my_content;
     FloatingActionButton fab_add_content;
     Toolbar toolbar_current_user_profile;
+    TextView toolbar_current_user_name;
     int counter = 1;
     private boolean isToolbarPrepared = false;
+    private boolean isTutorialShowing = false;
 
     public ProfileFragment() {
     }
@@ -72,7 +77,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         }
         adapter = new UserContentAdapter(getContext(), new UserHelper(getContext()).getLoggedUser());
         adapter.setFragmentManager(getChildFragmentManager());
-        myUserReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(user.getId()));
+        myUserContentReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(user.getId()));
+        myUserInfoReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(user.getId()));
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -116,6 +122,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         toolbar_current_user_profile = (Toolbar) v.findViewById(R.id.toolbar_current_user_profile);
+        toolbar_current_user_name = (TextView) v.findViewById(R.id.toolbar_current_user_name);
         recycler_my_content = (RecyclerView) v.findViewById(R.id.recycler_my_content);
         if (getContext() instanceof MainActivity) {
             this.fab_add_content = ((MainActivity) getContext()).getFab_add_content();
@@ -144,12 +151,18 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         return v;
     }
 
+
     private void prepareToolbar() {
         if (!isToolbarPrepared) {
             toolbar_current_user_profile.getMenu().clear();
             toolbar_current_user_profile.inflateMenu(R.menu.profile_menu);
             isToolbarPrepared = true;
         }
+
+        if (user.getFakeAccount() && new PreferenceHelper(getContext()).getTutorialProfileCounter() == 2) {
+            new PreferenceHelper(getContext()).addCounterToProfile();
+        }
+
         String title = "";
         String content = "";
         TapTargetView.Listener listener = new TapTargetView.Listener() {
@@ -159,29 +172,34 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
                 new PreferenceHelper(getContext()).addCounterToProfile();
                 ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
                 isToolbarPrepared = false;
+                isTutorialShowing = false;
                 counter++;
             }
         };
-        Log.wtf("Showing Option", counter + "");
-        switch (counter) {
+        switch (new PreferenceHelper(getContext()).getTutorialProfileCounter()) {
             case 1:
-                title = getString(R.string.lbl_tutorial_personalize);
-                content = getString(R.string.lbl_tutorial_personalize_content);
-                new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_settings_profile, title, content, 25, listener);
+                if (!isTutorialShowing) {
+                    title = getString(R.string.lbl_tutorial_personalize);
+                    content = getString(R.string.lbl_tutorial_personalize_content);
+                    new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_edit_profile, title, content, 25, listener);
+                    isTutorialShowing = true;
+                }
                 break;
             case 2:
-                //  if (user.getFakeAccount()) {
-                title = getString(R.string.lbl_tutorial_verify);
-                content = getString(R.string.lbl_tutorial_verify_content);
-                new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_edit_profile, title, content, 25, listener);
-                //       } else {
-                new PreferenceHelper(getContext()).addCounterToProfile();
-                //     }
+                if (!isTutorialShowing) {
+                    title = getString(R.string.lbl_tutorial_verify);
+                    content = getString(R.string.lbl_tutorial_verify_content);
+                    new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_settings_profile, title, content, 25, listener);
+                    isTutorialShowing = true;
+                }
                 break;
             case 3:
-                title = getString(R.string.lbl_tutorial_history);
-                content = getString(R.string.lbl_tutorial_history_content);
-                new Tutorials((MainActivity) getContext()).showTutorialForView(fab_add_content, true, title, content, 50, listener);
+                if (!isTutorialShowing) {
+                    title = getString(R.string.lbl_tutorial_history);
+                    content = getString(R.string.lbl_tutorial_history_content);
+                    new Tutorials((MainActivity) getContext()).showTutorialForView(fab_add_content, true, title, content, 50, listener);
+                    isTutorialShowing = true;
+                }
                 break;
             default:
                 ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
@@ -220,28 +238,38 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
                     ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
                 }
             });*/
-
+            if (new UserHelper(getContext()).getLoggedUser().getFakeAccount() != null && new UserHelper(getContext()).getLoggedUser().getFakeAccount())
+                toolbar_current_user_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_verified_profile, 0, 0, 0);
         }
     }
 
 
-    private void launchTutorial() {
-
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        ConversationItem conversationItem = dataSnapshot.getValue(ConversationItem.class);
+        if (conversationItem != null) {
+            Log.wtf("SettingName", conversationItem.getFullName());
+            toolbar_current_user_name.setText(conversationItem.getFullName());
+        }
     }
 
     public void onProfileSelected() {
-        if (getContext() instanceof MainActivity)
+        if (getContext() instanceof MainActivity) {
+            Log.wtf("onProfileSelected", "now");
             prepareToolbar();
+        }
+
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
-
         adapter.removeAllDescriptions();
         adapter.setUser(new UserHelper(getContext()).getLoggedUser());
-        myUserReference.addChildEventListener(this);
+        myUserContentReference.addChildEventListener(this);
+        myUserInfoReference.addValueEventListener(this);
+        prepareToolbar();
     }
 
 
@@ -249,7 +277,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     public void onStop() {
         super.onStop();
         adapter.stopMediaPlayer();
-        myUserReference.removeEventListener(this);
+        myUserContentReference.removeEventListener((ChildEventListener) this);
+        myUserInfoReference.removeEventListener((ValueEventListener) this);
     }
 
     @Override
