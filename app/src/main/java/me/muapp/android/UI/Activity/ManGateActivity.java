@@ -140,7 +140,7 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
                 getMenuInflater().inflate(R.menu.empty_menu, menu);
                 break;
             case navigation_profile_man_profile:
-                getMenuInflater().inflate(R.menu.man_profile_gate_menu, menu);
+                getMenuInflater().inflate(R.menu.profile_menu, menu);
                 break;
         }
 
@@ -150,8 +150,11 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_edit_description:
+            case R.id.action_edit_profile:
                 startActivity(new Intent(this, ProfileSettingsActivity.class));
+                break;
+            case R.id.action_settings_profile:
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -7,26 +7,18 @@ import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import me.muapp.android.Classes.Chat.MuappSticker;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
 
 
@@ -58,16 +50,18 @@ public class MuappStickerDialogFragment extends BottomSheetDialogFragment {
         super.onActivityCreated(savedInstanceState);
 
         try {
-            InputStream is = getResources().openRawResource(R.raw.stickers);
+            //Reading from file
+          /*  InputStream is = getResources().openRawResource(R.raw.stickers);
             Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             Type listType = new TypeToken<List<MuappSticker>>() {
             }.getType();
             List<MuappSticker> stickers = new Gson().fromJson(reader, listType);
             for (MuappSticker sticker : stickers) {
                 Log.wtf("Stickers", sticker.toString());
-            }
+            }*/
+
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-            recyclerView.setAdapter(new MuappStickerAdapter(stickers));
+            recyclerView.setAdapter(new MuappStickerAdapter(new PreferenceHelper(getContext()).getStickers()));
         } catch (Exception x) {
         }
     }

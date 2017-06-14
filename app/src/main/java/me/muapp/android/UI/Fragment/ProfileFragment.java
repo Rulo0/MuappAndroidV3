@@ -3,6 +3,7 @@ package me.muapp.android.UI.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -54,6 +55,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     FloatingActionButton fab_add_content;
     Toolbar toolbar_current_user_profile;
     TextView toolbar_current_user_name;
+    AppBarLayout app_bar_user_profile;
     int counter = 1;
     private boolean isToolbarPrepared = false;
     private boolean isTutorialShowing = false;
@@ -123,6 +125,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         toolbar_current_user_profile = (Toolbar) v.findViewById(R.id.toolbar_current_user_profile);
         toolbar_current_user_name = (TextView) v.findViewById(R.id.toolbar_current_user_name);
+        app_bar_user_profile = (AppBarLayout) v.findViewById(R.id.app_bar_user_profile);
         recycler_my_content = (RecyclerView) v.findViewById(R.id.recycler_my_content);
         if (getContext() instanceof MainActivity) {
             this.fab_add_content = ((MainActivity) getContext()).getFab_add_content();
@@ -211,7 +214,6 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         super.onActivityCreated(savedInstanceState);
         recycler_my_content.setAdapter(adapter);
         if (getContext() instanceof MainActivity) {
-            prepareToolbar();
           /*  new Tutorials((MainActivity) getContext()).showTutorialSequence(toolbar_current_user_profile, new TapTargetSequence.Listener() {
                         @Override
                         public void onSequenceFinish() {
@@ -253,20 +255,13 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         }
     }
 
-    public void onProfileSelected() {
-        if (getContext() instanceof MainActivity) {
-            Log.wtf("onProfileSelected", "now");
-            prepareToolbar();
-        }
-
-    }
 
 
     @Override
     public void onStart() {
         super.onStart();
-        adapter.removeAllDescriptions();
         adapter.setUser(new UserHelper(getContext()).getLoggedUser());
+        adapter.removeAllDescriptions();
         myUserContentReference.addChildEventListener(this);
         myUserInfoReference.addValueEventListener(this);
         prepareToolbar();

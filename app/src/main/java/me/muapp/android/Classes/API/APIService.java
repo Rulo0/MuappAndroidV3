@@ -22,11 +22,13 @@ import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
 import me.muapp.android.Classes.API.Handlers.LikeUserHandler;
 import me.muapp.android.Classes.API.Handlers.MatchingUsersHandler;
 import me.muapp.android.Classes.API.Handlers.MuappUserInfoHandler;
+import me.muapp.android.Classes.API.Handlers.StickersHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Handlers.UserQualificationHandler;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
 import me.muapp.android.Classes.API.Handlers.UserReportHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
+import me.muapp.android.Classes.Chat.MuappStickers;
 import me.muapp.android.Classes.Internal.CandidatesResult;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
 import me.muapp.android.Classes.Internal.LikeUserResult;
@@ -38,17 +40,14 @@ import me.muapp.android.Classes.Internal.ReportResult;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
-import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.http2.Header;
 
 import static me.muapp.android.Classes.Internal.User.getNullUser;
 import static me.muapp.android.Classes.Util.Utils.serializeMatchingUsers;
@@ -956,6 +955,40 @@ public class APIService {
             }
         }
 
+    }
+
+    public void getStickers(final StickersHandler handler) {
+        String url = BASE_URL + "stickers";
+        PreferenceHelper helper = new PreferenceHelper(mContext);
+        if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .get()
+                    .build();
+            Log.i("getStickers", url);
+            client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    if (handler != null) {
+                        handler.onFailure(false, e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String responseString = response.body().string();
+                    Log.wtf("getStickers", responseString);
+                    MuappStickers stickers = new Gson().fromJson(responseString, MuappStickers.class);
+                    if (stickers != null) {
+                        if (handler != null)
+                            handler.onSuccess(response.code(), stickers);
+                    }
+                }
+            });
+        } else {
+          if (handler != null)
+                handler.onFailure(false, "User not logged");
+        }
     }
 
 

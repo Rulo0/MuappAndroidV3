@@ -355,7 +355,11 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         }
 
         private void deleteContent() {
-            FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue();
+            Log.wtf("deleting",
+                    FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).getRef().toString());
+
+
+            //FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue();
 
             if (!TextUtils.isEmpty(itemContent.getStorageName())) {
                 FirebaseStorage.getInstance().getReference().child(itemContent.getStorageName()).delete();
@@ -564,14 +568,18 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 }
                 txt_gif_date.setReferenceTime(c.getCreatedAt());
 
+                //Glide.with(context).load(c.getContentUrl()).asGif().priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).fitCenter().into(img_gif_content);
+
                 GiphyMeasureData giphyMeasureData = c.getGiphyMeasureData();
                 float aspectRatio;
                 if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
                     aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_content);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).fitCenter().diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).dontAnimate().into(img_gif_content);
+                    Log.wtf("AspectRatio1 fc", aspectRatio + " : " + (int) (screenWidth * aspectRatio) + " x " + screenWidth + " œ " + giphyMeasureData.toString());
                 } else {
                     aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).fitCenter().diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).dontAnimate().into(img_gif_content);
+                    Log.wtf("AspectRatio2 fc", aspectRatio + " : " + screenWidth + " x " + (int) (screenWidth * aspectRatio) + " œ " + giphyMeasureData.toString());
                 }
             } catch (Exception x) {
                 Log.wtf("Binding Error", x.getMessage());

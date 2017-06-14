@@ -56,6 +56,7 @@ import me.muapp.android.UI.Adapter.UserPhotos.UserPhotoTouchHelper;
 import me.muapp.android.UI.Adapter.UserPhotos.UserPictureAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnProfileImageSelectedListener;
 
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
 
 public class ProfileSettingsActivity extends BaseActivity implements OnProfileImageSelectedListener {
@@ -133,13 +134,21 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
                 descriptionObj.put("description", newDescription);
                 new APIService(this).patchUser(descriptionObj, null);
 
-                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
-
-                reference.orderByChild("catContent").equalTo("contentDesc").addListenerForSingleValueEvent(new ValueEventListener() {
+                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
+                reference.orderByChild("catContent").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.wtf("Found", dataSnapshot.getRef().toString());
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            snapshot.getRef().removeValue();
+                            try {
+                                Log.wtf("Found", snapshot.child("catContent").getValue(String.class));
+                                if (snapshot.child("catContent").getValue(String.class).equals("contentDesc")) {
+                                    Log.wtf("Found", snapshot.getRef().toString());
+                                    snapshot.getRef().removeValue();
+                                }
+                            } catch (Exception x) {
+                                x.printStackTrace();
+                            }
                         }
                         UserContent content = new UserContent();
                         content.setCreatedAt(32535237599000L);

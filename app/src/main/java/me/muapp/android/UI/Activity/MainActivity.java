@@ -63,9 +63,11 @@ import java.util.Date;
 import java.util.HashMap;
 
 import me.muapp.android.Classes.API.APIService;
+import me.muapp.android.Classes.API.Handlers.StickersHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Chat.ConversationItem;
+import me.muapp.android.Classes.Chat.MuappStickers;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.LikeUserMatchUser;
 import me.muapp.android.Classes.Internal.MuappDialog;
@@ -290,6 +292,17 @@ public class MainActivity extends BaseActivity implements
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("profilePicture").setValue(loggedUser.getAlbum().get(0));
         badgeQuery = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).orderByChild("seen").equalTo(false);
         getLastDialog();
+        new APIService(this).getStickers(new StickersHandler() {
+            @Override
+            public void onSuccess(int responseCode, MuappStickers muappStickers) {
+                preferenceHelper.putStickers(muappStickers);
+            }
+
+            @Override
+            public void onFailure(boolean isSuccessful, String responseString) {
+
+            }
+        });
     }
 
     private void getLastDialog() {
@@ -553,7 +566,6 @@ public class MainActivity extends BaseActivity implements
                         AddContentDialogFragment.newInstance(false).show(getSupportFragmentManager(), "dialog");
                     }
                 });
-                ((ProfileFragment) frag).onProfileSelected();
             } else {
                 fab_add_content.hide();
                 fab_add_content.setOnClickListener(null);

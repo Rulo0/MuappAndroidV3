@@ -11,23 +11,16 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class MuappSticker implements Parcelable {
+
     @SerializedName("id")
     @Expose
     private Integer id;
     @SerializedName("image")
     @Expose
     private String image;
-
-
-    @Override
-    public String toString() {
-        return "MuappSticker{" +
-                "id=" + id +
-                ", image='" + image + '\'' +
-                '}';
-    }
-
     public final static Parcelable.Creator<MuappSticker> CREATOR = new Creator<MuappSticker>() {
+
+
         @SuppressWarnings({
                 "unchecked"
         })
@@ -48,9 +41,16 @@ public class MuappSticker implements Parcelable {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getImage() {
         return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
@@ -62,7 +62,15 @@ public class MuappSticker implements Parcelable {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return "MuappSticker{" +
+                "id=" + id +
+                ", image='" + image + '\'' +
+                '}';
+    }
 }
+
 
 
 
