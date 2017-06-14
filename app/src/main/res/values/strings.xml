@@ -240,5 +240,5 @@
     <string name="lbl_tutorial_verify">Verify your profile</string>
     <string name="lbl_tutorial_verify_content">You\'ll have more chances to be liked 👍</string>
     <string name="lbl_tutorial_history">New!</string>
-    <string name="lbl_tutorial_history_content">Whats your history?\n\nAdd content to your profile so they can know you better\nYou are much more than 6 pics!</string>
+    <string name="lbl_tutorial_history_content">Whats your history?\n\nAdd content to your profile so they can know you better\n\nYou are much more than 6 pics!</string>
 </resources>

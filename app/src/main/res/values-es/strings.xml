@@ -205,5 +205,5 @@
     <string name="lbl_tutorial_verify">Verifica tu perfil</string>
     <string name="lbl_tutorial_verify_content">Tendrás más oportunidades de gustar. 👍</string>
     <string name="lbl_tutorial_history">¡Nuevo!</string>
-    <string name="lbl_tutorial_history_content">¿Cuál es tu historia?\n\nAñade contenido en tu pefil para que te conozcan mejor.\n¡Eres mucho más que 6 fotos!</string>
+    <string name="lbl_tutorial_history_content">¿Cuál es tu historia?\n\nAñade contenido en tu pefil para que te conozcan mejor.\n\n¡Eres mucho más que 6 fotos!</string>
 </resources>
