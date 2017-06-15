@@ -33,8 +33,8 @@ import me.muapp.android.UI.Fragment.ReportUserDialogFragment;
 import me.muapp.android.UI.Fragment.ViewUserProfileFragment;
 
 import static me.muapp.android.UI.Activity.ChatActivity.PROFILE_VIEW_RESULT;
-import static me.muapp.android.UI.Fragment.GateFragment.CANDIDATE_KEY_RESULT;
-import static me.muapp.android.UI.Fragment.GateFragment.CANDIDATE_PROFILE_VIEW_RESULT;
+import static me.muapp.android.UI.Fragment.CandidatesFragment.CANDIDATE_KEY_RESULT;
+import static me.muapp.android.UI.Fragment.CandidatesFragment.CANDIDATE_PROFILE_VIEW_RESULT;
 
 public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHandler, OnFragmentInteractionListener, OnProfileScrollListener, View.OnClickListener, OnUserReportedListener {
     public static final String USER_ID = "USER_ID";
@@ -255,6 +255,10 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        Intent profileReturnIntent = new Intent();
+                        profileReturnIntent.putExtra(PROFILE_VIEW_RESULT, false);
+                        profileReturnIntent.putExtra(CANDIDATE_KEY_RESULT, user.getId());
+                        setResult(Activity.RESULT_OK, profileReturnIntent);
                         finish();
                     }
                 });

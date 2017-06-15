@@ -59,6 +59,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     int counter = 1;
     private boolean isToolbarPrepared = false;
     private boolean isTutorialShowing = false;
+    private boolean hasAddedContent = false;
 
     public ProfileFragment() {
     }
@@ -166,6 +167,9 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
             new PreferenceHelper(getContext()).addCounterToProfile();
         }
 
+        if (new PreferenceHelper(getContext()).getTutorialProfileCounter() == 3 && hasAddedContent) {
+            new PreferenceHelper(getContext()).addCounterToProfile();
+        }
         String title = "";
         String content = "";
         TapTargetView.Listener listener = new TapTargetView.Listener() {
@@ -200,6 +204,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
                 if (!isTutorialShowing) {
                     title = getString(R.string.lbl_tutorial_history);
                     content = getString(R.string.lbl_tutorial_history_content);
+                    if (!fab_add_content.isShown())
+                        fab_add_content.show();
                     new Tutorials((MainActivity) getContext()).showTutorialForView(fab_add_content, true, title, content, 50, listener);
                     isTutorialShowing = true;
                 }
@@ -306,11 +312,11 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        hasAddedContent = true;
         UserContent c = dataSnapshot.getValue(UserContent.class);
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
             adapter.addContent(c);
-            recycler_my_content.scrollToPosition(2);
         }
     }
 

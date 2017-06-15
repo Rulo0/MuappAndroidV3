@@ -3,7 +3,6 @@ package me.muapp.android.UI.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,14 +24,14 @@ import me.muapp.android.Classes.Internal.Candidate;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.ViewProfileActivity;
-import me.muapp.android.UI.Fragment.GateFragment;
+import me.muapp.android.UI.Fragment.CandidatesFragment;
 import me.muapp.android.UI.Fragment.Interface.OnCandidateInteractionListener;
 
 import static me.muapp.android.UI.Activity.ViewProfileActivity.CANDIDATE_PROGRESS;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_GATE;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_ID;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_NAME;
-import static me.muapp.android.UI.Fragment.GateFragment.CANDIDATE_PROFILE_CODE;
+import static me.muapp.android.UI.Fragment.CandidatesFragment.CANDIDATE_PROFILE_CODE;
 
 
 /**
@@ -47,10 +46,10 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
     public static final int TYPE_TUTORIAL = -1;
     private static final int TYPE_CANDIDATE = 0;
     OnCandidateInteractionListener candidateInteractionListener;
-    GateFragment gateFragment;
+    CandidatesFragment candidatesFragment;
 
-    public void setGateFragment(GateFragment gateFragment) {
-        this.gateFragment = gateFragment;
+    public void setCandidatesFragment(CandidatesFragment candidatesFragment) {
+        this.candidatesFragment = candidatesFragment;
     }
 
     public CandidatesAdapter(Context context) {
@@ -141,6 +140,7 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
 
         @Override
         public void onClick(View v) {
+            new PreferenceHelper(mContext).putCandidatesTutorialDisabled();
             candidates.remove(getAdapterPosition());
             notifyItemRemoved(getAdapterPosition());
         }
@@ -248,7 +248,7 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
                         profileIntent.putExtra(USER_NAME, currentCandidate.getFullName());
                         profileIntent.putExtra(FROM_GATE, true);
                         profileIntent.putExtra(CANDIDATE_PROGRESS, currentCandidate.getPercentage());
-                        gateFragment.startActivityForResult(profileIntent, CANDIDATE_PROFILE_CODE);
+                        candidatesFragment.startActivityForResult(profileIntent, CANDIDATE_PROFILE_CODE);
                     } catch (Exception x) {
                         x.printStackTrace();
                     }

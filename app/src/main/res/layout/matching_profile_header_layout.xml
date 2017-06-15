@@ -45,6 +45,7 @@
                 android:id="@+id/pillbox_section_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="User info"
                 android:textAlignment="center"
                 android:textColor="@color/color_muapp_dark"

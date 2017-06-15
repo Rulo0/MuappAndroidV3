@@ -29,6 +29,7 @@
 
     <style name="color_button_main" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="green_button_layout_style">

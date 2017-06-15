@@ -151,13 +151,13 @@
     <string name="txt_man_gate_youre_in">¡FELICITACIONES! ESTAS DENTRO.</string>
     <string name="txt_privacy">Privacidad</string>
     <string name="week_ago">hace más de una semana</string>
-    <string name="lbl_add_about_me">About me</string>
+    <string name="lbl_add_about_me">Sobre mí</string>
     <string name="lbl_add_music">Música</string>
     <string name="lbl_add_video">Video</string>
     <string name="lbl_add_voice_note">Nota de voz</string>
     <string name="lbl_add_giphy">Gifs</string>
     <string name="lbl_add_gallery">Galería</string>
-    <string name="lbl_rate">Rate</string>
+    <string name="lbl_rate">Calificar</string>
     <string name="lbl_hold_to_record">Mantén presionado el microfono para grabar una nota de voz.</string>
     <string name="lbl_content_removed">Contenido eliminado con exito</string>
     <string name="lbl_send_your_personal_code">Envía tu codigo personal</string>
@@ -196,14 +196,16 @@
     <string name="lbl_tutorial_crush_content">Haz Crush antes de hacer Match.\n\n¿Fue un flechazo y no quieres arriesgar a no volver a verlo? \n\nDale a Crush y se abrirá un chat durante 24h para que decidas si te gusta.</string>
     <string name="lbl_tutorial_rate_title">¡Nuevo!</string>
     <string name="lbl_tutorial_rate_content">Califica a tus amigos de Facebook para mantener una comunidad segura. ❤</string>
-    <string name="lbl_tutorial_conversation_crush_title">¡Empiezan tus 24h!🕚</string>
+    <string name="lbl_tutorial_conversation_crush_title">¡Empiezan tus 24h!</string>
     <string name="lbl_tutorial_conversation_crush_content">Tiempo restante para chatear con tu Crush.</string>
     <string name="lbl_tutorial_conversation_match_content">Aquí verás si habla con otras chicas al mismo tiempo.</string>
-    <string name="lbl_tutorial_conversation_match_title">¡Hey! 😁</string>
+    <string name="lbl_tutorial_conversation_match_title">¡Hey!</string>
     <string name="lbl_tutorial_personalize">¡Personaliza tu perfil!</string>
     <string name="lbl_tutorial_personalize_content">Si lo haces bien tus oportunidades de tener un match suben al 98%.</string>
     <string name="lbl_tutorial_verify">Verifica tu perfil</string>
-    <string name="lbl_tutorial_verify_content">Tendrás más oportunidades de gustar. 👍</string>
+    <string name="lbl_tutorial_verify_content">Tendrás más oportunidades de gustar.</string>
     <string name="lbl_tutorial_history">¡Nuevo!</string>
     <string name="lbl_tutorial_history_content">¿Cuál es tu historia?\n\nAñade contenido en tu pefil para que te conozcan mejor.\n\n¡Eres mucho más que 6 fotos!</string>
+    <string name="lbl_excellent">¡Excelente!</string>
+    <string name="lbl_verified_profile">Perfil Verificado</string>
 </resources>

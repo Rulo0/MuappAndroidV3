@@ -45,6 +45,7 @@ import me.muapp.android.Classes.Internal.UserSettings;
 import me.muapp.android.Classes.Util.Constants;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
+import me.muapp.android.UI.Fragment.ProfileVerifiedDialogFragment;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
@@ -208,6 +209,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
             @Override
             public void onSuccess(Account account) {
+                ProfileVerifiedDialogFragment.newInstance().show(getSupportFragmentManager(), "VERIFIED");
+                phone_verification_container.setVisibility(View.GONE);
                 Bundle phoneBundle = new Bundle();
                 phoneBundle.putString(Analytics.Phone.PHONE_PROPERTY.Screen.toString(), Analytics.Phone.PHONE_SCREEN.Settings.toString());
                 mFirebaseAnalytics.logEvent(Analytics.Phone.PHONE_EVENT.Phone.toString(), phoneBundle);
@@ -452,7 +455,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onFailure(boolean isSuccessful, String responseString) {
                 Log.wtf("deleteUserAccount", responseString.toString());
-                if(isSuccessful)
+                if (isSuccessful)
                     exitFromApp(true);
                 hideProgressDialog();
             }

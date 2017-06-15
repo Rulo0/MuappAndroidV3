@@ -81,7 +81,7 @@ import me.muapp.android.ResultReceivers.AddressResultReceiver;
 import me.muapp.android.Services.FetchAddressIntentService;
 import me.muapp.android.UI.Fragment.AddContentDialogFragment;
 import me.muapp.android.UI.Fragment.ChatFragment;
-import me.muapp.android.UI.Fragment.GateFragment;
+import me.muapp.android.UI.Fragment.CandidatesFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import me.muapp.android.UI.Fragment.MatchingFragment;
 import me.muapp.android.UI.Fragment.MuappPopupDialogFragment;
@@ -124,9 +124,9 @@ public class MainActivity extends BaseActivity implements
         bottomNavigation.setNotification("", notificationPos);
         if (dataSnapshot.getChildrenCount() > 0) {
             AHNotification notification = new AHNotification.Builder()
-                    .setText(String.valueOf(dataSnapshot.getChildrenCount()))
+                    .setText("") //String.valueOf(dataSnapshot.getChildrenCount())
                     .setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
-                    .setTextColor(ContextCompat.getColor(this, android.R.color.white))
+                    .setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
                     .build();
             bottomNavigation.setNotification(notification, notificationPos);
         }
@@ -269,7 +269,7 @@ public class MainActivity extends BaseActivity implements
             notificationPos = User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female ? 2 : 1;
             if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female) {
                 fragmentHashMap.put(0, MatchingFragment.newInstance(loggedUser));
-                fragmentHashMap.put(1, GateFragment.newInstance(loggedUser));
+                fragmentHashMap.put(1, CandidatesFragment.newInstance(loggedUser));
                 fragmentHashMap.put(2, ChatFragment.newInstance(loggedUser));
                 fragmentHashMap.put(3, profileFragment);
             } else {
@@ -530,7 +530,7 @@ public class MainActivity extends BaseActivity implements
             Log.wtf("selectFragment", bottomNavigation.getItem(position).getTitle(this));
             Fragment frag = fragmentHashMap.get(position);
 
-            if (frag instanceof GateFragment) {
+            if (frag instanceof CandidatesFragment) {
                 mFirebaseAnalytics.logEvent(Analytics.Gate_Woman.GATE_WOMAN_EVENT.Gate_Woman.toString(), null);
             }
 
@@ -584,7 +584,8 @@ public class MainActivity extends BaseActivity implements
         if (selectedNavigationElement.getFrag() instanceof ProfileFragment) {
 
         } else {
-            fab_add_content.hide();
+            if (fab_add_content.isShown())
+                fab_add_content.hide();
         }
     }
 

@@ -403,7 +403,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
                 if (!conversationItem.getConversation().getCrush() && new PreferenceHelper(ChatActivity.this).getTutorialMatchConversation()
                         ) {
-                    new Tutorials(ChatActivity.this).showTutorialForView(chat_user_last_conversations, true, getString(R.string.lbl_tutorial_conversation_match_title), getString(R.string.lbl_tutorial_conversation_match_content), null, new TapTargetView.Listener() {
+                    new Tutorials(ChatActivity.this).showTutorialForView(toolbar_opponent_photo, true, getString(R.string.lbl_tutorial_conversation_match_title), getString(R.string.lbl_tutorial_conversation_match_content), null, new TapTargetView.Listener() {
                         @Override
                         public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
                             super.onTargetDismissed(view, userInitiated);
@@ -549,7 +549,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         if (m != null) {
             m.setKey(dataSnapshot.getKey());
             messagesAdapter.addMessage(m);
-            recycler_conversation.scrollToPosition(recycler_conversation.getChildCount());
+
         }
     }
 

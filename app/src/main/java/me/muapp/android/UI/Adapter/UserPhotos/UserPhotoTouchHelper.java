@@ -28,14 +28,23 @@ public class UserPhotoTouchHelper extends ItemTouchHelper.SimpleCallback {
         this.userPictureAdapter = userPictureAdapter;
     }
 
+
     @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-        userPictureAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
+        try {
+            if (!((UserPictureAdapter.UserPhotoViewHolder) target).hasData) return false;
+        } catch (Exception x) {
+        }
+        userPictureAdapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
         return true;
     }
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        try {
+            if (!((UserPictureAdapter.UserPhotoViewHolder) viewHolder).hasData) return 0;
+        } catch (Exception x) {
+        }
         if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
             final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
             final int swipeFlags = 0;
@@ -45,6 +54,13 @@ public class UserPhotoTouchHelper extends ItemTouchHelper.SimpleCallback {
             final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
             return makeMovementFlags(dragFlags, swipeFlags);
         }
+    }
+
+    @Override
+    public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        ////  if (((UserPictureAdapter.UserPhotoViewHolder) viewHolder).hasData) return 0;
+        //  return super.getSwipeDirs(recyclerView, viewHolder);
+        return 0;
     }
 
     @Override

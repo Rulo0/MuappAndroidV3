@@ -149,6 +149,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             @Override
             public void onInserted(int position, int count) {
                 notifyItemRangeInserted(position, count);
+                mRecyclerView.scrollToPosition(position);
             }
 
             @Override

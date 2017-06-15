@@ -95,7 +95,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     ImageButton previewPlayedButton;
     UserQualificationsAdapter userQualificationsAdapter;
     Boolean showMenuButton = true;
-
+    RecyclerView mRecycler;
 
     public void setShowMenuButton(Boolean showMenuButton) {
         this.showMenuButton = showMenuButton;
@@ -106,6 +106,13 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             if (userContentList.get(i).getCatContent().equals("contentDesc"))
                 userContentList.removeItemAt(i);
         }
+    }
+
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        mRecycler = recyclerView;
     }
 
     public void setQualifications(List<Qualification> qualifications) {
@@ -138,6 +145,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             @Override
             public void onInserted(int position, int count) {
                 notifyItemRangeInserted(position, count);
+                mRecycler.scrollToPosition(3);
             }
 
             @Override

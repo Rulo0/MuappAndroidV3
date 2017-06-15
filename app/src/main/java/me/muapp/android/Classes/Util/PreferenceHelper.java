@@ -31,13 +31,12 @@ public class PreferenceHelper {
     private final String PENDING_MATCH = "pendingMatch";
     private final String ACTIVE_CHAT = "activeChat";
     private final String STICKERS = "stickers";
-
-
     private final String TUTORIAL_CRUSH = "tutorialCrush";
     private final String TUTORIAL_RATE = "tutorialRate";
     private final String TUTORIAL_CRUSH_CONVERSATION = "tutorialCrushConversation";
     private final String TUTORIAL_MATCH_CONVERSATION = "tutorialMatchConversation";
     private final String TUTORIAL_PROFILE_COUNTER = "tutorialProfileCounter";
+    private final String TUTORIAL_GATE_CARDS = "tutorialGateCards";
     private static final String STICKERS_PLACEHOLDER = "{\n" +
             "  \"stickers\": [\n" +
             "    {\n" +
@@ -235,6 +234,16 @@ public class PreferenceHelper {
 
     public boolean getTutorialCrush() {
         return preferences.getBoolean(TUTORIAL_CRUSH, true);
+    }
+
+    public void putTutorialCardsDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(TUTORIAL_GATE_CARDS, false);
+        edit.apply();
+    }
+
+    public boolean getTutorialCards() {
+        return preferences.getBoolean(TUTORIAL_GATE_CARDS, true);
     }
 
     public void putTutorialRateDisabled() {

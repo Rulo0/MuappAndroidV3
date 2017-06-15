@@ -134,6 +134,11 @@ public class UserPictureAdapter extends RecyclerView.Adapter<UserPictureAdapter.
 
 
     public void validateMovedElements() {
+
+        for (int i = 0; i < picturesData.size(); i++) {
+            Log.wtf("Original", picturesData.get(i).toString() + " " + (i + 1));
+        }
+        //notifyDataSetChanged();
     /*    for (String s : picturesData) {
             Log.wtf("Original", s.toString());
         }
