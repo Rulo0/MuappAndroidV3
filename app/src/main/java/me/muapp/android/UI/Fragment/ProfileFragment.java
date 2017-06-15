@@ -256,7 +256,6 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     }
 
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -345,5 +344,12 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     @Override
     public void onCancelled(DatabaseError databaseError) {
 
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden)
+            adapter.stopMediaPlayer();
     }
 }

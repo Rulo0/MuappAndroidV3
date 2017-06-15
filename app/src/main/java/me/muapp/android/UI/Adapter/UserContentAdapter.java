@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.util.SortedList;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -39,6 +40,7 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
@@ -190,12 +192,16 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     }
 
     public void removeContent(String contentKey) {
+        Log.wtf("deleting", contentKey);
         for (int i = 0; i < userContentList.size(); i++) {
             if (userContentList.get(i).getKey().equals(contentKey)) {
+                Log.wtf("deleting", contentKey + " at position " + i);
                 userContentList.removeItemAt(i);
                 break;
             }
+            Log.wtf("deleting", contentKey + " not found");
         }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -359,15 +365,18 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                     FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).getRef().toString());
 
 
-            //FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue();
-
-            if (!TextUtils.isEmpty(itemContent.getStorageName())) {
-                FirebaseStorage.getInstance().getReference().child(itemContent.getStorageName()).delete();
-            }
-            if (!TextUtils.isEmpty(itemContent.getVideoThumbStorage())) {
-                FirebaseStorage.getInstance().getReference().child(itemContent.getVideoThumbStorage()).delete();
-            }
-            Toast.makeText(context, context.getString(R.string.lbl_content_removed), Toast.LENGTH_SHORT).show();
+            FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    if (!TextUtils.isEmpty(itemContent.getStorageName())) {
+                        FirebaseStorage.getInstance().getReference().child(itemContent.getStorageName()).delete();
+                    }
+                    if (!TextUtils.isEmpty(itemContent.getVideoThumbStorage())) {
+                        FirebaseStorage.getInstance().getReference().child(itemContent.getVideoThumbStorage()).delete();
+                    }
+                    Toast.makeText(context, context.getString(R.string.lbl_content_removed), Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -377,15 +386,18 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         ViewPager pager_profile_pictures;
         TextView title;
         TextView txt_statistics_visits, txt_statistics_muapps, txt_statistics_matches;
+        CardView container_statistics;
 
         public HeaderContentHolder(View itemView) {
             super(itemView);
+            container_statistics = (CardView) itemView.findViewById(R.id.container_statistics);
             pager_profile_pictures = (ViewPager) itemView.findViewById(R.id.pager_profile_pictures);
             indicator_profile_pictures = (PageIndicatorView) itemView.findViewById(R.id.indicator_profile_pictures);
             title = (TextView) itemView.findViewById(R.id.pillbox_section_text);
             indicator_profile_pictures.setViewPager(pager_profile_pictures);
             indicator_profile_pictures.setRadius(5);
             indicator_profile_pictures.setAnimationType(AnimationType.SWAP);
+
             txt_statistics_visits = (TextView) itemView.findViewById(R.id.txt_statistics_visits);
             txt_statistics_muapps = (TextView) itemView.findViewById(R.id.txt_statistics_muapps);
             txt_statistics_matches = (TextView) itemView.findViewById(R.id.txt_statistics_matches);
@@ -393,13 +405,16 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
         @Override
         public void bind(User u) {
+            Log.wtf("Binding header", u.toString());
             super.bind(u);
             title.setText("");
             profilePicturesAdapter = new ProfilePicturesAdapter(context, u.getAlbum());
             pager_profile_pictures.setAdapter(profilePicturesAdapter);
             indicator_profile_pictures.setCount(u.getAlbum().size());
             createHeader(u, title);
+            container_statistics.setVisibility(View.VISIBLE);
             txt_statistics_visits.setText(String.valueOf(u.getVisits()));
+            txt_statistics_muapps.setText(String.valueOf(u.getLikes()));
             txt_statistics_matches.setText(String.valueOf(u.getMatches()));
         }
 
@@ -867,7 +882,12 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     }
 
     public void stopMediaPlayer() {
-        mediaPlayer.stop();
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            if (previewPlayedButton != null) {
+                previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+            }
+        }
     }
 
     public void releaseMediaPlayer() {

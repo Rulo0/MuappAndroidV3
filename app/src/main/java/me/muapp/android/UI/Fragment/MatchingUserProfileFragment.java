@@ -93,6 +93,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
             matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);
         }
         imFemale = (User.Gender.getGender(new UserHelper(getContext()).getLoggedUser().getGender()) == User.Gender.Female);
+        Log.wtf("imFemale?", "" + imFemale);
         adapter = new MatchingUserContentAdapter(getContext(), matchingUser);
         adapter.setShowMenuButton(false);
         adapter.setFragmentManager(getChildFragmentManager());
@@ -166,14 +167,11 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         if (matchingUser.getFakeAccount() != null && matchingUser.getFakeAccount())
             toolbar_matching_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_verified_profile, 0, 0, 0);
         recycler_user_content.setAdapter(adapter);
-        if (imFemale && matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()
-                ) {
+        if (imFemale && matchingUser.getIsFbFriend() && !matchingUser.getIsQualificationed()) {
             btn_matching_rate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    RatingFriendDialogFragment ratingFriendDialogFragment = RatingFriendDialogFragment.newInstance(matchingUser);
-                    ratingFriendDialogFragment.setOnUserRatedListener(MatchingUserProfileFragment.this);
-                    ratingFriendDialogFragment.show(getChildFragmentManager(), "");
+                    rateFriend();
                 }
             });
             if (new PreferenceHelper(getContext()).getTutorialRate() && !isHidden()) {
@@ -192,9 +190,16 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         btn_matching_report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rateFriend();
+                reportUser();
             }
         });
+    }
+
+
+    private void reportUser() {
+        ReportUserDialogFragment reportUserDialogFragment = ReportUserDialogFragment.newInstance(matchingUser.getId());
+        reportUserDialogFragment.setOnUserReportedListener(this);
+        reportUserDialogFragment.show(getChildFragmentManager(), matchingUser.getLastName());
     }
 
     private void rateFriend() {
