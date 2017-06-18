@@ -273,7 +273,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 break;
             case R.id.img_info_login:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setIcon(R.mipmap.ic_launcher)
+                builder.setIcon(R.mipmap.ic_muapp_app)
                         .setMessage(R.string.lbl_info_message)
                         .setTitle(R.string.lbl_info_title);
                 AlertDialog dialog = builder.create();

@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import me.muapp.android.BuildConfig;
 import me.muapp.android.Classes.API.Handlers.CandidatesHandler;
 import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
 import me.muapp.android.Classes.API.Handlers.LikeUserHandler;
 import me.muapp.android.Classes.API.Handlers.MatchingUsersHandler;
 import me.muapp.android.Classes.API.Handlers.MuappUserInfoHandler;
+import me.muapp.android.Classes.API.Handlers.MutualFriendsHandler;
 import me.muapp.android.Classes.API.Handlers.StickersHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Handlers.UserQualificationHandler;
@@ -35,6 +35,7 @@ import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.MatchingResult;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
+import me.muapp.android.Classes.Internal.MutualFriends;
 import me.muapp.android.Classes.Internal.QualificationResult;
 import me.muapp.android.Classes.Internal.ReportResult;
 import me.muapp.android.Classes.Internal.User;
@@ -65,7 +66,7 @@ public class APIService {
             .build();
     Context mContext;
     SimpleDateFormat dateFormat;
-    private static final String BASE_URL = BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
+    private static final String BASE_URL = "http://dev.muapp.me/"; //BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
 
     public APIService(Context mContext) {
         this.mContext = mContext;
@@ -986,11 +987,46 @@ public class APIService {
                 }
             });
         } else {
-          if (handler != null)
+            if (handler != null)
                 handler.onFailure(false, "User not logged");
         }
     }
 
+    public void getMutualFriends(Integer userId, final MutualFriendsHandler handler) {
+        String url = BASE_URL + String.format("users/%s/friendships", userId);
+        PreferenceHelper helper = new PreferenceHelper(mContext);
+        if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .get()
+                    .build();
+            Log.i("getMutualFriends", url);
+            client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    if (handler != null) {
+                        handler.onFailure(false, e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String responseString = response.body().string();
+                    Log.wtf("getMutualFriends", responseString);
+                    MutualFriends friends = new Gson().fromJson(responseString, MutualFriends.class);
+                    if (friends != null) {
+                        Log.wtf("getMutualFriends", friends.getMutualFriends().size() + "");
+
+                        if (handler != null)
+                            handler.onSuccess(response.code(), friends);
+                    }
+                }
+            });
+        } else {
+            if (handler != null)
+                handler.onFailure(false, "User not logged");
+        }
+    }
 
     private Request addAuthHeaders(Request mainRequest) {
         PreferenceHelper helper = new PreferenceHelper(mContext);

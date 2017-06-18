@@ -24,6 +24,7 @@ import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.MuappUserInfoHandler;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.MatchingUser;
+import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
@@ -42,12 +43,13 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
     public static final String FROM_CRUSH = "FROM_CRUSH";
     public static final String FROM_MATCH = "FROM_MATCH";
     public static final String FROM_GATE = "FROM_GATE";
+    public static final String IS_LIKED_BY_ME = "IS_LIKED_BY_ME";
     public static final String CANDIDATE_PROGRESS = "CANDIDATE_PROGRESS";
     MatchingUser user;
     TextView txt_profile_view_name, txt_candidate_profile_progress;
     ImageView img_profile_view_verified;
     RelativeLayout container_actions_profile, container_gate_thumbs_profile;
-    Boolean fromCrush, fromMatch, fromGate;
+    Boolean fromCrush, fromMatch, fromGate, isLikedByMe;
     ImageButton btn_muapp_profile, btn_no_muapp_profile, btn_profile_gate_accept, btn_profile_gate_deny;
     ProgressBar view_profile_progress;
     CircleProgressView candidate_profile_progress;
@@ -93,12 +95,17 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
         getMenuInflater().inflate(R.menu.profile_view_menu, menu);
         MenuItem uncrush = menu.findItem(R.id.action_uncrush_profile);
         MenuItem unmatch = menu.findItem(R.id.action_unmatch_profile);
+        MenuItem report = menu.findItem(R.id.action_report_profile);
         uncrush.setVisible(false);
         unmatch.setVisible(false);
         if (fromMatch)
             unmatch.setVisible(true);
         if (fromCrush)
             uncrush.setVisible(true);
+        if (User.Gender.getGender(loggedUser.getGender()) != User.Gender.Female)
+            report.setVisible(false);
+
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -183,7 +190,7 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
     }
 
     private void showControls(final Boolean show) {
-        if (fromCrush) {
+        if (fromCrush && !isLikedByMe) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

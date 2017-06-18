@@ -110,6 +110,7 @@ import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_CONVERSATION;
 import static me.muapp.android.UI.Activity.MatchActivity.MATCHING_USER;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_CRUSH;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_MATCH;
+import static me.muapp.android.UI.Activity.ViewProfileActivity.IS_LIKED_BY_ME;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_ID;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_NAME;
 
@@ -493,7 +494,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     @Override
     protected void onResume() {
         super.onResume();
-
         conversationReference.keepSynced(true);
         Log.wtf("MessageReference", "Added");
         conversationReference.addChildEventListener(this);
@@ -593,6 +593,12 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             yourConversation.child("seen").setValue(false);
             sendPushMessage();
         }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        messagesAdapter.clearConversation();
     }
 
     private void sendPushMessage() {
@@ -1132,6 +1138,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         Intent profileIntent = new Intent(this, ViewProfileActivity.class);
         profileIntent.putExtra(USER_ID, conversationItem.getConversation().getOpponentId());
         profileIntent.putExtra(USER_NAME, conversationItem.getFullName());
+        profileIntent.putExtra(IS_LIKED_BY_ME, conversationItem.getConversation().getLikeByMe());
         profileIntent.putExtra(FROM_CRUSH, conversationItem.getConversation().getCrush());
         profileIntent.putExtra(FROM_MATCH, !conversationItem.getConversation().getCrush());
         startActivityForResult(profileIntent, PROFILE_VIEW_CODE);

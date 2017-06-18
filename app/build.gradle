@@ -16,7 +16,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -63,9 +63,11 @@ dependencies {
     compile 'com.dewarder:holdingbutton:0.0.8'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-gcm'
-    compile 'com.firebase:firebase-jobdispatcher:0.6.0'
     compile 'com.getkeepsafe.taptargetview:taptargetview:1.9.1'
     testCompile 'junit:junit:4.12'
+    compile ("com.firebase:firebase-jobdispatcher-with-gcm-dep:0.6.0") {
+        exclude module: "play-services-gcm"
+    }
 }
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->

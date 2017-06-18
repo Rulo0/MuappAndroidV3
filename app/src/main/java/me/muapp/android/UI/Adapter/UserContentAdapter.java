@@ -225,10 +225,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     }
 
     public void setUser(User user) {
-        if (!user.getAlbum().equals(this.user.getAlbum())) {
+     //   if (!user.getAlbum().equals(this.user.getAlbum())) {
             this.user = user;
             notifyItemChanged(0);
-        }
+     //   }
     }
 
     @Override

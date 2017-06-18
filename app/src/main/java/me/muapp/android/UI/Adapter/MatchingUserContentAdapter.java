@@ -21,6 +21,7 @@ import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -59,6 +60,7 @@ import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQuote;
+import me.muapp.android.Classes.Internal.MutualFriends;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.PreferenceHelper;
@@ -66,6 +68,7 @@ import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.VideoViewActivity;
 import me.muapp.android.UI.Activity.YoutubeViewActivity;
+import me.muapp.android.UI.Adapter.UserPhotos.UserMutualFriendsAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnProfileScrollListener;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
@@ -74,6 +77,10 @@ import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
  * Created by rulo on 18/04/17.
  */
 public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUserContentAdapter.UserContentHolder> {
+    final int TYPE_HEADER = -1;
+    final int TYPE_QUALIFICATIONS = -2;
+    final int TYPE_MUTUAL_FRIENDS = -3;
+
     SortedList<UserContent> userContentList;
     HashMap<String, Integer> viewTypeMap = new HashMap<String, Integer>() {{
         put("contentAud", 1);
@@ -92,10 +99,12 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     String currentPlaying = "";
     ImageButton previewPlayedButton;
     UserQualificationsAdapter userQualificationsAdapter;
+    UserMutualFriendsAdapter userMutualFriendsAdapter;
     Boolean showMenuButton = true;
     RecyclerView parentRecycler;
     private OnProfileScrollListener onProfileScrollListener;
     OnScrollListener matchingScrollListener;
+    List<MutualFriends.MutualFriend> mutualFriends;
 
     public void setShowMenuButton(Boolean showMenuButton) {
         this.showMenuButton = showMenuButton;
@@ -141,9 +150,20 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         Handler handler = new Handler(Looper.getMainLooper());
         final Runnable r = new Runnable() {
             public void run() {
-                notifyItemChanged(1);
+                notifyItemChanged(2);
                 if (mustScroll)
-                    parentRecycler.scrollToPosition(1);
+                    parentRecycler.scrollToPosition(2);
+            }
+        };
+        handler.post(r);
+    }
+
+    public void setMutualFriends(List<MutualFriends.MutualFriend> mutualFriends) {
+        userMutualFriendsAdapter = new UserMutualFriendsAdapter(context, mutualFriends);
+        Handler handler = new Handler(Looper.getMainLooper());
+        final Runnable r = new Runnable() {
+            public void run() {
+                notifyItemChanged(1);
             }
         };
         handler.post(r);
@@ -239,11 +259,13 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
 
         switch (position) {
             case 0:
-                return -1;
+                return TYPE_HEADER;
             case 1:
-                return -2;
+                return TYPE_MUTUAL_FRIENDS;
+            case 2:
+                return TYPE_QUALIFICATIONS;
             default:
-                return viewTypeMap.get(userContentList.get(position - 2).getCatContent());
+                return viewTypeMap.get(userContentList.get(position - 3).getCatContent());
         }
     }
 
@@ -259,11 +281,15 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
 
         UserContentHolder holder;
         switch (viewType) {
-            case -1:
+            case TYPE_HEADER:
                 View headerView = mInflater.inflate(R.layout.matching_profile_header_layout, parent, false);
                 holder = new HeaderContentHolder(headerView);
                 break;
-            case -2:
+            case TYPE_MUTUAL_FRIENDS:
+                View friendsView = mInflater.inflate(R.layout.layout_mutual_friends_profile, parent, false);
+                holder = new CommonConnectionsContentHolder(friendsView);
+                break;
+            case TYPE_QUALIFICATIONS:
                 View qualificationsView = mInflater.inflate(R.layout.layout_qualifications_profile, parent, false);
                 holder = new QualificationsContentHolder(qualificationsView);
                 break;
@@ -308,15 +334,17 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         if (position == 0)
             holder.bind(user);
         else if (position == 1)
+            holder.bind(userMutualFriendsAdapter);
+        else if (position == 2)
             holder.bind(userQualificationsAdapter);
         else {
-            holder.bind(userContentList.get(position - 2));
+            holder.bind(userContentList.get(position - 3));
         }
     }
 
     @Override
     public int getItemCount() {
-        return userContentList.size() + 2;
+        return userContentList.size() + 3;
     }
 
     interface UserContentInterface {
@@ -325,6 +353,8 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         void bind(MatchingUser u);
 
         void bind(UserQualificationsAdapter userQualificationsAdapter);
+
+        void bind(UserMutualFriendsAdapter userMutualFriendsAdapter);
     }
 
     class UserContentHolder extends RecyclerView.ViewHolder implements UserContentInterface, View.OnClickListener {
@@ -370,6 +400,12 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
 
         @Override
         public void bind(UserQualificationsAdapter adapter) {
+            parentRecycler.clearOnScrollListeners();
+            parentRecycler.addOnScrollListener(matchingScrollListener);
+        }
+
+        @Override
+        public void bind(UserMutualFriendsAdapter adapter) {
             parentRecycler.clearOnScrollListeners();
             parentRecycler.addOnScrollListener(matchingScrollListener);
         }
@@ -428,6 +464,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         public void bind(MatchingUser u) {
             super.bind(u);
             title.setText("");
+            pager_profile_pictures.invalidate();
             profilePicturesAdapter = new ProfilePicturesAdapter(context, u.getAlbum());
             pager_profile_pictures.setAdapter(profilePicturesAdapter);
             indicator_profile_pictures.setCount(u.getAlbum().size());
@@ -550,6 +587,40 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                 param.width = LinearLayout.LayoutParams.MATCH_PARENT;
                 itemView.setVisibility(View.VISIBLE);
                 txt_profile_qualification.setText(String.format(context.getString(R.string.lbl_average_score), String.format("%.1f", qualificationsAdapter.getAverage()), qualificationsAdapter.getItemCount()));
+            } else {
+                itemView.setVisibility(View.GONE);
+                param.setMargins(0, 0, 0, 0);
+                param.height = 0;
+                param.width = 0;
+            }
+            itemView.setLayoutParams(param);
+        }
+    }
+
+    class CommonConnectionsContentHolder extends UserContentHolder {
+        RecyclerView recycler_common_connections;
+        TextView txt_profile_connections;
+        View containerView;
+
+        public CommonConnectionsContentHolder(View itemView) {
+            super(itemView);
+            containerView = itemView;
+            txt_profile_connections = (TextView) itemView.findViewById(R.id.txt_profile_connections);
+            recycler_common_connections = (RecyclerView) itemView.findViewById(R.id.recycler_common_connections);
+            LinearLayoutManager llm = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+            recycler_common_connections.setLayoutManager(llm);
+        }
+
+        @Override
+        public void bind(UserMutualFriendsAdapter friendsAdapter) {
+            super.bind(friendsAdapter);
+            RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) itemView.getLayoutParams();
+            if (friendsAdapter != null && friendsAdapter.getItemCount() > 0) {
+                recycler_common_connections.setAdapter(userMutualFriendsAdapter);
+                param.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                param.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                itemView.setVisibility(View.VISIBLE);
+                txt_profile_connections.setText(String.format(context.getString(R.string.format_common_connections), String.valueOf(friendsAdapter.getItemCount())));
             } else {
                 itemView.setVisibility(View.GONE);
                 param.setMargins(0, 0, 0, 0);
@@ -948,7 +1019,13 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     }
 
     public void stopMediaPlayer() {
-        mediaPlayer.stop();
+        Log.wtf("Stop", "mp");
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            if (previewPlayedButton != null) {
+                previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+            }
+        }
     }
 
     public void releaseMediaPlayer() {

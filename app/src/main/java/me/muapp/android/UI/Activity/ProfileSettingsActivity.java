@@ -58,6 +58,7 @@ import me.muapp.android.UI.Fragment.Interface.OnProfileImageSelectedListener;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
+import static me.muapp.android.UI.Adapter.UserPhotos.UserPictureAdapter.picturesData;
 
 public class ProfileSettingsActivity extends BaseActivity implements OnProfileImageSelectedListener {
     private static final int PIC_CROP = 724;
@@ -123,6 +124,20 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     }
 
     private void attempSaveSettings() {
+        List<String> userAlbum = new ArrayList<>();
+        List<AlbumParam> prms = new ArrayList<>();
+        for (String s : adapter.picturesData) {
+            if (s != null && !TextUtils.isEmpty(s)) {
+                userAlbum.add(s);
+                AlbumParam albumParam = new AlbumParam();
+                albumParam.setUrl(s);
+                prms.add(albumParam);
+            }
+            Log.wtf("Original", s != null ? s.toString() : "empty");
+        }
+        uploadPhotos(prms, false);
+        loggedUser.setAlbum(userAlbum);
+        saveUser(loggedUser);
 
         final String newDescription = et_user_biography.getText().toString();
         if (!newDescription.equals(loggedUser.getDescription())) {
@@ -263,14 +278,14 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     @Override
     public void onPictureDeleted(ImageView container, int adapterPosition) {
         List<AlbumParam> prms = new ArrayList<>();
-        for (String image : UserPictureAdapter.picturesData) {
+        for (String image : picturesData) {
             if (image != null && !TextUtils.isEmpty(image)) {
                 AlbumParam albumParam = new AlbumParam();
                 albumParam.setUrl(image);
                 prms.add(albumParam);
             }
         }
-        uploadPhotos(prms);
+        uploadPhotos(prms, true);
     }
 
     @Override
@@ -290,16 +305,16 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
                 case REQUEST_FACEBOOK_ALBUMS:
                     Log.wtf("imageSelected", data.getStringExtra(PHOTO_URL));
                     Log.wtf("position", "" + data.getIntExtra(ADAPTER_POSITION, 5));
-                    UserPictureAdapter.picturesData.set(data.getIntExtra(ADAPTER_POSITION, 5), data.getStringExtra(PHOTO_URL));
+                    picturesData.set(data.getIntExtra(ADAPTER_POSITION, 5), data.getStringExtra(PHOTO_URL));
                     List<AlbumParam> prms = new ArrayList<>();
-                    for (String image : UserPictureAdapter.picturesData) {
+                    for (String image : picturesData) {
                         if (image != null && !TextUtils.isEmpty(image)) {
                             AlbumParam albumParam = new AlbumParam();
                             albumParam.setUrl(image);
                             prms.add(albumParam);
                         }
                     }
-                    uploadPhotos(prms);
+                    uploadPhotos(prms, true);
                     break;
             }
         }
@@ -310,9 +325,10 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
         cropImage(Uri.fromFile(photoFile));
     }
 
-    private void uploadPhotos(List<AlbumParam> albumParams) {
+    private void uploadPhotos(List<AlbumParam> albumParams, Boolean showDialog) {
         mFirebaseAnalytics.logEvent(Analytics.EditInfo.EDIT_INFO_EVENT.Edit_Info_Photos.toString(), null);
-        showProgressDialog();
+        if (showDialog)
+            showProgressDialog();
         new APIService(this).uploadPhotos(albumParams, new UserInfoHandler() {
             @Override
             public void onSuccess(int responseCode, String userResponse) {
@@ -358,7 +374,7 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
             AlbumParam imageParam = new AlbumParam();
             imageParam.setFileBytes(bytes);
             albumParams.add(imageParam);
-            uploadPhotos(albumParams);
+            uploadPhotos(albumParams, true);
         } catch (Exception x) {
 
         }
@@ -400,13 +416,13 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     private void cropImage(Uri selectedImageUri) {
         try {
             Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             cropIntent.setDataAndType(selectedImageUri, "image/*");
             cropIntent.putExtra("crop", "true");
             cropIntent.putExtra("aspectX", 1);
             cropIntent.putExtra("aspectY", 1);
             cropIntent.putExtra("outputX", 512);
             cropIntent.putExtra("outputY", 512);
-            cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivityForResult(cropIntent, PIC_CROP);
         } catch (Exception ex) {
             ex.printStackTrace();

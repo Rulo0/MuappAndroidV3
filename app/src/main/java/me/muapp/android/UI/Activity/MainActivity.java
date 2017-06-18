@@ -537,8 +537,6 @@ public class MainActivity extends BaseActivity implements
 
             if (frag instanceof MatchingFragment) {
                 // getSupportActionBar().hide();
-            } else {
-                // getSupportActionBar().show();
             }
 
             mSelectedItem = position;
@@ -581,12 +579,8 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (selectedNavigationElement.getFrag() instanceof ProfileFragment) {
-
-        } else {
-            if (fab_add_content.isShown())
-                fab_add_content.hide();
-        }
+        Log.wtf("Restart", "hiddingFab");
+        fab_add_content.hide();
     }
 
     @Override

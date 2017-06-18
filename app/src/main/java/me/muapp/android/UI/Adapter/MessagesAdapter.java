@@ -78,6 +78,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         this.yourPhotoUrl = yourPhotoUrl;
     }
 
+    public void clearConversation() {
+        this.messageList.clear();
+    }
+
     public void setLoggedUserId(Integer loggedUserId) {
         this.loggedUserId = loggedUserId;
     }

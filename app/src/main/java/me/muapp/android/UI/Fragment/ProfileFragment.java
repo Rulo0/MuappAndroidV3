@@ -120,6 +120,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     }
 
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -156,12 +158,16 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     }
 
 
+
+
     private void prepareToolbar() {
         if (!isToolbarPrepared) {
             toolbar_current_user_profile.getMenu().clear();
             toolbar_current_user_profile.inflateMenu(R.menu.profile_menu);
             isToolbarPrepared = true;
         }
+        if(getContext() instanceof  ManGateActivity)
+            app_bar_user_profile.setVisibility(View.GONE);
 
         if (user.getFakeAccount() && new PreferenceHelper(getContext()).getTutorialProfileCounter() == 2) {
             new PreferenceHelper(getContext()).addCounterToProfile();
@@ -183,35 +189,37 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
                 counter++;
             }
         };
-        switch (new PreferenceHelper(getContext()).getTutorialProfileCounter()) {
-            case 1:
-                if (!isTutorialShowing) {
-                    title = getString(R.string.lbl_tutorial_personalize);
-                    content = getString(R.string.lbl_tutorial_personalize_content);
-                    new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_edit_profile, title, content, 25, listener);
-                    isTutorialShowing = true;
-                }
-                break;
-            case 2:
-                if (!isTutorialShowing) {
-                    title = getString(R.string.lbl_tutorial_verify);
-                    content = getString(R.string.lbl_tutorial_verify_content);
-                    new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_settings_profile, title, content, 25, listener);
-                    isTutorialShowing = true;
-                }
-                break;
-            case 3:
-                if (!isTutorialShowing) {
-                    title = getString(R.string.lbl_tutorial_history);
-                    content = getString(R.string.lbl_tutorial_history_content);
-                    if (!fab_add_content.isShown())
-                        fab_add_content.show();
-                    new Tutorials((MainActivity) getContext()).showTutorialForView(fab_add_content, true, title, content, 50, listener);
-                    isTutorialShowing = true;
-                }
-                break;
-            default:
-                ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
+        if (getContext() instanceof MainActivity) {
+            switch (new PreferenceHelper(getContext()).getTutorialProfileCounter()) {
+                case 1:
+                    if (!isTutorialShowing && !isHidden()) {
+                        title = getString(R.string.lbl_tutorial_personalize);
+                        content = getString(R.string.lbl_tutorial_personalize_content);
+                        new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_edit_profile, title, content, 25, listener);
+                        isTutorialShowing = true;
+                    }
+                    break;
+                case 2:
+                    if (!isTutorialShowing  && !isHidden()) {
+                        title = getString(R.string.lbl_tutorial_verify);
+                        content = getString(R.string.lbl_tutorial_verify_content);
+                        new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_settings_profile, title, content, 25, listener);
+                        isTutorialShowing = true;
+                    }
+                    break;
+                case 3:
+                    if (!isTutorialShowing  && !isHidden()) {
+                        title = getString(R.string.lbl_tutorial_history);
+                        content = getString(R.string.lbl_tutorial_history_content);
+                        if (!fab_add_content.isShown())
+                            fab_add_content.show();
+                        new Tutorials((MainActivity) getContext()).showTutorialForView(fab_add_content, true, title, content, 50, listener);
+                        isTutorialShowing = true;
+                    }
+                    break;
+                default:
+                    ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
+            }
         }
     }
 

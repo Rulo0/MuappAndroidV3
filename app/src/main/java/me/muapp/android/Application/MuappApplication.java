@@ -1,14 +1,13 @@
 package me.muapp.android.Application;
 
 import android.app.Application;
+import android.os.StrictMode;
 import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
 import com.zplesac.connectionbuddy.ConnectionBuddy;
 import com.zplesac.connectionbuddy.ConnectionBuddyConfiguration;
-
-import me.muapp.android.BuildConfig;
 
 /**
  * Created by rulo on 21/03/17.
@@ -21,11 +20,13 @@ public class MuappApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
         FirebaseApp.initializeApp(this);
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        if (!BuildConfig.DEBUG) {
+       /* if (!BuildConfig.DEBUG) {
             DATABASE_REFERENCE = "prodDB";
-        }
+        }*/
         Log.wtf("DATABASE_REFERENCE", DATABASE_REFERENCE);
         ConnectionBuddyConfiguration networkInspectorConfiguration =
                 new ConnectionBuddyConfiguration.Builder(this)

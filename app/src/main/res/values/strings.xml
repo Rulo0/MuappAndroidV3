@@ -243,4 +243,5 @@
     <string name="lbl_tutorial_history_content">Whats your history?\n\nAdd content to your profile so they can know you better\n\nYou are much more than 6 pics!</string>
     <string name="lbl_excellent">Excellent!</string>
     <string name="lbl_verified_profile">Verified profile.</string>
+    <string name="format_common_connections">%s Common Connections</string>
 </resources>

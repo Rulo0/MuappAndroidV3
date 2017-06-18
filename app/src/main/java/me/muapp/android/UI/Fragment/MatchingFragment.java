@@ -130,6 +130,12 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         }
     }
 
+    public void validateFragmentVisibility() {
+        if (currentFragment.isHidden()) {
+
+        }
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -144,22 +150,23 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onStart() {
         super.onStart();
-        if (!isHidden()) {
-            replaceFragment(GetMatchingUsersFragment.newInstance(user));
-            handler = new Handler();
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (((MainActivity) getContext()).getCurrentLocation() != null) {
-                        getMatchingUsers();
-                        preferenceHelper.putSearchPreferencesChangedDisabled();
-                    } else
-                        handler.postDelayed(this, waitTime);
-                }
-            };
-            handler.postDelayed(runnable, waitTime);
-        }
+        // if (!isHidden()) {
+        replaceFragment(GetMatchingUsersFragment.newInstance(user));
+        handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (((MainActivity) getContext()).getCurrentLocation() != null) {
+                    getMatchingUsers();
+                    preferenceHelper.putSearchPreferencesChangedDisabled();
+                } else
+                    handler.postDelayed(this, waitTime);
+            }
+        };
+        handler.postDelayed(runnable, waitTime);
+        //}
     }
+
 
     @Override
     public void onStop() {
@@ -488,5 +495,14 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             Log.wtf("LikeResult", "Theres not motherfucking match");
         }
 
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            if (currentFragment instanceof MatchingUserProfileFragment)
+                ((MatchingUserProfileFragment) currentFragment).stopPlayer();
+        }
     }
 }

@@ -26,12 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.muapp.android.Classes.API.APIService;
+import me.muapp.android.Classes.API.Handlers.MutualFriendsHandler;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
+import me.muapp.android.Classes.Internal.MutualFriends;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.PreferenceHelper;
@@ -137,6 +139,21 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
             }
         });
 
+        if (matchingUser.getCommonFriendships() > 0) {
+            new APIService(getContext()).getMutualFriends(matchingUser.getId(), new MutualFriendsHandler() {
+                @Override
+                public void onSuccess(int responseCode, MutualFriends mutualFriends) {
+                    adapter.setMutualFriends(mutualFriends.getMutualFriends());
+                }
+
+                @Override
+                public void onFailure(boolean isSuccessful, String responseString) {
+
+                }
+            });
+        }
+
+
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(matchingUser.getId())).child("profilePicture").setValue(matchingUser.getAlbum().get(0));
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(matchingUser.getId())).child("name").setValue(matchingUser.getFirstName());
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(matchingUser.getId())).child("lastName").setValue(matchingUser.getLastName());
@@ -163,6 +180,8 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (!imFemale)
+            btn_matching_report.setVisibility(View.GONE);
         toolbar_matching_name.setText(matchingUser.getFullName());
         if (matchingUser.getFakeAccount() != null && matchingUser.getFakeAccount())
             toolbar_matching_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_verified_profile, 0, 0, 0);
@@ -224,6 +243,12 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         userReference.removeEventListener((ChildEventListener) this);
         userReference.removeEventListener((ValueEventListener) this);
     }
+
+
+    public void stopPlayer() {
+        adapter.stopMediaPlayer();
+    }
+
 
     @Override
     public void onDestroy() {
