@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -135,7 +136,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
             this.fab_add_content = ((ManGateActivity) getContext()).getFab_add_content();
         }
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        llm.setStackFromEnd(true);
+        //llm.setStackFromEnd(true);
         recycler_my_content.setLayoutManager(llm);
         recycler_my_content.setHasFixedSize(true);
         recycler_my_content.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -163,8 +164,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
             toolbar_current_user_profile.inflateMenu(R.menu.profile_menu);
             isToolbarPrepared = true;
         }
-        if (getContext() instanceof ManGateActivity)
-            app_bar_user_profile.setVisibility(View.GONE);
+       if (getContext() instanceof ManGateActivity)
+           ((ManGateActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
 
         if (user.getFakeAccount() && preferenceHelper.getTutorialProfileCounter() == 2) {
             preferenceHelper.addCounterToProfile();
@@ -225,34 +226,22 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         super.onActivityCreated(savedInstanceState);
         recycler_my_content.setAdapter(adapter);
         if (getContext() instanceof MainActivity) {
-          /*  new Tutorials((MainActivity) getContext()).showTutorialSequence(toolbar_current_user_profile, new TapTargetSequence.Listener() {
-                        @Override
-                        public void onSequenceFinish() {
-
-                        }
-
-                        @Override
-                        public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
-
-                        }
-
-                        @Override
-                        public void onSequenceCanceled(TapTarget lastTarget) {
-
-                        }
-                    }, new Tutorials.MenuItemTutorial(R.id.action_settings_profile, "tit1", "subtit1", 25),
-                    new Tutorials.MenuItemTutorial(R.id.action_edit_profile, "tit2", "subtit2", 25))
-            ;
-*/
-          /*  new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_settings_profile, "probando", "probando", 25, new TapTargetView.Listener() {
-                @Override
-                public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
-                    super.onTargetDismissed(view, userInitiated);
-                    ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
-                }
-            });*/
             if (new UserHelper(getContext()).getLoggedUser().getFakeAccount() != null && new UserHelper(getContext()).getLoggedUser().getFakeAccount())
                 toolbar_current_user_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_verified_profile, 0, 0, 0);
+        }
+        myUserContentReference.addChildEventListener(this);
+        myUserInfoReference.addValueEventListener(this);
+        if (!TextUtils.isEmpty(user.getDescription())) {
+            UserContent content = new UserContent();
+            content.setCreatedAt(32535237599000L);
+            content.setCatContent("contentDesc");
+            content.setKey("contentDesc");
+            content.setComment(user.getDescription());
+            content.setLikes(0);
+            adapter.removeAllDescriptions();
+            adapter.addContent(content);
+        } else {
+            adapter.removeAllDescriptions();
         }
     }
 
@@ -270,11 +259,25 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     @Override
     public void onStart() {
         super.onStart();
-        adapter.setUser(new UserHelper(getContext()).getLoggedUser());
-        adapter.removeAllDescriptions();
-        myUserContentReference.addChildEventListener(this);
-        myUserInfoReference.addValueEventListener(this);
         prepareToolbar();
+
+        String previousDescription = adapter.getCurrentDescription();
+
+        User loggedUser = new UserHelper(getContext()).getLoggedUser();
+        adapter.setUser(loggedUser);
+        Log.wtf("LeDescription", previousDescription + " - " + loggedUser.getDescription());
+        if (!previousDescription.equals(loggedUser.getDescription())) {
+            adapter.removeAllDescriptions();
+            UserContent content = new UserContent();
+            content.setCreatedAt(32535237599000L);
+            content.setCatContent("contentDesc");
+            content.setKey("contentDesc");
+            content.setComment(loggedUser.getDescription());
+            content.setLikes(0);
+            adapter.removeAllDescriptions();
+            if (!TextUtils.isEmpty(loggedUser.getDescription()))
+                adapter.addContent(content);
+        }
     }
 
 
@@ -282,14 +285,14 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     public void onStop() {
         super.onStop();
         adapter.stopMediaPlayer();
-        myUserContentReference.removeEventListener((ChildEventListener) this);
-        myUserInfoReference.removeEventListener((ValueEventListener) this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         adapter.releaseMediaPlayer();
+        myUserContentReference.removeEventListener((ChildEventListener) this);
+        myUserInfoReference.removeEventListener((ValueEventListener) this);
     }
 
     @Override
@@ -317,6 +320,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        Log.wtf("onChildAdded", dataSnapshot.getKey());
         if (preferenceHelper.getTutorialAddContent()) {
             preferenceHelper.putTutorialAddContentDisabled();
         }

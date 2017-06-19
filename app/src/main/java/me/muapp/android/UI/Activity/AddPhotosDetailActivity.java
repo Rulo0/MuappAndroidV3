@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -168,6 +167,7 @@ public class AddPhotosDetailActivity extends BaseActivity {
                                         ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
+                                                preferenceHelper.putAddedContentEnabled();
                                                 hideProgressDialog();
                                                 setResult(RESULT_OK);
                                                 finish();

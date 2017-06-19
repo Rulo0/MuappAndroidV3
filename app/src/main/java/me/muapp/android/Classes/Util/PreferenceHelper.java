@@ -38,6 +38,8 @@ public class PreferenceHelper {
     private final String TUTORIAL_PROFILE_COUNTER = "tutorialProfileCounter";
     private final String TUTORIAL_GATE_CARDS = "tutorialGateCards";
     private final String TUTORIAL_ADD_CONTENT = "tutorial_add_content";
+    private final String REQUEST_CODE = "request_code";
+    private final String HAS_ADDED_CONTENT = "has_added_content";
     private static final String STICKERS_PLACEHOLDER = "{\n" +
             "  \"stickers\": [\n" +
             "    {\n" +
@@ -233,9 +235,37 @@ public class PreferenceHelper {
         edit.apply();
     }
 
+    public boolean getMustRequestCode() {
+        return preferences.getBoolean(REQUEST_CODE, true);
+    }
+
+    public void putMustRequestCodeDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(REQUEST_CODE, false);
+        edit.apply();
+    }
+
+
     public boolean getTutorialCrush() {
         return preferences.getBoolean(TUTORIAL_CRUSH, true);
     }
+
+    public boolean getHasAddedContent() {
+        return preferences.getBoolean(HAS_ADDED_CONTENT, false);
+    }
+
+    public void putAddedContentEnabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(HAS_ADDED_CONTENT, true);
+        edit.apply();
+    }
+
+    public void putAddedContentDisabled() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean(HAS_ADDED_CONTENT, false);
+        edit.apply();
+    }
+
 
     public void putTutorialAddContentDisabled() {
         SharedPreferences.Editor edit = preferences.edit();
@@ -317,7 +347,6 @@ public class PreferenceHelper {
     }
 
     public Boolean getSeachPreferencesChanged() {
-
         return preferences.getBoolean(SEARCH_PREFERENCES_CHANGED, false);
     }
 

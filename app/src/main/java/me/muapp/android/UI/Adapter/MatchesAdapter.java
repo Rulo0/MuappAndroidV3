@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -151,7 +152,9 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             if (conversation.getConversation().getLastMessage() != null)
                 matchLine2.setText(conversation.getConversation().getLastMessage().getContent());
             else {
-                matchLine2.setText("match hace");
+                if (conversation.getConversation().getCreationDate() > new Date().getTime())
+                    conversation.getConversation().setCreationDate(new Date().getTime());
+                matchLine2.setText("Match " + DateUtils.getRelativeTimeSpanString(conversation.getConversation().getCreationDate(), new Date().getTime(), DateUtils.SECOND_IN_MILLIS));
             }
         }
 

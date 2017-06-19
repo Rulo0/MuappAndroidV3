@@ -130,7 +130,7 @@
                         android:layout_marginRight="8dp"
                         android:layout_toLeftOf="@id/chat_actions_container"
                         android:layout_toRightOf="@id/chatAddAttachmentButton"
-                        android:hint="Write something..."
+                        android:hint="@string/lbl_write_something"
                         android:imeOptions="actionSend"
                         android:inputType="textMultiLine"
                         android:maxLines="5"

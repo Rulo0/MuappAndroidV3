@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -145,12 +144,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             btn_crush_matching.setVisibility(View.GONE);
         else
             btn_crush_matching.setOnClickListener(this);
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // if (!isHidden()) {
         replaceFragment(GetMatchingUsersFragment.newInstance(user));
         handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -164,6 +158,13 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             }
         };
         handler.postDelayed(runnable, waitTime);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // if (!isHidden()) {
+
         //}
     }
 
@@ -202,8 +203,8 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         if (result.getMatchingUsers().size() > 0) {
             matchingFragmentList.clear();
             for (final MatchingUser user : result.getMatchingUsers()) {
-                if (!TextUtils.isEmpty(user.getDescription()))
-                    uploadDescriptionToFirebase(user.getId(), user.getDescription());
+               /* if (!TextUtils.isEmpty(user.getDescription()))
+                    uploadDescriptionToFirebase(user.getId(), user.getDescription());*/
                 Log.wtf("Matching", user.toString());
                 MatchingUserProfileFragment fragment = MatchingUserProfileFragment.newInstance(user);
                 fragment.setOnMatchingInteractionListener(this);
@@ -242,15 +243,16 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
 
     private void replaceFragment(Fragment frag) {
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        if (currentFragment != null)
-            ft.remove(currentFragment);
-        currentFragment = frag;
+
         if (frag instanceof GetMatchingUsersFragment)
             showControls(false);
         else showControls(true);
         ft.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_up);
         ft.replace(R.id.content_matching_profiles, frag);
         ft.commit();
+        if (currentFragment != null)
+           // ft.remove(currentFragment);
+        currentFragment = frag;
     }
 
     private void showControls(final Boolean show) {
@@ -415,6 +417,19 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                                     crush.setOpponentConversationId(opponentCrushId);
                                     crush.setOpponentId(opponentId);
                                     conversationItem.setConversation(crush);
+                                    try {
+                                        matchingFragmentList.remove(0);
+                                        if (matchingFragmentList.size() > 0) {
+                                            replaceFragment(matchingFragmentList.get(0));
+                                        } else {
+                                            matchingUsersPage++;
+                                            showControls(false);
+                                            replaceFragment(GetMatchingUsersFragment.newInstance(user));
+                                            getMatchingUsers();
+                                        }
+                                    } catch (Exception x) {
+                                        x.printStackTrace();
+                                    }
                                     Intent crushIntent = new Intent(getContext(), ChatActivity.class);
                                     crushIntent.putExtra(CONVERSATION_EXTRA, conversationItem);
                                     startActivity(crushIntent);
@@ -501,8 +516,20 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
-            if (currentFragment instanceof MatchingUserProfileFragment)
+            if (currentFragment instanceof MatchingUserProfileFragment) {
                 ((MatchingUserProfileFragment) currentFragment).stopPlayer();
+            }
+        } else {
+            if (currentFragment instanceof MatchingUserProfileFragment) {
+                ((MatchingUserProfileFragment) currentFragment).scrollProfileToTop();
+                Log.wtf("onHiddenChanged", "PreferemcesChanged " + new PreferenceHelper(getContext()).getSeachPreferencesChanged());
+                if (new PreferenceHelper(getContext()).getSeachPreferencesChanged()) {
+                    matchingFragmentList.clear();
+                    replaceFragment(GetMatchingUsersFragment.newInstance(user));
+                    getMatchingUsers();
+                    new PreferenceHelper(getContext()).putSearchPreferencesChangedDisabled();
+                }
+            }
         }
     }
 }

@@ -3,7 +3,6 @@ package me.muapp.android.UI.Activity;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -156,6 +155,7 @@ public class AddQuoteActivity extends BaseActivity {
             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    preferenceHelper.putAddedContentEnabled();
                     hideProgressDialog();
                     setResult(RESULT_OK);
                     finish();

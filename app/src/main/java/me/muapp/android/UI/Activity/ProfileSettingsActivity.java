@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -24,14 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
 
@@ -49,14 +40,11 @@ import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.User;
-import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.UserPhotos.UserPhotoTouchHelper;
-
 import me.muapp.android.UI.Adapter.UserPhotos.UserPictureAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnProfileImageSelectedListener;
 
-import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
 import static me.muapp.android.UI.Adapter.UserPhotos.UserPictureAdapter.picturesData;
 
@@ -80,8 +68,8 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
         setContentView(R.layout.activity_profile_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         et_user_biography = (EditText) findViewById(R.id.et_user_biography);
-        et_user_biography.setText(loggedUser.getDescription()
-        );
+        Log.wtf("Biography",":" + loggedUser.getDescription());
+        et_user_biography.setText(loggedUser.getDescription());
         recycler_user_photos = (RecyclerView) findViewById(R.id.recycler_user_photos);
         if (loggedUser.getPending()) {
             recycler_user_photos.setVisibility(View.GONE);
@@ -148,8 +136,8 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
                 JSONObject descriptionObj = new JSONObject();
                 descriptionObj.put("description", newDescription);
                 new APIService(this).patchUser(descriptionObj, null);
-
-                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
+                finish();
+                /*final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
                 reference.orderByChild("catContent").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -182,7 +170,7 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
-                });
+                });*/
             } catch (Exception x) {
                 x.printStackTrace();
             }

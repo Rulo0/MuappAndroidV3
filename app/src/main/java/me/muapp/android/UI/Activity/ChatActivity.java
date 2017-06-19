@@ -275,7 +275,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         txt_created_empty_messages = (TextView) findViewById(R.id.txt_created_empty_messages);
         img_empty_messages = (ImageView) findViewById(R.id.img_empty_messages);
         txt_conversation_count_empty_messages = (TextView) findViewById(R.id.txt_conversation_count_empty_messages);
-
+        toolbar_opponent_fullname = (TextView) findViewById(R.id.toolbar_opponent_fullname);
         if (User.Gender.getGender(loggedUser.getGender()) == User.Gender.Female)
             getRecentsConversations();
 
@@ -333,7 +333,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             }
         });
         chatAddAttachmentButton = (ImageButton) findViewById(R.id.chatAddAttachmentButton);
-        toolbar_opponent_fullname = (TextView) findViewById(R.id.toolbar_opponent_fullname);
         toolbar_opponent_fullname.setText(conversationItem.getFullName());
         toolbar.findViewById(R.id.toolbar_btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -404,7 +403,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
                 if (!conversationItem.getConversation().getCrush() && new PreferenceHelper(ChatActivity.this).getTutorialMatchConversation()
                         ) {
-                    new Tutorials(ChatActivity.this).showTutorialForView(toolbar_opponent_photo, true, getString(R.string.lbl_tutorial_conversation_match_title), getString(R.string.lbl_tutorial_conversation_match_content), null, new TapTargetView.Listener() {
+                    new Tutorials(ChatActivity.this).showTutorialForView(chat_user_last_conversations, true, getString(R.string.lbl_tutorial_conversation_match_title), getString(R.string.lbl_tutorial_conversation_match_content), 120, new TapTargetView.Listener() {
                         @Override
                         public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
                             super.onTargetDismissed(view, userInitiated);
@@ -419,8 +418,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
             }
         });
-
-
     }
 
     private void setupRemainingTime() {
@@ -1102,6 +1099,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         Log.wtf("Expired", txt_remaining_time.getId() + " Must be gone");
         Log.wtf("likeUser", "Sending: " + conversationItem.getConversation().getKey() + " " + conversationItem.getConversation().getOpponentConversationId());
         new APIService(this).likeUser(conversationItem.getConversation().getOpponentId(), null, this, conversationItem.getConversation().getKey(), conversationItem.getConversation().getOpponentConversationId());
+        if (!conversationItem.getConversation().getLikeByOpponent()) {
+            new CrushedExpiredLikeDialogFragment().newInstance(conversationItem).show(getSupportFragmentManager(), conversationItem.getKey());
+            isShowingDialog = true;
+        }
         /*
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).child(conversationItem.getKey()).removeValue();
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child(conversationItem.getConversation().getOpponentConversationId()).removeValue();
@@ -1123,7 +1124,14 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     @Override
     public void onExpiredCancel() {
         Log.wtf("Expired", "Cancelled");
-        finish();
+        final Calendar expirationDate = Calendar.getInstance();
+        expirationDate.setTimeInMillis(conversationItem.getConversation().getCreationDate());
+        expirationDate.add(Calendar.DATE, 1);
+        long difference = expirationDate.getTime().getTime() - Calendar.getInstance().getTime().getTime();
+        if (difference <= 0) {
+            finish();
+        }
+
     }
 
     @Override

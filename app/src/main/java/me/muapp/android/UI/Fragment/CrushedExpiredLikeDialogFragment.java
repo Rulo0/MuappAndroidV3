@@ -9,7 +9,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +32,11 @@ public class CrushedExpiredLikeDialogFragment extends DialogFragment implements 
     TextView txt_content_expired_like;
     ConversationItem conversationItem;
     OnTimeExpiredListener onTimeExpiredListener;
+    Boolean cancelable = false;
+
+    public void setCancelable(Boolean cancelable) {
+        this.cancelable = cancelable;
+    }
 
     public static CrushedExpiredLikeDialogFragment newInstance(ConversationItem conversationItem) {
         CrushedExpiredLikeDialogFragment fragment = new CrushedExpiredLikeDialogFragment();

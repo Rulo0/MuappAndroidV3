@@ -136,6 +136,7 @@ public class AddSpotifyDetailActivity extends BaseActivity implements MediaPlaye
             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    preferenceHelper.putAddedContentEnabled();
                     setResult(RESULT_OK);
                     finish();
                 }

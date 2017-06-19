@@ -149,7 +149,6 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
 
     }
 
-
     private void showConfirmDialog(MenuItem item) {
         new AlertDialog.Builder(this)
                 .setTitle(item.getTitle())

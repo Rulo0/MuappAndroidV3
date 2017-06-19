@@ -346,6 +346,7 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                                 public void onSuccess(Void aVoid) {
                                     long stopTime = System.currentTimeMillis();
                                     long elapsedTime = stopTime - startTime;
+                                    preferenceHelper.putAddedContentEnabled();
                                     hideProgressDialog();
                                     thisFile.delete();
                                     setResult(RESULT_OK);

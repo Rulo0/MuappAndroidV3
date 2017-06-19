@@ -2,6 +2,7 @@ package me.muapp.android.UI.Activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
@@ -114,6 +115,32 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 // startActivity(new Intent(LoginActivity.this, ConfirmUserActivity.class));
             } catch (Exception x) {
             }
+        }
+        removePreviousMuapp();
+    }
+
+    private void removePreviousMuapp() {
+        final String uri = "com.borealos.muapp";
+        PackageManager pm = getPackageManager();
+        try {
+            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.app_name))
+                    .setMessage(getString(R.string.lbl_uninstall_prompt))
+                    .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Uri packageUri = Uri.parse("package:" + uri);
+                            Intent uninstallIntent =
+                                    new Intent(Intent.ACTION_UNINSTALL_PACKAGE, packageUri);
+                            startActivity(uninstallIntent);
+                        }
+                    })
+                    .create()
+                    .show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -273,7 +300,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 break;
             case R.id.img_info_login:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setIcon(R.mipmap.ic_muapp_app)
+                builder.setIcon(R.mipmap.ic_launcher)
                         .setMessage(R.string.lbl_info_message)
                         .setTitle(R.string.lbl_info_title);
                 AlertDialog dialog = builder.create();
@@ -287,4 +314,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 break;
         }
     }
+
+
 }

@@ -65,6 +65,7 @@ import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.VideoViewActivity;
@@ -96,6 +97,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     UserQualificationsAdapter userQualificationsAdapter;
     Boolean showMenuButton = true;
     RecyclerView mRecycler;
+    PreferenceHelper preferenceHelper;
 
     public void setShowMenuButton(Boolean showMenuButton) {
         this.showMenuButton = showMenuButton;
@@ -106,6 +108,14 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             if (userContentList.get(i).getCatContent().equals("contentDesc"))
                 userContentList.removeItemAt(i);
         }
+    }
+
+    public String getCurrentDescription() {
+        for (int i = 0; i < userContentList.size(); i++) {
+            if (userContentList.get(i).getCatContent().equals("contentDesc"))
+                return userContentList.get(i).getComment();
+        }
+        return "";
     }
 
 
@@ -120,7 +130,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         Handler handler = new Handler(Looper.getMainLooper());
         final Runnable r = new Runnable() {
             public void run() {
-                notifyItemChanged(1);
+                notifyItemRangeChanged(1, getItemCount());
             }
         };
         handler.post(r);
@@ -141,11 +151,20 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     public UserContentAdapter(Context context, User user) {
         this.user = user;
         this.mInflater = LayoutInflater.from(context);
+        this.preferenceHelper = new PreferenceHelper(context);
         this.userContentList = new SortedList<>(UserContent.class, new SortedList.Callback<UserContent>() {
             @Override
             public void onInserted(int position, int count) {
                 notifyItemRangeInserted(position, count);
-                mRecycler.scrollToPosition(3);
+                Log.wtf("LeCallback", position + " uhh la la");
+                if (position == 1) {
+                    if (preferenceHelper.getHasAddedContent()) {
+                        mRecycler.getLayoutManager().scrollToPosition(3);
+                        preferenceHelper.putAddedContentDisabled();
+                    }
+                } else {
+                    mRecycler.getLayoutManager().scrollToPosition(0);
+                }
             }
 
             @Override
@@ -196,7 +215,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     public void setQuoteList(List<MuappQuote> quoteList) {
         this.quoteList = quoteList;
-        notifyDataSetChanged();
+
     }
 
     public void removeContent(String contentKey) {
@@ -225,10 +244,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     }
 
     public void setUser(User user) {
-     //   if (!user.getAlbum().equals(this.user.getAlbum())) {
-            this.user = user;
-            notifyItemChanged(0);
-     //   }
+        //   if (!user.getAlbum().equals(this.user.getAlbum())) {
+        this.user = user;
+        notifyItemRangeChanged(0, getItemCount());
+        //   }
     }
 
     @Override

@@ -158,11 +158,12 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         handler.post(r);
     }
 
-    public void setMutualFriends(List<MutualFriends.MutualFriend> mutualFriends) {
+    public void setMutualFriends(final List<MutualFriends.MutualFriend> mutualFriends) {
         userMutualFriendsAdapter = new UserMutualFriendsAdapter(context, mutualFriends);
         Handler handler = new Handler(Looper.getMainLooper());
         final Runnable r = new Runnable() {
             public void run() {
+                Log.wtf("setMutualFriends", "mutualFriends " + mutualFriends.size());
                 notifyItemChanged(1);
             }
         };

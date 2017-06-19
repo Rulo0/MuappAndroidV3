@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.muapp.android.Classes.API.APIService;
+import me.muapp.android.Classes.API.Handlers.MutualFriendsHandler;
 import me.muapp.android.Classes.API.Handlers.UserQualificationsHandler;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.MuappQualifications.Qualification;
 import me.muapp.android.Classes.Internal.MuappQualifications.UserQualifications;
 import me.muapp.android.Classes.Internal.MuappQuote;
+import me.muapp.android.Classes.Internal.MutualFriends;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.UserHelper;
@@ -152,7 +154,19 @@ public class ViewUserProfileFragment extends Fragment implements ChildEventListe
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         recycler_user_content_view.setAdapter(adapter);
+        if (matchingUser.getCommonFriendships() > 0) {
+            new APIService(getContext()).getMutualFriends(matchingUser.getId(), new MutualFriendsHandler() {
+                @Override
+                public void onSuccess(int responseCode, MutualFriends mutualFriends) {
+                    adapter.setMutualFriends(mutualFriends.getMutualFriends());
+                }
 
+                @Override
+                public void onFailure(boolean isSuccessful, String responseString) {
+
+                }
+            });
+        }
     }
 
     @Override

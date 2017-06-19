@@ -1,11 +1,13 @@
 package me.muapp.android.UI.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import me.muapp.android.Classes.API.APIService;
@@ -40,6 +43,7 @@ import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Tutorials;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
+import me.muapp.android.UI.Activity.SplashActivity;
 import me.muapp.android.UI.Adapter.MatchingUserContentAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnMatchingInteractionListener;
 import me.muapp.android.UI.Fragment.Interface.OnProfileScrollListener;
@@ -92,17 +96,26 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         Log.wtf("Creating", "MatchingUserProfileFragment");
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);
+            try {
+                matchingUser = getArguments().getParcelable(ARG_MATCHING_USER);
+                int id = matchingUser.getId();
+            } catch (Exception x) {
+                startActivity(new Intent(getContext(), SplashActivity.class));
+                getActivity().finish();
+            }
         }
         imFemale = (User.Gender.getGender(new UserHelper(getContext()).getLoggedUser().getGender()) == User.Gender.Female);
         Log.wtf("imFemale?", "" + imFemale);
         adapter = new MatchingUserContentAdapter(getContext(), matchingUser);
         adapter.setShowMenuButton(false);
         adapter.setFragmentManager(getChildFragmentManager());
-
-
         adapter.setOnProfileScrollListener(onProfileScrollListener);
-        userReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(matchingUser.getId()));
+        try {
+            userReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(matchingUser.getId()));
+        } catch (Exception x) {
+            startActivity(new Intent(getContext(), SplashActivity.class));
+            getActivity().finish();
+        }
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -138,7 +151,6 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
 
             }
         });
-
         if (matchingUser.getCommonFriendships() > 0) {
             new APIService(getContext()).getMutualFriends(matchingUser.getId(), new MutualFriendsHandler() {
                 @Override
@@ -202,6 +214,8 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
                         new PreferenceHelper(getContext()).putTutorialRateDisabled();
                     }
                 });
+            } else {
+                rateFriend();
             }
         } else {
             btn_matching_rate.setVisibility(View.GONE);
@@ -214,6 +228,14 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         });
     }
 
+    public void scrollProfileToTop() {
+        ((LinearLayoutManager) recycler_user_content.getLayoutManager()).scrollToPositionWithOffset(0, 0);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+    }
 
     private void reportUser() {
         ReportUserDialogFragment reportUserDialogFragment = ReportUserDialogFragment.newInstance(matchingUser.getId());
@@ -232,6 +254,17 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         super.onStart();
         adapter.removeAllDescriptions();
         adapter.setUser(matchingUser);
+        if (!TextUtils.isEmpty(matchingUser.getDescription())) {
+            Log.wtf("OnStart", matchingUser.getDescription());
+            UserContent content = new UserContent();
+            content.setCreatedAt(32535237599000L);
+            content.setCatContent("contentDesc");
+            content.setKey(String.valueOf(new Date().getTime()));
+            content.setComment(matchingUser.getDescription());
+            content.setLikes(0);
+            adapter.addContent(content);
+            adapter.notifyItemChanged(2);
+        }
         userReference.addChildEventListener(this);
         userReference.addValueEventListener(this);
     }

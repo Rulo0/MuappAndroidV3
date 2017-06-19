@@ -580,7 +580,10 @@ public class MainActivity extends BaseActivity implements
     protected void onRestart() {
         super.onRestart();
         Log.wtf("Restart", "hiddingFab");
-        fab_add_content.hide();
+        if (selectedNavigationElement.getFrag() instanceof ProfileFragment) {
+        } else {
+            fab_add_content.hide();
+        }
     }
 
     @Override

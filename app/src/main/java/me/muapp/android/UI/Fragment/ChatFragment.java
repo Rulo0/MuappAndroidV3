@@ -214,7 +214,6 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     }
 
     private void prepareConversation(final Conversation conversation) {
-        Log.wtf("Prepare converdeation", conversation.toString());
         final DatabaseReference userInfoReference = FirebaseDatabase.getInstance().getReference(DATABASE_REFERENCE).child("users").child(String.valueOf(conversation.getOpponentId()));
         userInfoReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -233,8 +232,6 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
                     }
                     progressUtil.showProgress(false);
                     listenerHashMap.put(conversation.getKey(), new ChatItemObject(conversationItem.getProfilePicture(), conversation.getKey(), conversation.getCrush(), userInfoReference));
-
-                } else {
 
                 }
             }

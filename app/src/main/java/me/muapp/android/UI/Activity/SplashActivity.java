@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
@@ -50,20 +49,8 @@ public class SplashActivity extends BaseActivity {
             new PreferenceHelper(this).putPendingMatch(pendingMatch);
         }
         mFirebaseAnalytics.logEvent(Analytics.Login.LOGIN_EVENTS.Login_Loading.toString(), null);
-        removePreviousMuapp();
+
     }
-
-    private void removePreviousMuapp() {
-        String uri = "com.borealos.muapp";
-        PackageManager pm = getPackageManager();
-        try {
-            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     protected void onStop() {

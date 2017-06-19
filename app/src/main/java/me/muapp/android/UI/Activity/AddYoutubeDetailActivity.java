@@ -93,6 +93,7 @@ public class AddYoutubeDetailActivity extends BaseActivity implements YouTubePla
             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    preferenceHelper.putAddedContentEnabled();
                     setResult(RESULT_OK);
                     finish();
                 }

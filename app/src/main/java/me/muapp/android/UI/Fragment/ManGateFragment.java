@@ -40,6 +40,7 @@ import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
@@ -130,11 +131,15 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.wtf(TAG, user.getPhoto());
-        Glide.with(this).load(user.getPhoto()).placeholder(R.drawable.ic_logo_muapp_no_caption).bitmapTransform(new CropCircleTransformation(getContext())).into(img_man_gate);
+        Glide.with(this).load(user.getPhoto()).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(getContext())).into(img_man_gate);
         txt_entrance_invitation_code.setOnClickListener(this);
         fab_man_edit_photo.setOnClickListener(this);
         img_info_man_gate.setOnClickListener(this);
         btn_action_man_gate.setOnClickListener(this);
+        if (new PreferenceHelper(getContext()).getMustRequestCode()) {
+            showCodePrompt();
+            new PreferenceHelper(getContext()).putMustRequestCodeDisabled();
+        }
     }
 
     @Override
@@ -213,30 +218,34 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
         mListener = null;
     }
 
+    private void showCodePrompt() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(getString(R.string.lbl_insert_code));
+        final EditText input = new EditText(getContext());
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+        builder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TextUtils.isEmpty(input.getText().toString()))
+                    redeemCode(input.getText().toString());
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.txt_entrance_invitation_code:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle(getString(R.string.lbl_insert_code));
-                final EditText input = new EditText(getContext());
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
-                builder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!TextUtils.isEmpty(input.getText().toString()))
-                            redeemCode(input.getText().toString());
-                        dialog.dismiss();
-                    }
-                });
-                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builder.show();
+                showCodePrompt();
                 break;
             case R.id.fab_man_edit_photo:
                 startActivityForResult(new Intent(getContext(), FacebookAlbumsActivity.class), REQUEST_USER_PHOTOS_FACEBOOK);
@@ -366,7 +375,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
                 Log.i(TAG, redeemResponse.toString());
                 hideProgressDialog();
                 if (redeemResponse.getAuthorization()) {
-                   // FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Gate_Man.GATE_MAN_EVENT.Gate_Man_Correct_Code.toString(), null);
+                    // FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Gate_Man.GATE_MAN_EVENT.Gate_Man_Correct_Code.toString(), null);
                     user.setHasUseInvitation(redeemResponse.getHasUseInvitation());
                     int finalPercent = user.getInvPercentage() + redeemResponse.getGotPercentage();
                     if (finalPercent > 100) {

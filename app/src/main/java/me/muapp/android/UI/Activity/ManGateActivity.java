@@ -134,6 +134,14 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (navigationElement.getFrag() instanceof ManGateFragment) {
+            fab_add_content_gate.hide();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         switch (navigationElement.getItm().getItemId()) {
             case R.id.navigation_man_discover:
@@ -162,10 +170,6 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.navigation_profile_man_profile)
-            getSupportActionBar().setTitle(loggedUser.getFullName());
-        else
-            getSupportActionBar().setTitle(item.getTitle());
         if (!navigationElement.getItm().equals(item)) {
             selectFragment(item);
         }
@@ -193,7 +197,7 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
         }
         Bundle addTypeBundle = new Bundle();
         addTypeBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Type.toString(), value.toString());
-        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add.toString(),addTypeBundle );
+        mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add.toString(), addTypeBundle);
     }
 }
 

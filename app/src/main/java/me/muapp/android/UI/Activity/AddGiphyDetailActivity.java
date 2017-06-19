@@ -96,6 +96,7 @@ public class AddGiphyDetailActivity extends BaseActivity {
             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    preferenceHelper.putAddedContentEnabled();
                     hideProgressDialog();
                     setResult(RESULT_OK);
                     finish();

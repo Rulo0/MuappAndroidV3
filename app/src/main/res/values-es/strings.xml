@@ -209,4 +209,6 @@
     <string name="lbl_excellent">¡Excelente!</string>
     <string name="lbl_verified_profile">Perfil Verificado</string>
     <string name="format_common_connections">%s Conexiones en común</string>
+    <string name="lbl_uninstall_prompt">Hemos detectado una version previa de la aplicacion intalada en el dispositivo. Por favor desinstalala.</string>
+    <string name="lbl_write_something">Escribe algo...</string>
 </resources>
