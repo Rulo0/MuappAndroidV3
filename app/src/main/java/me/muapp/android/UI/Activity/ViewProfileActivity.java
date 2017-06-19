@@ -77,6 +77,7 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
         fromCrush = getIntent().getBooleanExtra(FROM_CRUSH, false);
         fromMatch = getIntent().getBooleanExtra(FROM_MATCH, false);
         fromGate = getIntent().getBooleanExtra(FROM_GATE, false);
+        isLikedByMe = getIntent().getBooleanExtra(IS_LIKED_BY_ME, false);
         candidateProgress = getIntent().getIntExtra(CANDIDATE_PROGRESS, 0);
         new APIService(this).getFullUser(userId, this);
         view_profile_progress = (ProgressBar) findViewById(R.id.view_profile_progress);

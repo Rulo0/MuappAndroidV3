@@ -1096,6 +1096,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
 
     @Override
     public void onExpiredMuapp() {
+        conversationItem.getConversation().setLikeByMe(true);
         txt_remaining_time.setVisibility(View.GONE);
         Log.wtf("Expired", "Muapp");
         Log.wtf("Expired", txt_remaining_time.getId() + " Must be gone");

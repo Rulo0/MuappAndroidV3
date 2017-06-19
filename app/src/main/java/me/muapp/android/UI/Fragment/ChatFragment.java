@@ -127,10 +127,8 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onStart() {
         super.onStart();
-        if (!isHidden())
-            clearRecyclers();
-        chatReference.addValueEventListener(this);
-        chatReference.addChildEventListener(this);
+      //  if (!isHidden())
+         //   clearRecyclers();
         if (listenerHashMap.size() > 0) {
             for (Map.Entry entry : listenerHashMap.entrySet()) {
                 ChatItemObject object = ((ChatItemObject) entry.getValue());
@@ -147,14 +145,6 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onStop() {
         super.onStop();
-        chatReference.removeEventListener((ValueEventListener) this);
-        chatReference.removeEventListener((ChildEventListener) this);
-        if (listenerHashMap.size() > 0) {
-            for (Map.Entry entry : listenerHashMap.entrySet()) {
-                ChatItemObject object = ((ChatItemObject) entry.getValue());
-                object.reference.removeEventListener(object.getListener());
-            }
-        }
     }
 
     @Override
@@ -184,6 +174,21 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        chatReference.addValueEventListener(this);
+        chatReference.addChildEventListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        chatReference.removeEventListener((ValueEventListener) this);
+        chatReference.removeEventListener((ChildEventListener) this);
+        if (listenerHashMap.size() > 0) {
+            for (Map.Entry entry : listenerHashMap.entrySet()) {
+                ChatItemObject object = ((ChatItemObject) entry.getValue());
+                object.reference.removeEventListener(object.getListener());
+            }
+        }
     }
 
     @Override

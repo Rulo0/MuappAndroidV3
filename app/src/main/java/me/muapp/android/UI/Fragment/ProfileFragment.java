@@ -59,7 +59,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     int counter = 1;
     private boolean isToolbarPrepared = false;
     private boolean isTutorialShowing = false;
-    private boolean hasAddedContent = false;
+    PreferenceHelper preferenceHelper;
 
     public ProfileFragment() {
     }
@@ -78,6 +78,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         if (getArguments() != null) {
             user = getArguments().getParcelable(ARG_CURRENT_USER);
         }
+        preferenceHelper = new PreferenceHelper(getContext());
         adapter = new UserContentAdapter(getContext(), new UserHelper(getContext()).getLoggedUser());
         adapter.setFragmentManager(getChildFragmentManager());
         myUserContentReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(user.getId()));
@@ -120,8 +121,6 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     }
 
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -158,23 +157,21 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     }
 
 
-
-
     private void prepareToolbar() {
         if (!isToolbarPrepared) {
             toolbar_current_user_profile.getMenu().clear();
             toolbar_current_user_profile.inflateMenu(R.menu.profile_menu);
             isToolbarPrepared = true;
         }
-        if(getContext() instanceof  ManGateActivity)
+        if (getContext() instanceof ManGateActivity)
             app_bar_user_profile.setVisibility(View.GONE);
 
-        if (user.getFakeAccount() && new PreferenceHelper(getContext()).getTutorialProfileCounter() == 2) {
-            new PreferenceHelper(getContext()).addCounterToProfile();
+        if (user.getFakeAccount() && preferenceHelper.getTutorialProfileCounter() == 2) {
+            preferenceHelper.addCounterToProfile();
         }
 
-        if (new PreferenceHelper(getContext()).getTutorialProfileCounter() == 3 && hasAddedContent) {
-            new PreferenceHelper(getContext()).addCounterToProfile();
+        if (preferenceHelper.getTutorialProfileCounter() == 3 && !preferenceHelper.getTutorialAddContent()) {
+            preferenceHelper.addCounterToProfile();
         }
         String title = "";
         String content = "";
@@ -182,7 +179,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
             @Override
             public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
                 super.onTargetDismissed(view, userInitiated);
-                new PreferenceHelper(getContext()).addCounterToProfile();
+                preferenceHelper.addCounterToProfile();
                 ((MainActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
                 isToolbarPrepared = false;
                 isTutorialShowing = false;
@@ -190,7 +187,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
             }
         };
         if (getContext() instanceof MainActivity) {
-            switch (new PreferenceHelper(getContext()).getTutorialProfileCounter()) {
+            switch (preferenceHelper.getTutorialProfileCounter()) {
                 case 1:
                     if (!isTutorialShowing && !isHidden()) {
                         title = getString(R.string.lbl_tutorial_personalize);
@@ -200,7 +197,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
                     }
                     break;
                 case 2:
-                    if (!isTutorialShowing  && !isHidden()) {
+                    if (!isTutorialShowing && !isHidden()) {
                         title = getString(R.string.lbl_tutorial_verify);
                         content = getString(R.string.lbl_tutorial_verify_content);
                         new Tutorials((MainActivity) getContext()).showTutorialForMenuItem(toolbar_current_user_profile, R.id.action_settings_profile, title, content, 25, listener);
@@ -208,7 +205,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
                     }
                     break;
                 case 3:
-                    if (!isTutorialShowing  && !isHidden()) {
+                    if (!isTutorialShowing && !isHidden()) {
                         title = getString(R.string.lbl_tutorial_history);
                         content = getString(R.string.lbl_tutorial_history_content);
                         if (!fab_add_content.isShown())
@@ -320,7 +317,9 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-        hasAddedContent = true;
+        if (preferenceHelper.getTutorialAddContent()) {
+            preferenceHelper.putTutorialAddContentDisabled();
+        }
         UserContent c = dataSnapshot.getValue(UserContent.class);
         if (c != null) {
             c.setKey(dataSnapshot.getKey());
