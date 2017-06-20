@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.gson.Gson;
 import com.shinelw.library.ColorArcProgressBar;
 
 import org.json.JSONObject;
@@ -51,7 +50,6 @@ import me.muapp.android.UI.Activity.ManGateInfoActivity;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 
 import static android.app.Activity.RESULT_OK;
-import static me.muapp.android.Classes.Util.Utils.serializeUser;
 import static me.muapp.android.UI.Activity.FacebookPhotoDetailActivity.PHOTO_URL;
 
 public class ManGateFragment extends Fragment implements View.OnClickListener {
@@ -164,7 +162,6 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
                     btn_enter_man_gate.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
                             JSONObject userVerified = new JSONObject();
                             user.setPending(false);
                             new UserHelper(getContext()).saveUser(user);
@@ -188,6 +185,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
                                 });
                             } catch (Exception x) {
                             }
+                            Log.wtf("StartClicked", new UserHelper(getContext()).getLoggedUser().toString());
                             FirebaseAnalytics.getInstance(getContext()).logEvent(Analytics.Gate_Man.GATE_MAN_EVENT.Gate_Man_Start.toString(), null);
                             Intent i = new Intent(getContext(), Utils.hasLocationPermissions(getContext()) ? MainActivity.class : LocationCheckerActivity.class);
                             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -302,6 +300,10 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
             switch (requestCode) {
                 case REQUEST_USER_PHOTOS_FACEBOOK:
                     if (data.hasExtra(PHOTO_URL)) {
+                        User usr = new UserHelper(getContext()).getLoggedUser();
+                        usr.setPhoto(data.getStringExtra(PHOTO_URL));
+                        usr.getAlbum().set(0, data.getStringExtra(PHOTO_URL));
+                        new UserHelper(getContext()).saveUser(usr);
                         uploadPhoto(data.getStringExtra(PHOTO_URL));
                     }
             }
@@ -313,10 +315,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
         Runnable myRunnable = new Runnable() {
             @Override
             public void run() {
-                User usr = new UserHelper(getContext()).getLoggedUser();
-                usr.setPhoto(photoUrl);
-                new UserHelper(getContext()).saveUser(usr);
-                Glide.with(getContext()).load(usr.getPhoto()).bitmapTransform(new CropCircleTransformation(getContext())).into(img_man_gate);
+                Glide.with(getContext()).load(photoUrl).bitmapTransform(new CropCircleTransformation(getContext())).into(img_man_gate);
             }
         };
         mainHandler.post(myRunnable);
@@ -328,33 +327,23 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onSuccess(int responseCode, String userResponse) {
                 Log.wtf(TAG, userResponse);
-                try {
-                    JSONObject response = new JSONObject(userResponse);
-                    if (response.has("user")) {
-                        Gson gson = new Gson();
-                        final User u = gson.fromJson(serializeUser(response.getJSONObject("user")), User.class);
-                        if (u != null) {
-                            Handler mainHandler = new Handler(getContext().getMainLooper());
-                            Runnable myRunnable = new Runnable() {
-                                @Override
-                                public void run() {
-                                    new UserHelper(getContext()).saveUser(u);
-                                }
-                            };
-                            mainHandler.post(myRunnable);
-                        } else {
-                            Log.wtf(TAG, "user is null");
-                        }
-                    }
 
-                } catch (Exception x) {
-                    Log.wtf(TAG, x.getMessage());
-                    x.printStackTrace();
-                }
             }
 
             @Override
-            public void onSuccess(int responseCode, User user) {
+            public void onSuccess(int responseCode, final User user) {
+                if (user != null) {
+                    Handler mainHandler = new Handler(getContext().getMainLooper());
+                    Runnable myRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            new UserHelper(getContext()).saveUser(user);
+                        }
+                    };
+                    mainHandler.post(myRunnable);
+                } else {
+                    Log.wtf(TAG, "user is null");
+                }
 
             }
 

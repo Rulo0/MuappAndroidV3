@@ -119,7 +119,7 @@ public class AddFBPhotosAdapter extends RecyclerView.Adapter<AddFBPhotosAdapter.
 
         public void bind(final FacebookImage image) {
             photoUrl = String.format(ALBUM_PHOTO_FORMAT, image.getId(), userFBToken);
-            Glide.with(mContext).load(photoUrl).placeholder(R.drawable.ic_placeholder).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
+            Glide.with(mContext).load(photoUrl).placeholder(R.drawable.ic_placeholder).centerCrop().error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
             itemView.setOnClickListener(this);
             if (!hasSelectedMedia) {
                 onImageSelectedListener.onImageSelected(photoUrl, null, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE, img_photo_fb_item);

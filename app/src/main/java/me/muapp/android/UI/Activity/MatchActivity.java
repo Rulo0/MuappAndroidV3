@@ -47,8 +47,8 @@ public class MatchActivity extends BaseActivity implements View.OnClickListener 
         btn_conversation_match = (ImageButton) findViewById(R.id.btn_conversation_match);
         txt_match_description = (TextView) findViewById(R.id.txt_match_description);
         txt_match_description.setText(String.format(getString(R.string.format_match_names), likeUserMatchUser.getFirstName()));
-        Glide.with(this).load(loggedUser.getPhoto()).placeholder(R.drawable.ic_placeholder_white).bitmapTransform(new CropCircleTransformation(this)).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_my_photo);
-        Glide.with(this).load(likeUserMatchUser.getPhoto()).placeholder(R.drawable.ic_placeholder_white).bitmapTransform(new CropCircleTransformation(this)).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_your_photo);
+        Glide.with(this).load(loggedUser.getPhoto()).placeholder(R.drawable.ic_placeholder_white).bitmapTransform(new CropCircleTransformation(this)).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_my_photo);
+        Glide.with(this).load(likeUserMatchUser.getPhoto()).placeholder(R.drawable.ic_placeholder_white).bitmapTransform(new CropCircleTransformation(this)).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_your_photo);
         btn_ok_match.setOnClickListener(this);
         btn_conversation_match.setOnClickListener(this);
     }

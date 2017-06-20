@@ -177,10 +177,10 @@ public class AddPhotosActivity extends BaseActivity implements OnImageSelectedLi
         if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
             if (url != null) {
                 Log.wtf("onImageSelected", url.toString());
-                Glide.with(this).load(url).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_preview);
+                Glide.with(this).load(url).centerCrop().error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_preview);
             } else if (uri != null) {
                 Log.wtf("onImageSelected", uri.toString());
-                Glide.with(this).load(url).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_preview);
+                Glide.with(this).load(url).centerCrop().error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_preview);
             }
         } else if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
             Log.wtf("onImageSelected", url.toString());

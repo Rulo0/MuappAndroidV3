@@ -63,7 +63,7 @@ public class UserMutualFriendsAdapter extends RecyclerView.Adapter<UserMutualFri
         }
 
         public void bind(MutualFriends.MutualFriend mf) {
-            Glide.with(mContext).load(mf.getPhoto()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(img_crush_photo);
+            Glide.with(mContext).load(mf.getPhoto()).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(img_crush_photo);
             img_crush_overlay.setVisibility(View.GONE);
             img_crush_notification.setVisibility(View.GONE);
             txt_crush_name.setText(mf.getFirstName()

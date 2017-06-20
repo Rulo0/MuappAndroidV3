@@ -124,7 +124,7 @@ public class MuappStickerDialogFragment extends BottomSheetDialogFragment {
 
             public void bind(MuappSticker sticker) {
                 currentSticker = sticker;
-                Glide.with(MuappStickerDialogFragment.this).load(sticker.getImage()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_sticker);
+                Glide.with(MuappStickerDialogFragment.this).load(sticker.getImage()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_sticker);
                 img_sticker.setOnClickListener(this);
             }
 

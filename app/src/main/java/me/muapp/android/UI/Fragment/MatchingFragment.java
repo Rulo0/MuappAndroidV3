@@ -242,17 +242,18 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     }
 
     private void replaceFragment(Fragment frag) {
-        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-
         if (frag instanceof GetMatchingUsersFragment)
             showControls(false);
         else showControls(true);
+        if (currentFragment != null) {
+            getChildFragmentManager().beginTransaction().remove(currentFragment).commit();
+        }
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_up);
-        ft.replace(R.id.content_matching_profiles, frag);
-        ft.commit();
-        if (currentFragment != null)
-           // ft.remove(currentFragment);
-        currentFragment = frag;
+        ft.replace(R.id.content_matching_profiles, frag, String.valueOf(new Date().getTime())).commit();
+
+        if (frag != null)
+            currentFragment = frag;
     }
 
     private void showControls(final Boolean show) {

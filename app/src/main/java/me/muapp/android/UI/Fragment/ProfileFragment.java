@@ -164,8 +164,8 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
             toolbar_current_user_profile.inflateMenu(R.menu.profile_menu);
             isToolbarPrepared = true;
         }
-       if (getContext() instanceof ManGateActivity)
-           ((ManGateActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
+        if (getContext() instanceof ManGateActivity)
+            ((ManGateActivity) getContext()).setSupportActionBar(toolbar_current_user_profile);
 
         if (user.getFakeAccount() && preferenceHelper.getTutorialProfileCounter() == 2) {
             preferenceHelper.addCounterToProfile();
@@ -368,5 +368,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
         super.onHiddenChanged(hidden);
         if (hidden)
             adapter.stopMediaPlayer();
+        else
+            adapter.setUser(new UserHelper(getContext()).getLoggedUser());
     }
 }

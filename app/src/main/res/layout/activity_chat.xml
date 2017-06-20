@@ -56,6 +56,17 @@
                     android:visibility="gone">
 
                     <TextView
+                        android:id="@+id/txt_recording_timer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/rec_shape"
+                        android:drawablePadding="4dp"
+                        android:gravity="left"
+                        android:text="00:00"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                        android:textColor="@color/color_muapp_dark" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/ic_arrow_left"
@@ -90,8 +101,8 @@
                         android:id="@+id/chat_actions_container"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
                         android:layout_weight="2">
 
                         <ImageButton

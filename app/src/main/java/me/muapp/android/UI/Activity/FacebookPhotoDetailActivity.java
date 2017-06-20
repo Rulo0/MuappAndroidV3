@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import me.muapp.android.R;
 
@@ -26,7 +27,7 @@ public class FacebookPhotoDetailActivity extends AppCompatActivity {
         if (getIntent().hasExtra(PHOTO_URL)) {
             photoUrl = getIntent().getStringExtra(PHOTO_URL);
             if (!TextUtils.isEmpty(photoUrl)) {
-                Glide.with(this).load(photoUrl).placeholder(R.drawable.ic_placeholder).fitCenter().into(img_photo_detail);
+                Glide.with(this).load(photoUrl).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).dontAnimate().fitCenter().into(img_photo_detail);
             } else {
                 finish();
             }

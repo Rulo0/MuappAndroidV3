@@ -122,7 +122,7 @@ public class AddInstagramPhotosAdapter extends RecyclerView.Adapter<AddInstagram
         }
 
         public void bind(final InstagramPhoto image) {
-            Glide.with(mContext).load(photoUrl = image.getImages().getStandardResolution().getUrl()).placeholder(R.drawable.ic_placeholder).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
+            Glide.with(mContext).load(photoUrl = image.getImages().getStandardResolution().getUrl()).placeholder(R.drawable.ic_placeholder).centerCrop().error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_fb_item);
             itemView.setOnClickListener(this);
         }
 

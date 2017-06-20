@@ -81,9 +81,9 @@ public class AddPhotosDetailActivity extends BaseActivity {
             if (vv_video_detail.getVisibility() != View.GONE)
                 vv_video_detail.setVisibility(View.GONE);
             if (currentMedia.getPath() != null) {
-                with(this).load(currentMedia.getPath()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_detail);
+                with(this).load(currentMedia.getPath()).centerCrop().error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_detail);
             } else {
-                with(this).load(currentMedia.getUri()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_detail);
+                with(this).load(currentMedia.getUri()).centerCrop().error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_photo_detail);
             }
         } else if (currentMedia.getMediaType() == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
             if (vv_video_detail.getVisibility() != View.VISIBLE)
@@ -149,7 +149,7 @@ public class AddPhotosDetailActivity extends BaseActivity {
                     .atMost()
                     .override(400, 400) // 1280 I guess
                     .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE) // read it from cache
+                    .error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE) // read it from cache
                     .skipMemoryCache(true) // don't save in memory, needed only once
                     .into(new SimpleTarget<byte[]>() {
                         @Override

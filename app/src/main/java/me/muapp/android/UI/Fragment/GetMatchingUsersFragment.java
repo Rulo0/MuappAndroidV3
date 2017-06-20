@@ -68,7 +68,7 @@ public class GetMatchingUsersFragment extends Fragment implements OnFragmentInte
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Glide.with(this).load(user.getPhoto()).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(getContext())).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_loading_face);
+        Glide.with(this).load(user.getPhoto()).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(getContext())).skipMemoryCache(true).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_loading_face);
     }
 
     public void onButtonPressed(String name, Object object) {

@@ -54,10 +54,9 @@
                     android:id="@+id/txt_quote_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/color_quote_text"
                     android:gravity="center"
                     android:text="Content"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+                    android:textColor="@color/color_quote_text" />
             </LinearLayout>
 
 

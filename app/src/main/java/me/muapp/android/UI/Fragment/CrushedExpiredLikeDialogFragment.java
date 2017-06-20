@@ -83,7 +83,7 @@ public class CrushedExpiredLikeDialogFragment extends DialogFragment implements 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(getContext())).into(img_photo_expired_like);
+        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(getContext())).into(img_photo_expired_like);
         txt_content_expired_like.setText(String.format(getString(R.string.lbl_wait_for_muapp), conversationItem.getName()));
         img_photo_expired_like.setOnClickListener(this);
     }

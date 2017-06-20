@@ -555,6 +555,7 @@ public class MainActivity extends BaseActivity implements
 
             selectedNavigationElement = new SelectedNavigationElement(position, frag);
             invalidateOptionsMenu();
+            fab_add_content.hide();
             if (frag instanceof ProfileFragment) {
                 fab_add_content.show();
                 fab_add_content.setOnClickListener(new View.OnClickListener() {
@@ -565,8 +566,8 @@ public class MainActivity extends BaseActivity implements
                     }
                 });
             } else {
-                fab_add_content.hide();
                 fab_add_content.setOnClickListener(null);
+
             }
 
 

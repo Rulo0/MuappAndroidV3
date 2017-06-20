@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -143,7 +144,7 @@ public class CrushesAdapter extends RecyclerView.Adapter<CrushesAdapter.CrushVie
 
         public void bind(ConversationItem item) {
             thisConversation = item;
-            Glide.with(mContext).load(item.getProfilePicture()).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(img_crush_photo);
+            Glide.with(mContext).load(item.getProfilePicture()).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(img_crush_photo);
             txt_crush_name.setText(item.getName());
             img_crush_overlay.setVisibility(View.GONE);
             if (item.getConversation().getSeen() != null) {

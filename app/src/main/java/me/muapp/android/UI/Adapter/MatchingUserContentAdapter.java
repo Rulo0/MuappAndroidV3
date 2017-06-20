@@ -650,7 +650,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         @Override
         public void bind(UserContent c) {
             super.bind(c);
-            Glide.with(context).load(c.getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_picture_content);
+            Glide.with(context).load(c.getContentUrl()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).fitCenter().dontAnimate().into(img_picture_content);
             if (!TextUtils.isEmpty(c.getComment())) {
                 txt_image_comment.setText(c.getComment());
                 txt_image_comment.setVisibility(View.VISIBLE);
@@ -679,7 +679,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         @Override
         public void bind(UserContent c) {
             super.bind(c);
-            Glide.with(context).load(c.getThumbUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_video_content);
+            Glide.with(context).load(c.getThumbUrl()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_video_content);
             if (!TextUtils.isEmpty(c.getComment())) {
                 txt_video_comment.setText(c.getComment());
                 txt_video_comment.setVisibility(View.VISIBLE);
@@ -734,10 +734,10 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                 float aspectRatio;
                 if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
                     aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_content);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_content);
                 } else {
                     aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
                 }
             } catch (Exception x) {
 
@@ -779,8 +779,8 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             }
             txt_spotify_date.setReferenceTime(c.getCreatedAt());
             if ((currentData = c.getSpotifyData()) != null) {
-                Glide.with(context).load(currentData.getThumb()).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).centerCrop().into(img_detail_album);
-                Glide.with(context).load(currentData.getThumb()).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).bitmapTransform(new CenterCrop(context), new BlurTransformation(context)).into(img_detail_album_blurred);
+                Glide.with(context).load(currentData.getThumb()).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).centerCrop().into(img_detail_album);
+                Glide.with(context).load(currentData.getThumb()).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).bitmapTransform(new CenterCrop(context), new BlurTransformation(context)).into(img_detail_album_blurred);
                 txt_detail_name.setText(currentData.getName());
                 txt_detail_artist.setText(currentData.getArtistName());
                 if (currentPlaying.equals(currentData.getPreviewUrl())) {
@@ -1020,12 +1020,12 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     }
 
     public void stopMediaPlayer() {
-        Log.wtf("Stop", "mp");
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             if (previewPlayedButton != null) {
                 previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
             }
+            currentPlaying = "";
         }
     }
 

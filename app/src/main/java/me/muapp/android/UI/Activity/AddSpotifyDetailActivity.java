@@ -64,8 +64,8 @@ public class AddSpotifyDetailActivity extends BaseActivity implements MediaPlaye
             mp.setDataSource(currentSong.getPreviewUrl());
             mp.setOnPreparedListener(this);
             mp.prepareAsync();
-            Glide.with(this).load(currentSong.getAlbum().getHigherImage()).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).centerCrop().into(img_detail_album);
-            Glide.with(this).load(currentSong.getAlbum().getHigherImage()).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).bitmapTransform(new CenterCrop(this), new BlurTransformation(this)).into(img_detail_album_blurred);
+            Glide.with(this).load(currentSong.getAlbum().getHigherImage()).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).centerCrop().into(img_detail_album);
+            Glide.with(this).load(currentSong.getAlbum().getHigherImage()).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).priority(Priority.IMMEDIATE).bitmapTransform(new CenterCrop(this), new BlurTransformation(this)).into(img_detail_album_blurred);
             txt_detail_name.setText(currentSong.getName());
             txt_detail_artist.setText(currentSong.getAlbum().getArtistNames());
         } catch (Exception x) {

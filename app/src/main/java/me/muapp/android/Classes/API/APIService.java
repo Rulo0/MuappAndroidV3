@@ -40,6 +40,7 @@ import me.muapp.android.Classes.Internal.QualificationResult;
 import me.muapp.android.Classes.Internal.ReportResult;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.PreferenceHelper;
+import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -363,6 +364,7 @@ public class APIService {
                         User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                         if (u != null) {
                             Log.wtf("patchUser", u.toString());
+                            new UserHelper(mContext).saveUser(u);
                             if (handler != null)
                                 handler.onSuccess(response.code(), u);
                         } else {

@@ -235,6 +235,8 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+        if (hidden)
+            stopPlayer();
     }
 
     private void reportUser() {

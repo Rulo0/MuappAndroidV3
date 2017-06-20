@@ -67,10 +67,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -132,7 +134,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     HoldingButtonLayout input_holder;
     ConversationItem conversationItem = null;
     Toolbar toolbar;
-    TextView toolbar_opponent_fullname, chat_user_last_conversations, txt_remaining_time;
+    TextView toolbar_opponent_fullname, chat_user_last_conversations, txt_remaining_time, txt_recording_timer;
     RecyclerView recycler_conversation;
     DatabaseReference conversationReference;
     MessagesAdapter messagesAdapter;
@@ -145,8 +147,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     ChatReferences chatReferences;
     Vibrator v;
     Timer remainingTimer;
-    Integer conversationsCount = 0;
+    int conversationsCount = 0;
+    int ellapsedSeconds = 0;
     CardView container_empty_messages;
+    Timer recordingTimer;
     TextView txt_name_empty_messages, txt_conversation_count_empty_messages, txt_created_empty_messages;
     ImageView img_empty_messages;
     public static final String PROFILE_VIEW_RESULT = "PROFILE_VIEW_RESULT";
@@ -224,6 +228,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         if (User.Gender.getGender(loggedUser.getGender()) != User.Gender.Female)
             chat_user_last_conversations.setVisibility(View.GONE);
         txt_remaining_time = (TextView) findViewById(R.id.txt_remaining_time);
+        txt_recording_timer = (TextView) findViewById(R.id.txt_recording_timer);
         myStorageReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("conversations").child(conversationItem.getKey());
         yourPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("online");
         messagesAdapter = new MessagesAdapter(this);
@@ -282,7 +287,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         txt_name_empty_messages.setText(String.format("%s %s", conversationItem.getName(), conversationItem.getLastName()));
 
         txt_created_empty_messages.setText((conversationItem.getConversation().getCrush() ? "Crush " : "Match ") + DateUtils.getRelativeTimeSpanString(conversationItem.getConversation().getCreationDate(), Calendar.getInstance().getTimeInMillis(), DateUtils.MINUTE_IN_MILLIS).toString().toLowerCase());
-        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(this)).into(img_empty_messages);
+        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(this)).into(img_empty_messages);
         img_empty_messages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -344,7 +349,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recycler_conversation.setLayoutManager(llm);
         recycler_conversation.setAdapter(messagesAdapter);
-        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(this)).diskCacheStrategy(DiskCacheStrategy.ALL).into(toolbar_opponent_photo);
+        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(this)).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).into(toolbar_opponent_photo);
         toolbar_opponent_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -805,7 +810,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             listPermissionsNeeded.add(Manifest.permission.RECORD_AUDIO);
         }
         if (permissionStorage != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.RECORD_AUDIO);
+            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(ChatActivity.this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_MIC_PERMISSIONS);
@@ -881,7 +886,6 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     private void setupVoicenote() {
         input_holder.setIcon(R.drawable.ic_mic_white);
         mAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
         input_holder.addListener(new HoldingButtonLayoutListener() {
             @Override
             public void onBeforeExpand() {
@@ -901,19 +905,12 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                     }
                 });
                 mInputAnimator.start();
-            /*    mTime.setTranslationY(mTime.getHeight());
-                mTime.setAlpha(0f);
-                mTime.setVisibility(View.VISIBLE);
-                mTimeAnimator = mTime.animate().translationY(0f).alpha(1f).setDuration(mAnimationDuration);
-                mTimeAnimator.start();*/
             }
 
             @Override
             public void onExpand() {
                 if (checkAndRequestMicPermissions())
                     startRecording();
-
-
             }
 
             @Override
@@ -967,6 +964,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
     private void startRecording() {
+        Log.wtf("startRecording", "now");
         if (thisFile != null) {
             thisFile.delete();
         }
@@ -1011,6 +1009,23 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         try {
             recorder.prepare();
             recorder.start();
+
+            recordingTimer = new Timer();
+            recordingTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SimpleDateFormat formatter = new SimpleDateFormat("mm:ss", Locale.getDefault());
+                            txt_recording_timer.setText(String.valueOf(formatter.format(new Date(ellapsedSeconds * 1000))));
+                            ellapsedSeconds++;
+                        }
+                    });
+                }
+            }, 0, 1000);
+
+
         } catch (IllegalStateException e) {
             Log.wtf("startRecording1", e.getMessage());
             e.printStackTrace();
@@ -1035,10 +1050,13 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
     private void stopRecording(boolean sendFile) {
+        if (recordingTimer != null)
+            recordingTimer.cancel();
         if (voiceCountdown != null)
             voiceCountdown.cancel();
         try {
             if (recorder != null) {
+                ellapsedSeconds = 0;
                 recorder.stop();
                 recorder.reset();
                 recorder.release();

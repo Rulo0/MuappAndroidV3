@@ -81,7 +81,7 @@ public class CrushExpiredDialogFragment extends DialogFragment implements View.O
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(getContext())).into(img_photo_expired);
+        Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(getContext())).into(img_photo_expired);
         txt_content_expired.setText(String.format(getString(R.string.format_time_to_choose), conversationItem.getName()));
         imb_expired_no_muapp.setOnClickListener(this);
         imb_expired_muapp.setOnClickListener(this);

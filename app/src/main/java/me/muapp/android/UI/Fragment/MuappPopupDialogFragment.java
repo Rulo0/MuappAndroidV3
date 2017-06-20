@@ -78,8 +78,8 @@ public class MuappPopupDialogFragment extends DialogFragment implements View.OnC
         super.onActivityCreated(savedInstanceState);
         txt_dialog_title.setText(muappDialog.getTitle());
         txt_dialog_content.setText(muappDialog.getContentText());
-        Glide.with(this).load(muappDialog.getHeaderIconUrl()).placeholder(R.drawable.ic_placeholder_white).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(getContext())).into(imb_dialog_icon);
-        Glide.with(this).load(muappDialog.getContentImageUrl()).placeholder(R.drawable.ic_placeholder_white).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_dialog_content);
+        Glide.with(this).load(muappDialog.getHeaderIconUrl()).placeholder(R.drawable.ic_placeholder_white).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(getContext())).into(imb_dialog_icon);
+        Glide.with(this).load(muappDialog.getContentImageUrl()).placeholder(R.drawable.ic_placeholder_white).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_dialog_content);
         btn_dialog_more_info.setText(muappDialog.getExtraButtonTitle());
         if(muappDialog.getShowCancelButton() != null && !muappDialog.getShowCancelButton())
             btn_dismiss_muapp_dialog.setVisibility(View.GONE);
