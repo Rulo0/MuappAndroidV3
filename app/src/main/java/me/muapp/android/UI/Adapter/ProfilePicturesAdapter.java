@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class ProfilePicturesAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View v = mInflater.inflate(R.layout.profile_picture_item_layout, container, false);
         ImageView img_profile_picture_big = (ImageView) v.findViewById(R.id.img_profile_picture_big);
-        Glide.with(context).load(userAlbum.get(position)).centerCrop().placeholder(R.drawable.ic_placeholder).into(img_profile_picture_big);
+        Glide.with(context).load(userAlbum.get(position)).diskCacheStrategy(DiskCacheStrategy.ALL).priority(Priority.IMMEDIATE).centerCrop().placeholder(R.drawable.ic_placeholder).into(img_profile_picture_big);
         container.addView(v);
         return v;
     }
@@ -52,6 +54,7 @@ public class ProfilePicturesAdapter extends PagerAdapter {
     public boolean isViewFromObject(View view, Object object) {
         return view == ((LinearLayout) object);
     }
+
     @Override
     public void destroyItem(ViewGroup collection, int position, Object view) {
         collection.removeView((View) view);

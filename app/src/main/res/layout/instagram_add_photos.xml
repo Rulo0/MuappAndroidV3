@@ -20,7 +20,7 @@
 
     <Button
         android:id="@+id/btn_connect_instagram"
-        style="@style/color_button_main"
+        style="@style/main_button_layout_style"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"

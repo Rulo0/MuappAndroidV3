@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="4dp"
     android:layout_marginLeft="8dp"
-    android:layout_marginRight="64dp"
+    android:layout_marginRight="180dp"
     android:layout_marginTop="4dp"
     android:gravity="right"
     android:orientation="vertical">
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/img_receiver_image"
+            android:id="@+id/img_receiver_sticker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -33,7 +33,7 @@
 
 
         <com.github.curioustechizen.ago.RelativeTimeTextView
-            android:id="@+id/txt_time_receiver_image"
+            android:id="@+id/txt_time_receiver_sticker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"

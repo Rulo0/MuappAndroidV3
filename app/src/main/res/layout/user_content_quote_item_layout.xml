@@ -13,7 +13,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="16dp">
 
             <ImageView
                 android:id="@+id/img_qte_left"
@@ -21,7 +22,6 @@
                 android:layout_height="24dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
-                android:layout_margin="8dp"
                 app:srcCompat="@drawable/ic_quote_left" />
 
             <ImageView
@@ -30,16 +30,13 @@
                 android:layout_height="24dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
-                android:layout_margin="8dp"
-                android:layout_marginBottom="8dp"
-                app:srcCompat="@drawable/ic_quote_right"
-                tools:layout_editor_absoluteX="280dp" />
+                app:srcCompat="@drawable/ic_quote_right" />
 
             <LinearLayout
+                android:id="@+id/container_qte"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_margin="8dp"
                 android:layout_toLeftOf="@id/img_qte_right"
                 android:layout_toRightOf="@id/img_qte_left"
                 android:orientation="vertical">
@@ -57,16 +54,21 @@
                     android:id="@+id/txt_quote_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/color_quote_text"
                     android:gravity="center"
                     android:text="Content"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
             </LinearLayout>
+
+
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/quotes_container_footer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp">
 
             <View
                 android:id="@+id/img_quote_icon"

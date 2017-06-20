@@ -207,11 +207,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             //Pictures
             case 4:
                 View senderImageView = mInflater.inflate(R.layout.message_item_layout_sender_image, parent, false);
-                holder = new MyStickerContentHolder(senderImageView);
+                holder = new MyImageContentHolder(senderImageView);
                 break;
             case -4:
                 View receiverImageView = mInflater.inflate(R.layout.message_item_layout_receiver_image, parent, false);
-                holder = new YourStickerContentHolder(receiverImageView);
+                holder = new YourImageContentHolder(receiverImageView);
                 break;
             //Spotify
             case 6:
@@ -231,13 +231,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 View receiverYoutubeView = mInflater.inflate(R.layout.message_item_layout_receiver_youtube, parent, false);
                 holder = new YourYoutubeContentHolder(receiverYoutubeView);
                 break;
-            //Pictures
+            //Stickers
             case 10:
-                View senderStickerView = mInflater.inflate(R.layout.message_item_layout_sender_image, parent, false);
+                View senderStickerView = mInflater.inflate(R.layout.message_item_layout_sender_sticker, parent, false);
                 holder = new MyStickerContentHolder(senderStickerView);
                 break;
             case -10:
-                View receiverStickerView = mInflater.inflate(R.layout.message_item_layout_receiver_image, parent, false);
+                View receiverStickerView = mInflater.inflate(R.layout.message_item_layout_receiver_sticker, parent, false);
                 holder = new YourStickerContentHolder(receiverStickerView);
                 break;
             default:
@@ -911,44 +911,44 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     public class MyStickerContentHolder extends MessageContentHolder {
-        RelativeTimeTextView txt_time_sender_image;
-        ImageView img_sender_image;
-        ImageView img_indicator_sender_image;
+        RelativeTimeTextView txt_time_sender_sticker;
+        ImageView img_sender_sticker;
+        ImageView img_indicator_sender_sticker;
 
         public MyStickerContentHolder(View itemView) {
             super(itemView);
-            txt_time_sender_image = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_image);
-            img_sender_image = (ImageView) itemView.findViewById(R.id.img_sender_image);
-            img_indicator_sender_image = (ImageView) itemView.findViewById(R.id.img_indicator_sender_image);
-            setIndicatorView(img_indicator_sender_image);
+            txt_time_sender_sticker = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_sticker);
+            img_sender_sticker = (ImageView) itemView.findViewById(R.id.img_sender_sticker);
+            img_indicator_sender_sticker = (ImageView) itemView.findViewById(R.id.img_indicator_sender_sticker);
+            setIndicatorView(img_indicator_sender_sticker);
         }
 
         @Override
         public void bind(Message message) {
             super.bind(message);
-            txt_time_sender_image.setReferenceTime(message.getTimeStamp());
-            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_sender_image);
+            txt_time_sender_sticker.setReferenceTime(message.getTimeStamp());
+            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_sender_sticker);
         }
     }
 
     public class YourStickerContentHolder extends MessageContentHolder {
-        RelativeTimeTextView txt_time_receiver_image;
-        ImageView img_receiver_image;
+        RelativeTimeTextView txt_time_receiver_sticker;
+        ImageView img_receiver_sticker;
 
         public YourStickerContentHolder(View itemView) {
             super(itemView);
-            txt_time_receiver_image = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_receiver_image);
-            img_receiver_image = (ImageView) itemView.findViewById(R.id.img_receiver_image);
+            txt_time_receiver_sticker = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_receiver_sticker);
+            img_receiver_sticker = (ImageView) itemView.findViewById(R.id.img_receiver_sticker);
         }
 
         @Override
         public void bind(Message message) {
             try {
-                txt_time_receiver_image.setReferenceTime(message.getTimeStamp());
+                txt_time_receiver_sticker.setReferenceTime(message.getTimeStamp());
             } catch (Exception x) {
 
             }
-            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_receiver_image);
+            Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).into(img_receiver_sticker);
         }
     }
 

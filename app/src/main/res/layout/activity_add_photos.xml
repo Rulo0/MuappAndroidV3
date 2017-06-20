@@ -12,7 +12,6 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/appbar_padding_top"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
@@ -26,7 +25,7 @@
 
         </android.support.v7.widget.Toolbar>
 
-        <RelativeLayout
+        <me.muapp.android.UI.View.SquareRelativeLayout
             android:layout_width="match_parent"
             android:layout_height="270dp">
 
@@ -46,11 +45,11 @@
             <ImageView
                 android:id="@+id/img_photo_preview"
                 android:layout_width="match_parent"
-                android:layout_height="270dp"
+                android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop" />
-        </RelativeLayout>
+        </me.muapp.android.UI.View.SquareRelativeLayout>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"

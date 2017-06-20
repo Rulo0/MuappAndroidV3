@@ -469,7 +469,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 }
 
             }
-        }, 0, 1000);//Run each minute
+        }, 0, 1000);
     }
 
 

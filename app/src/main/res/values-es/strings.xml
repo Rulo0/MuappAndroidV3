@@ -183,7 +183,7 @@
     <string name="lbl_gate_load_title">ESTÁN ESPERANDO A ENTRAR EN MUAPP ¡ACÉPTALES!</string>
     <string name="lbl_undo_match">Deshacer match</string>
     <string name="lbl_undo_crush">Deshacer crush</string>
-    <string name="lbl_no_crush">¡Vaya! Parece que aún no hay crushes por aquí.</string>
+    <string name="lbl_no_crush">Aquí encontrarás tus crushes. Tienes 24h para decidirte.</string>
     <string name="lbl_no_match">¡Vaya! Parece que aún no hay matches por aquí.</string>
     <string name="lbl_confirm_unmatch">Al deshacer el Match se eliminará su conversación y no podrán volver a contactar. ¿Estás segur@?</string>
     <string name="lbl_confirm_uncrush">Al deshacer el Crush se eliminará su conversación y no podrán volver a contactar. ¿Estás segur@?</string>
@@ -211,4 +211,5 @@
     <string name="format_common_connections">%s Conexiones en común</string>
     <string name="lbl_uninstall_prompt">Hemos detectado una version previa de la aplicacion intalada en el dispositivo. Por favor desinstalala.</string>
     <string name="lbl_write_something">Escribe algo...</string>
+    <string name="lbl_no_crush_male">Un crush dura 24h, !espera a que 1 chica te haga crush!</string>
 </resources>

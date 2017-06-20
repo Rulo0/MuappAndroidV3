@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -18,13 +19,19 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.eralp.circleprogressview.CircleProgressView;
+
+import java.io.File;
 
 import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.MuappUserInfoHandler;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.ProgressUtil;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
@@ -45,6 +52,7 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
     public static final String FROM_GATE = "FROM_GATE";
     public static final String IS_LIKED_BY_ME = "IS_LIKED_BY_ME";
     public static final String CANDIDATE_PROGRESS = "CANDIDATE_PROGRESS";
+    ProgressUtil progressUtil;
     MatchingUser user;
     TextView txt_profile_view_name, txt_candidate_profile_progress;
     ImageView img_profile_view_verified;
@@ -89,6 +97,8 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
         btn_profile_gate_deny.setOnClickListener(this);
         candidate_profile_progress.setProgress(candidateProgress);
         txt_candidate_profile_progress.setText(candidateProgress + "%");
+        progressUtil = new ProgressUtil(this, findViewById(R.id.content_profile_view), view_profile_progress);
+        progressUtil.showProgress(true);
     }
 
     @Override
@@ -123,25 +133,42 @@ public class ViewProfileActivity extends BaseActivity implements MuappUserInfoHa
     @Override
     public void onSuccess(int responseCode, final MatchingUser muappuser) {
         user = muappuser;
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (muappuser.getFakeAccount() != null && muappuser.getFakeAccount()) {
-                    img_profile_view_verified.setImageResource(R.drawable.ic_verified_profile);
-                    img_profile_view_verified.setVisibility(View.VISIBLE);
-                    img_profile_view_verified.setPadding(0, 0, dpToPx(4), 0);
-                }
-                showControls(true);
-                Utils.animViewFade(view_profile_progress, false);
-            }
-        });
-
         Log.w("GettingUser", muappuser.toString());
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
         ft.replace(R.id.content_profile_view, ViewUserProfileFragment.newInstance(muappuser));
         ft.commit();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Glide.with(ViewProfileActivity.this).load(user.getAlbum().get(0)).downloadOnly(new SimpleTarget<File>() {
+                    @Override
+                    public void onResourceReady(File resource, GlideAnimation<? super File> glideAnimation) {
+                        showControls(true);
+                        progressUtil.showProgress(false);
+                        if (muappuser.getFakeAccount() != null && muappuser.getFakeAccount()) {
+                            img_profile_view_verified.setImageResource(R.drawable.ic_verified_profile);
+                            img_profile_view_verified.setVisibility(View.VISIBLE);
+                            img_profile_view_verified.setPadding(0, 0, dpToPx(4), 0);
+                        }
+                    }
+
+                    @Override
+                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                        super.onLoadFailed(e, errorDrawable);
+                        showControls(true);
+                        progressUtil.showProgress(false);
+                        if (muappuser.getFakeAccount() != null && muappuser.getFakeAccount()) {
+                            img_profile_view_verified.setImageResource(R.drawable.ic_verified_profile);
+                            img_profile_view_verified.setVisibility(View.VISIBLE);
+                            img_profile_view_verified.setPadding(0, 0, dpToPx(4), 0);
+                        }
+                    }
+                });
+            }
+        });
+
+
     }
 
     @Override

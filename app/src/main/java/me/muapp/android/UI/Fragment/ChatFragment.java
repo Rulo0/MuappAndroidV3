@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -43,6 +44,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     private OnFragmentInteractionListener mListener;
     MatchesAdapter matchesAdapter;
     CrushesAdapter crushesAdapter;
+    TextView txt_placeholder_no_crush;
     LinearLayout placeholder_no_match, placeholder_no_crush;
     View progress_chats, content_chats;
     RecyclerView recycler_matches, recycler_crushes, recycler_chats;
@@ -127,8 +129,8 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onStart() {
         super.onStart();
-      //  if (!isHidden())
-         //   clearRecyclers();
+        //  if (!isHidden())
+        //   clearRecyclers();
         if (listenerHashMap.size() > 0) {
             for (Map.Entry entry : listenerHashMap.entrySet()) {
                 ChatItemObject object = ((ChatItemObject) entry.getValue());
@@ -157,6 +159,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         recycler_crushes = (RecyclerView) v.findViewById(R.id.recycler_crushes);
         placeholder_no_match = (LinearLayout) v.findViewById(R.id.placeholder_no_match);
         placeholder_no_crush = (LinearLayout) v.findViewById(R.id.placeholder_no_crush);
+        txt_placeholder_no_crush = (TextView) v.findViewById(R.id.txt_placeholder_no_crush);
         LinearLayoutManager linearLayoutManagerHorizontal = new LinearLayoutManager(getContext());
         linearLayoutManagerHorizontal.setOrientation(LinearLayoutManager.HORIZONTAL);
         recycler_crushes.setLayoutManager(linearLayoutManagerHorizontal);
@@ -174,8 +177,10 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        chatReference.addValueEventListener(this);
+        if (User.Gender.getGender(user.getGender()) == User.Gender.Male)
+            txt_placeholder_no_crush.setText(getString(R.string.lbl_no_crush_male));
         chatReference.addChildEventListener(this);
+        chatReference.addValueEventListener(this);
     }
 
     @Override
@@ -292,6 +297,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
+        Log.wtf("Fucking", "Data");
         progressUtil.showProgress(false);
         if (dataSnapshot.hasChildren()) {
 

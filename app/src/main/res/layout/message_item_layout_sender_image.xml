@@ -28,7 +28,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/bg_message_sender_bottom"
         android:gravity="right"
         android:orientation="vertical"
         android:padding="8dp">
@@ -43,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="hora"
-                android:textColor="@android:color/white"
+                android:textColor="@color/color_muapp_dark"
                 android:textSize="10dp" />
 
             <ImageView

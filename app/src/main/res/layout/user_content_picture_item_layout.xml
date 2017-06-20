@@ -21,11 +21,14 @@
         </me.muapp.android.UI.View.SquareRelativeLayout>
 
         <RelativeLayout
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/img_video_icon"
+                android:id="@+id/img_gif_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -49,7 +52,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_toLeftOf="@id/btn_gif_menu"
-                android:layout_toRightOf="@+id/img_video_icon"
+                android:layout_toRightOf="@+id/img_gif_icon"
                 android:orientation="vertical">
 
                 <TextView

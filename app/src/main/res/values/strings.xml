@@ -217,7 +217,7 @@
     <string name="lbl_gate_load_title">THEY ARE WAITING TO ENTER MUAPP. LET THEM IN!</string>
     <string name="lbl_undo_match">Unmatch</string>
     <string name="lbl_undo_crush">Uncrush</string>
-    <string name="lbl_no_crush">Ups! Seems you have no crushes yet.</string>
+    <string name="lbl_no_crush">Here you will find your crushes. You have 24 hours to decide.</string>
     <string name="lbl_no_match">Ups! Seems you have no matches yet.</string>
     <string name="title_notifications">Notifications</string>
     <string name="lbl_confirm_unmatch">If you unmatch this user, the conversation will be deleted and you won’t be able to contact him/her again. Are you sure?</string>
@@ -246,4 +246,5 @@
     <string name="format_common_connections">%s Common Connections</string>
     <string name="lbl_uninstall_prompt">We have detected a previous version of the application installed in the device. Please uninstall it.</string>
     <string name="lbl_write_something">Write something...</string>
+    <string name="lbl_no_crush_male">A crush lasts 24h, wait for 1 girl to make you crush!</string>
 </resources>

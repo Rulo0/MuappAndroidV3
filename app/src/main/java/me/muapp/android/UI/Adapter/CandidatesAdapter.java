@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.eralp.circleprogressview.CircleProgressView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -198,7 +199,7 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
                 txt_candidate_friends.setText(String.valueOf(candidate.getCommonFriendships()));
                 txt_candidate_name.setText(candidate.getFirstName());
                 txt_candidate_age.setText(String.format(mContext.getString(R.string.format_user_years), candidate.getAge()));
-                Glide.with(mContext).load(candidate.getPhoto()).asBitmap().centerCrop().placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_candidate);
+                Glide.with(mContext).load(candidate.getPhoto()).asBitmap().centerCrop().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).diskCacheStrategy(DiskCacheStrategy.RESULT).into(img_photo_candidate);
                 btn_candidate_clear.setOnClickListener(this);
                 btn_candidate_like.setOnClickListener(this);
                 btn_candidate_unlike.setOnClickListener(this);

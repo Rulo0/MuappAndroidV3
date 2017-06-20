@@ -71,6 +71,7 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
     EditText et_voicenote_comment;
     TextView txt_hold_to_record;
     LinearLayout container_write_comment_voicenote;
+    boolean isMediaPlayerPrepared = false;
 
     private void logEvent(String bundleAction) {
         Bundle voicenoteBundle = new Bundle();
@@ -205,18 +206,34 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
         }
     }
 
+    private void prepareMediaPlayer() {
+        try {
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(thisFile.getAbsolutePath());
+            mediaPlayer.setOnPreparedListener(AddVoiceNoteActivity.this);
+            mediaPlayer.setOnCompletionListener(AddVoiceNoteActivity.this);
+            mediaPlayer.prepareAsync();
+        } catch (Exception x) {
+
+        }
+    }
+
     private View.OnClickListener getButtonListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    mediaPlayer.reset();
-                    mediaPlayer.setDataSource(thisFile.getAbsolutePath());
-                    mediaPlayer.setOnPreparedListener(AddVoiceNoteActivity.this);
-                    mediaPlayer.setOnCompletionListener(AddVoiceNoteActivity.this);
-                    mediaPlayer.prepareAsync();
-                } catch (Exception x) {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                    voicenote_play.setImageResource(R.drawable.ic_play);
+                } else {
+                    if (isMediaPlayerPrepared) {
+                        mediaPlayer.start();
+                        voicenote_play.setImageResource(R.drawable.ic_pause);
+                    } else {
+                        prepareMediaPlayer();
+                    }
                 }
+
             }
         };
 
@@ -379,6 +396,7 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        isMediaPlayerPrepared = true;
         mp.start();
         voicenote_play.setImageResource(R.drawable.ic_pause);
     }
