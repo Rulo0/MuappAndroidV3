@@ -18,7 +18,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +45,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -74,14 +74,16 @@ import me.muapp.android.Classes.Internal.MuappDialog;
 import me.muapp.android.Classes.Internal.SelectedNavigationElement;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
+import me.muapp.android.Classes.Util.Log;
+import me.muapp.android.Classes.Util.LoginHelper;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.ResultReceivers.AddressResultReceiver;
 import me.muapp.android.Services.FetchAddressIntentService;
 import me.muapp.android.UI.Fragment.AddContentDialogFragment;
-import me.muapp.android.UI.Fragment.ChatFragment;
 import me.muapp.android.UI.Fragment.CandidatesFragment;
+import me.muapp.android.UI.Fragment.ChatFragment;
 import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import me.muapp.android.UI.Fragment.MatchingFragment;
 import me.muapp.android.UI.Fragment.MuappPopupDialogFragment;
@@ -179,6 +181,8 @@ public class MainActivity extends BaseActivity implements
     /*    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);*/
         if (Utils.hasLocationPermissions(this)) {
+            if (FirebaseAuth.getInstance().getCurrentUser() == null)
+                new LoginHelper(MainActivity.this).performFullLogin();
             if (mGoogleApiClient == null) {
                 mGoogleApiClient = new GoogleApiClient.Builder(this)
                         .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {

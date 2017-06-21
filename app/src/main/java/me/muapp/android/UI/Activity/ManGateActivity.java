@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -103,7 +104,8 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
                 }
             }
         }
-        new LoginHelper(ManGateActivity.this).performFullLogin();
+        if (FirebaseAuth.getInstance().getCurrentUser() == null)
+            new LoginHelper(ManGateActivity.this).performFullLogin();
     }
 
     private void selectFragment(MenuItem item) {
