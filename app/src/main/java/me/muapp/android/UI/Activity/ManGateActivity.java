@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +26,8 @@ import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.CurrentNavigationElement;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
+import me.muapp.android.Classes.Util.LoginHelper;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
@@ -102,6 +103,7 @@ public class ManGateActivity extends BaseActivity implements BottomNavigationVie
                 }
             }
         }
+        new LoginHelper(ManGateActivity.this).performFullLogin();
     }
 
     private void selectFragment(MenuItem item) {

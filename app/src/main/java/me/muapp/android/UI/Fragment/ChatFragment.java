@@ -170,7 +170,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         recycler_matches.setLayoutManager(verticalLLM);
         recycler_matches.setAdapter(matchesAdapter);
         progressUtil = new ProgressUtil(getContext(), content_chats, progress_chats);
-       // progressUtil.showProgress(true);
+        progressUtil.showProgress(true);
         return v;
     }
 

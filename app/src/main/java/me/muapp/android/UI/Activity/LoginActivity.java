@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import me.muapp.android.Classes.Util.Log;
 import android.view.View;
 
 import com.facebook.AccessToken;
@@ -34,6 +33,7 @@ import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.Errors.Login.LoginError;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Util.Constants;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.LoginHelper;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Utils;
@@ -157,9 +157,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                             Gson gson = new Gson();
                             User u = gson.fromJson(serializeUser(response.getJSONObject("user")), User.class);
                             if (u != null) {
+                                if (u.getId() != null)
+                                    new LoginHelper(LoginActivity.this).performFullLogin();
                                 saveUser(u);
                                 redirectLoggedUser();
-                                new LoginHelper(LoginActivity.this).performFullLogin();
                             } else {
 
                             }
