@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import java.util.Map;
 import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.ProgressUtil;
 import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
@@ -170,7 +170,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         recycler_matches.setLayoutManager(verticalLLM);
         recycler_matches.setAdapter(matchesAdapter);
         progressUtil = new ProgressUtil(getContext(), content_chats, progress_chats);
-        progressUtil.showProgress(true);
+       // progressUtil.showProgress(true);
         return v;
     }
 
@@ -251,10 +251,10 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        progressUtil.showProgress(false);
         Conversation conversation = dataSnapshot.getValue(Conversation.class);
         if (conversation != null) {
             conversation.setKey(dataSnapshot.getKey());
-
             prepareConversation(conversation);
         }
     }

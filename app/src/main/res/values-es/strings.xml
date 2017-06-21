@@ -10,7 +10,6 @@
     <string name="action_select_from_facebook">Importar de Facebook</string>
     <string name="action_select_photo">Seleccionar de la galería</string>
     <string name="action_settings">Ajustes</string>
-    <string name="action_sign_in"></string>
     <string name="action_take_photo">Capturar foto</string>
     <string name="btn_logout">Cerrar sesión</string>
     <string name="chat_activity_button_send">Enviar</string>
@@ -143,7 +142,6 @@
     <string name="matches_last_message_sticker">Sticker</string>
     <string name="matches_last_message_voice_message">Nota de voz</string>
     <string name="minutes_ago">hace %d minutos</string>
-    <string name="prompt_email"></string>
     <string name="terms_of_use">Términos de uso</string>
     <string name="title_activity_settings">Ajustes</string>
     <string name="title_notifications">Notificaciones</string>
@@ -212,4 +210,7 @@
     <string name="lbl_uninstall_prompt">Hemos detectado una version previa de la aplicacion intalada en el dispositivo. Por favor desinstalala.</string>
     <string name="lbl_write_something">Escribe algo...</string>
     <string name="lbl_no_crush_male">Un crush dura 24h, !espera a que 1 chica te haga crush!</string>
+    <string name="facebook_account_key_token">3818036a6661eaab9ffcac9f7417928e</string>
+    <string name="facebook_app_id">185195208478071</string>
+    <string name="fb_login_protocol_scheme">fb185195208478071</string>
 </resources>

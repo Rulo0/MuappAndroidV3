@@ -13,7 +13,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;

@@ -5,7 +5,7 @@ import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.View;
 
 import com.getkeepsafe.taptargetview.TapTarget;

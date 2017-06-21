@@ -8,7 +8,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 import me.muapp.android.Classes.Util.Constants;
+import me.muapp.android.Classes.Util.Log;
 
 /**
  * Created by rulo on 4/05/17.
@@ -50,14 +50,14 @@ public class FetchAddressIntentService extends IntentService {
         } catch (IOException ioException) {
             // Catch network or other I/O problems.
             errorMessage = "Service not available";
-            Log.e(TAG, errorMessage, ioException);
+            Log.e(TAG, errorMessage);
         } catch (IllegalArgumentException illegalArgumentException) {
             // Catch invalid latitude or longitude values.
             errorMessage = "Invalid lat - lon";
             Log.e(TAG, errorMessage + ". " +
                     "Latitude = " + location.getLatitude() +
                     ", Longitude = " +
-                    location.getLongitude(), illegalArgumentException);
+                    location.getLongitude());
         }
 
         // Handle case where no address was found.

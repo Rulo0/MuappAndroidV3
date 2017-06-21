@@ -9,7 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;

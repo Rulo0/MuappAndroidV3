@@ -2,7 +2,7 @@ package me.muapp.android.Classes.FirebaseMessaging;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 
 /**
  * Created by rulo on 07/06/17.

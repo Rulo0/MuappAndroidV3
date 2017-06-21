@@ -3,7 +3,7 @@ package me.muapp.android.ResultReceivers;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 
 import me.muapp.android.Classes.Util.Constants;
 

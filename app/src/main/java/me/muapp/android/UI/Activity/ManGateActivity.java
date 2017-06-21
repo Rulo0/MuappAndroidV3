@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;

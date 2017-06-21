@@ -2,7 +2,7 @@ package me.muapp.android.Classes.Internal;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;

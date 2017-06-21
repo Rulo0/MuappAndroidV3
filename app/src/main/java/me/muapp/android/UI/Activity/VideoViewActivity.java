@@ -3,7 +3,7 @@ package me.muapp.android.UI.Activity;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.MediaController;

@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.View;
 
 import com.facebook.AccessToken;

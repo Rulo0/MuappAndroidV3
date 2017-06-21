@@ -3,7 +3,7 @@ package me.muapp.android.Classes.API;
 import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 
 import com.google.gson.Gson;
 
@@ -67,7 +67,7 @@ public class APIService {
             .build();
     Context mContext;
     SimpleDateFormat dateFormat;
-    private static final String BASE_URL = "http://dev.muapp.me/"; //BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
+    private static final String BASE_URL = "https://app.muapp.me/"; //BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
 
     public APIService(Context mContext) {
         this.mContext = mContext;
@@ -82,7 +82,6 @@ public class APIService {
                     .url(url)
                     .get()
                     .build();
-            Log.i("getUserProfile", url);
             client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -94,7 +93,6 @@ public class APIService {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String responseString = response.body().string();
-                    Log.wtf("getUserProfile", responseString);
                     if (handler != null)
                         handler.onSuccess(response.code(), responseString);
                     try {
@@ -103,17 +101,14 @@ public class APIService {
                             Gson gson = new Gson();
                             User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                             if (u != null) {
-                                Log.wtf("getUserProfile", u.toString());
                                 if (handler != null)
                                     handler.onSuccess(response.code(), u);
                             } else {
-                                Log.wtf("getUserProfile", "user is null");
-                            }
+                               }
                         }
                     } catch (Exception x) {
                         if (handler != null)
                             handler.onSuccess(response.code(), responseString);
-                        Log.wtf("getUserProfile", x.getMessage());
                         x.printStackTrace();
                     }
 
@@ -147,9 +142,6 @@ public class APIService {
                 .url(url)
                 .post(body)
                 .build();
-        Log.i("confirmUser", url);
-        Log.i("confirmUser", sendObject.toString());
-
         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -169,15 +161,12 @@ public class APIService {
                         Gson gson = new Gson();
                         User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                         if (u != null) {
-                            Log.wtf("confirmUser", u.toString());
                             if (handler != null)
                                 handler.onSuccess(response.code(), u);
                         } else {
-                            Log.wtf("confirmUser", "user is null");
-                        }
+                            }
                     }
                 } catch (Exception x) {
-                    Log.wtf("confirmUser", x.getMessage());
                     x.printStackTrace();
                 }
             }
@@ -206,9 +195,7 @@ public class APIService {
                 .url(url)
                 .post(body)
                 .build();
-        Log.wtf("likeUser", url);
-        Log.wtf("likeUser", sendObject.toString());
-        final String demoMatch = "{\"dialog_key\":" + myConversationKey + ",\"message\":\"Tu selección ha sido registrada con éxito.\"}";
+         final String demoMatch = "{\"dialog_key\":" + myConversationKey + ",\"message\":\"Tu selección ha sido registrada con éxito.\"}";
         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -221,7 +208,6 @@ public class APIService {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseString = response.body().string();
-                    Log.wtf("LikeResult", responseString);
                     try {
                         LikeUserResult result = new Gson().fromJson(responseString, LikeUserResult.class);
                         if (result != null)
@@ -257,9 +243,7 @@ public class APIService {
                 .url(url)
                 .post(body)
                 .build();
-        Log.i("reportUser", url);
-        Log.i("reportUser", sendObject.toString());
-        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+       client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (handler != null)
@@ -270,8 +254,7 @@ public class APIService {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseString = response.body().string();
-                Log.i("reportUser", responseString);
-                try {
+                 try {
                     if (handler != null)
                         handler.onSuccess(response.code(), new Gson().fromJson(responseString, ReportResult.class));
                 } catch (Exception x) {
@@ -290,8 +273,7 @@ public class APIService {
                 .url(url)
                 .post(emptyBody)
                 .build();
-        Log.i("dislikeUser", url);
-        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (handler != null)
@@ -302,7 +284,6 @@ public class APIService {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseString = response.body().string();
-                Log.i("dislikeUser", responseString);
                 if (handler != null)
                     handler.onSuccess(response.code(), responseString);
                 try {
@@ -311,15 +292,12 @@ public class APIService {
                         Gson gson = new Gson();
                         User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                         if (u != null) {
-                            Log.wtf("dislikeUser", u.toString());
-                            if (handler != null)
+                             if (handler != null)
                                 handler.onSuccess(response.code(), u);
                         } else {
-                            Log.wtf("dislikeUser", "user is null");
-                        }
+                         }
                     }
                 } catch (Exception x) {
-                    Log.wtf("dislikeUser", x.getMessage());
                     x.printStackTrace();
                 }
             }
@@ -341,9 +319,7 @@ public class APIService {
                 .url(url)
                 .patch(body)
                 .build();
-        Log.i("patchUser", url);
-        Log.i("patchUser", sendObject.toString());
-        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+      client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (handler != null)
@@ -354,7 +330,6 @@ public class APIService {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseString = response.body().string();
-                Log.i("patchUser response", responseString);
                 if (handler != null)
                     handler.onSuccess(response.code(), responseString);
                 try {
@@ -363,17 +338,14 @@ public class APIService {
                         Gson gson = new Gson();
                         User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                         if (u != null) {
-                            Log.wtf("patchUser", u.toString());
                             new UserHelper(mContext).saveUser(u);
                             if (handler != null)
                                 handler.onSuccess(response.code(), u);
                         } else {
-                            Log.wtf("patchUser", "user is null");
-                        }
+                             }
                     }
 
                 } catch (Exception x) {
-                    Log.wtf("getUserProfile", x.getMessage());
                     x.printStackTrace();
                 }
 
@@ -397,8 +369,6 @@ public class APIService {
                 .url(url)
                 .post(body)
                 .build();
-        Log.i("setUserFakeAccount", url);
-        Log.i("setUserFakeAccount", sendObject.toString());
         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -418,15 +388,12 @@ public class APIService {
                         Gson gson = new Gson();
                         User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                         if (u != null) {
-                            Log.wtf("setUserFakeAccount", u.toString());
                             if (handler != null)
                                 handler.onSuccess(response.code(), u);
                         } else {
-                            Log.wtf("setUserFakeAccount", "user is null");
-                        }
+                         }
                     }
                 } catch (Exception x) {
-                    Log.wtf("setUserFakeAccount", x.getMessage());
                     x.printStackTrace();
                 }
             }
@@ -449,9 +416,7 @@ public class APIService {
                 .url(url)
                 .post(body)
                 .build();
-        Log.i("setUserQualification", url);
-        Log.i("setUserQualification", sendObject.toString());
-        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (handler != null)
@@ -462,8 +427,7 @@ public class APIService {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseString = response.body().string();
-                Log.i("setUserQualification", responseString);
-                try {
+                 try {
                     if (handler != null)
                         handler.onSuccess(response.code(), new Gson().fromJson(responseString, QualificationResult.class));
                 } catch (Exception x) {
@@ -483,7 +447,6 @@ public class APIService {
                     .url(url)
                     .get()
                     .build();
-            Log.i("redeemInvitationCode", url);
             client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -515,7 +478,6 @@ public class APIService {
                     .url(url)
                     .delete()
                     .build();
-            Log.wtf("deleteUser", url);
             client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -535,17 +497,14 @@ public class APIService {
                             Gson gson = new Gson();
                             User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                             if (u != null) {
-                                Log.wtf("deleteUser", u.toString());
-                                if (handler != null)
+                                 if (handler != null)
                                     handler.onSuccess(response.code(), u);
                             } else {
-                                Log.wtf("deleteUser", "user is null");
                                 handler.onSuccess(response.code(), getNullUser);
                             }
                         }
 
                     } catch (Exception x) {
-                        Log.wtf("deleteUser", x.getMessage());
                         x.printStackTrace();
                     }
                 }
@@ -604,12 +563,10 @@ public class APIService {
                                         Gson gson = new Gson();
                                         User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                                         if (u != null) {
-                                            Log.wtf("uploadPhotos", u.toString());
-                                            if (handler != null)
+                                             if (handler != null)
                                                 handler.onSuccess(response.code(), u);
                                         } else {
-                                            Log.wtf("uploadPhotos", "user is null");
-                                        }
+                                           }
                                     }
 
                                 } catch (Exception x) {
@@ -1041,9 +998,7 @@ public class APIService {
                 .addHeader("cache-control", "no-cache")
                 .build();
 
-        for (int i = 0; i < r.headers().size(); i++) {
-            Log.wtf("Headers", r.headers().name(i) + " : " + r.headers().value(i));
-        }
+
         return r;
     }
 }

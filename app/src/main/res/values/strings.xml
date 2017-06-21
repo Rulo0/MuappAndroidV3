@@ -16,7 +16,6 @@
     <string name="lbl_privacy_policy">Privacy Policy</string>
     <string name="lbl_and">and</string>
     <string name="terms_of_use">Terms of Use</string>
-    <string name="title_activity_scrolling">ScrollingActivity</string>
     <string name="action_settings">Settings</string>
     <string name="action_continue">Continue</string>
     <string name="lbl_agree">By continuing, you agree to our</string>
@@ -129,21 +128,8 @@
     <string name="matches_last_message_sticker">Sticker</string>
     <string name="matches_last_message_photo">Photo</string>
     <string name="matches_last_message_voice_message">Voice message</string>
-    <string name="title_activity_chat">ChatActivity</string>
-    <string name="title_activity_login_demo">Sign in</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
     <string name="matches_fragment_list_empty">You have no matches yet</string>
     <string name="crushes_fragment_list_empty">You have no crushes yet</string>
     <string name="lbl_placeholder_spotify">Find a song on Spotify to add it to your content</string>
@@ -151,9 +137,6 @@
     <string name="lbl_about_video">What do you tell us about this video?</string>
     <string name="lbl_write_comment">Write a comment</string>
     <string name="lbl_publish">Publish</string>
-    <string name="title_activity_add_phothos">AddPhothosActivity</string>
-    <string name="section_format">Hello World from section: %s</string>
-    <string name="title_activity_add_photos">AddPhotosActivity</string>
     <string name="lbl_add_videos">Add videos to your profile</string>
     <string name="format_user_years">%d years </string>
     <string name="format_user_hometown">, i was born on</string>
@@ -206,7 +189,6 @@
     <string name="lbl_cancel_voicenote">Slide to cancel</string>
     <string name="lbl_match_header">MATCH!</string>
     <string name="format_match_names">%s and you like each other.</string>
-    <string name="title_activity_profile_view">ProfileViewActivity</string>
     <string name="format_remaining_time">Remaining time: %s</string>
     <string name="lbl_time_over">The time is up!</string>
     <string name="format_time_to_choose">It\'s time to decide if %s is the ideal match.</string>

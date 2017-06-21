@@ -2,10 +2,11 @@ package me.muapp.android.UI.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +57,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             public int compare(ConversationItem o1, ConversationItem o2) {
                 Long date1 = o1.getConversation().getLastMessage() != null ? o1.getConversation().getLastMessage().getTimeStamp() : o1.getConversation().getCreationDate();
                 Long date2 = o2.getConversation().getLastMessage() != null ? o2.getConversation().getLastMessage().getTimeStamp() : o2.getConversation().getCreationDate();
-                return new Date(date2).compareTo(new Date(date1));
+                return new Date(date1).compareTo(new Date(date2));
             }
 
             @Override
@@ -141,6 +142,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
         public void bind(ConversationItem conversation) {
             thisConversation = conversation;
             match_item_container.setOnClickListener(this);
+            matchLine2.setTextColor(ContextCompat.getColor(mContext, R.color.color_muapp_dark));
             Log.w("Binding", conversation.toString());
             if (conversation.getConversation().getSeen() != null) {
                 matchIndicator.setVisibility(conversation.getConversation().getSeen() ? View.GONE : View.VISIBLE);
@@ -154,6 +156,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             else {
                 if (conversation.getConversation().getCreationDate() > new Date().getTime())
                     conversation.getConversation().setCreationDate(new Date().getTime());
+                matchLine2.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
                 matchLine2.setText("Match " + DateUtils.getRelativeTimeSpanString(conversation.getConversation().getCreationDate(), new Date().getTime(), DateUtils.SECOND_IN_MILLIS));
             }
         }

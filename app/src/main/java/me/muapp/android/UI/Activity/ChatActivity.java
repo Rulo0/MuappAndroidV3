@@ -32,7 +32,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.widget.EditText;
@@ -72,7 +71,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -89,6 +87,7 @@ import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.LikeUserResult;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Tutorials;
 import me.muapp.android.R;
@@ -149,6 +148,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     Timer remainingTimer;
     int conversationsCount = 0;
     int ellapsedSeconds = 0;
+    SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
     CardView container_empty_messages;
     Timer recordingTimer;
     TextView txt_name_empty_messages, txt_conversation_count_empty_messages, txt_created_empty_messages;
@@ -1017,7 +1017,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            SimpleDateFormat formatter = new SimpleDateFormat("mm:ss", Locale.getDefault());
+
                             txt_recording_timer.setText(String.valueOf(formatter.format(new Date(ellapsedSeconds * 1000))));
                             ellapsedSeconds++;
                         }

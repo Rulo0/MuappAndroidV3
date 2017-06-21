@@ -5,11 +5,12 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,10 +29,13 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
@@ -53,17 +57,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     Context context;
     LayoutInflater mInflater;
     MediaPlayer mediaPlayer;
+    Timer mediaTimer;
+    int playedSeconds;
     RecyclerView mRecyclerView;
     Integer loggedUserId;
     int screenWidth;
     String currentPlaying = "";
     ImageButton previewPlayedButton;
+    TextView previewPlayedText;
     Boolean fromOpponent = true;
     String myPhotoUrl;
     String yourPhotoUrl;
     Long lastSeenByOpponent = 0L;
+    SimpleDateFormat sdfTimer = new SimpleDateFormat("mm:ss");
     private Set<MessageContentHolder> mBoundViewHolders = new HashSet<>();
-
 
     public void setLastSeenByOpponent(Long lastSeenByOpponent) {
         this.lastSeenByOpponent = lastSeenByOpponent;
@@ -257,6 +264,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     public void stopMediaPlayer() {
         if (mediaPlayer.isPlaying())
             mediaPlayer.stop();
+        resetTimer();
         currentPlaying = "";
     }
 
@@ -384,16 +392,51 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         }
     }
 
+    private void startTimer() {
+        if (mediaTimer != null)
+            mediaTimer.cancel();
+        mediaTimer = new Timer();
+        mediaTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Handler mainHandler = new Handler(context.getMainLooper());
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (previewPlayedText != null)
+                            previewPlayedText.setText(String.valueOf(sdfTimer.format(new Date(mediaPlayer.getCurrentPosition()))));
+                        playedSeconds++;
+                    }
+                });
+            }
+        }, 0, 100);
+    }
+
+    private void pauseTimer() {
+        if (mediaTimer != null)
+            mediaTimer.cancel();
+    }
+
+    private void resetTimer() {
+        if (mediaTimer != null)
+            mediaTimer.cancel();
+        playedSeconds = 0;
+        if (previewPlayedText != null)
+            previewPlayedText.setText(String.valueOf(sdfTimer.format(new Date(playedSeconds * 1000))));
+    }
+
     public class MyAudioContentHolder extends MessageContentHolder implements View.OnClickListener {
         RelativeTimeTextView txt_time_sender_voicenote;
         ImageView img_sender_audio_face;
         ImageButton btn_sender_audio_play_pause;
         ImageView img_indicator_sender_voicenote;
         UserContent itemContent;
+        TextView txt_sender_voicenote_timer;
 
         public MyAudioContentHolder(View itemView) {
             super(itemView);
             txt_time_sender_voicenote = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_voicenote);
+            txt_sender_voicenote_timer = (TextView) itemView.findViewById(R.id.txt_sender_voicenote_timer);
             img_sender_audio_face = (ImageView) itemView.findViewById(R.id.img_sender_audio_face);
             btn_sender_audio_play_pause = (ImageButton) itemView.findViewById(R.id.btn_sender_audio_play_pause);
             img_indicator_sender_voicenote = (ImageView) itemView.findViewById(R.id.img_indicator_sender_voicenote);
@@ -405,7 +448,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             super.bind(message);
             itemContent = message.getAttachment();
             txt_time_sender_voicenote.setReferenceTime(message.getTimeStamp());
-            Glide.with(context).load(myPhotoUrl).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(context)).into(img_sender_audio_face);
+            Glide.with(context).load(myPhotoUrl).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(context)).into(img_sender_audio_face);
             btn_sender_audio_play_pause.setOnClickListener(this);
         }
 
@@ -424,11 +467,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                         public void onPrepared(MediaPlayer mp) {
                             btn_sender_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause_white));
                             mediaPlayer.start();
+                            if (previewPlayedText != null)
+                                previewPlayedText.setText("00:00");
+                            previewPlayedText = txt_sender_voicenote_timer;
+                            startTimer();
                         }
                     });
                     mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
+                            resetTimer();
                             currentPlaying = "firebasestorage";
                             btn_sender_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play_white));
                         }
@@ -438,9 +486,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 } else {
                     if (mediaPlayer.isPlaying()) {
                         mediaPlayer.pause();
+                        pauseTimer();
                         btn_sender_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play_white));
                     } else {
                         mediaPlayer.start();
+                        startTimer();
                         btn_sender_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause_white));
                     }
                 }
@@ -455,10 +505,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         ImageView img_receiver_audio_face;
         ImageButton btn_receiver_audio_play_pause;
         UserContent itemContent;
+        TextView txt_receiver_voicenote_timer;
 
         public YourAudioContentHolder(View itemView) {
             super(itemView);
             txt_time_receiver_voicenote = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_receiver_voicenote);
+            txt_receiver_voicenote_timer = (TextView) itemView.findViewById(R.id.txt_receiver_voicenote_timer);
             img_receiver_audio_face = (ImageView) itemView.findViewById(R.id.img_receiver_audio_face);
             btn_receiver_audio_play_pause = (ImageButton) itemView.findViewById(R.id.btn_receiver_audio_play_pause);
         }
@@ -468,7 +520,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             super.bind(message);
             itemContent = message.getAttachment();
             txt_time_receiver_voicenote.setReferenceTime(message.getTimeStamp());
-            Glide.with(context).load(yourPhotoUrl).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(context)).into(img_receiver_audio_face);
+            Glide.with(context).load(yourPhotoUrl).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(context)).into(img_receiver_audio_face);
             btn_receiver_audio_play_pause.setOnClickListener(this);
         }
 
@@ -487,6 +539,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                         public void onPrepared(MediaPlayer mp) {
                             btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
                             mediaPlayer.start();
+                            previewPlayedText = txt_receiver_voicenote_timer;
+                            startTimer();
                         }
                     });
                     mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -494,6 +548,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                         public void onCompletion(MediaPlayer mp) {
                             currentPlaying = "firebasestorage";
                             btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                            resetTimer();
                         }
                     });
                     mediaPlayer.prepareAsync();
@@ -501,9 +556,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 } else {
                     if (mediaPlayer.isPlaying()) {
                         mediaPlayer.pause();
+                        pauseTimer();
                         btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
                     } else {
                         mediaPlayer.start();
+                        startTimer();
                         btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
                     }
                 }

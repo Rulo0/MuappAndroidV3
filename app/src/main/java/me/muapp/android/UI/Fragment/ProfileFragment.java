@@ -10,7 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -148,7 +148,7 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
                         if (fab_add_content.isShown())
                             fab_add_content.hide();
                     } else {
-                        if (!fab_add_content.isShown())
+                        if (!fab_add_content.isShown() && !isHidden())
                             fab_add_content.show();
                     }
                 }
@@ -366,9 +366,11 @@ public class ProfileFragment extends Fragment implements OnFragmentInteractionLi
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (hidden)
+        if (hidden) {
             adapter.stopMediaPlayer();
-        else
+            fab_add_content.hide();
+        } else {
             adapter.setUser(new UserHelper(getContext()).getLoggedUser());
+        }
     }
 }

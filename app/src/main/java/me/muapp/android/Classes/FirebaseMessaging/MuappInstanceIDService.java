@@ -1,6 +1,6 @@
 package me.muapp.android.Classes.FirebaseMessaging;
 
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;

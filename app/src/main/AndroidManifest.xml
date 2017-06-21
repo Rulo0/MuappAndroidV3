@@ -118,7 +118,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".UI.Activity.ChatActivity"
-            android:label="@string/title_activity_chat"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

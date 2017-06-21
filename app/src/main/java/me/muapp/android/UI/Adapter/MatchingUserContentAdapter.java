@@ -21,7 +21,7 @@ import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
-import android.util.Log;
+import me.muapp.android.Classes.Util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -48,12 +48,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.rd.PageIndicatorView;
 import com.rd.animation.AnimationType;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
@@ -104,7 +107,10 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     RecyclerView parentRecycler;
     private OnProfileScrollListener onProfileScrollListener;
     OnScrollListener matchingScrollListener;
-    List<MutualFriends.MutualFriend> mutualFriends;
+    Timer mediaTimer;
+    TextView previewPlayedText;
+    int playedSeconds = 0;
+    SimpleDateFormat sdfTimer = new SimpleDateFormat("mm:ss");
 
     public void setShowMenuButton(Boolean showMenuButton) {
         this.showMenuButton = showMenuButton;
@@ -431,13 +437,13 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
 
         private void deleteContent() {
             FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(new UserHelper(context).getLoggedUser().getId())).child(itemContent.getKey()).removeValue();
-
             if (!TextUtils.isEmpty(itemContent.getStorageName())) {
                 FirebaseStorage.getInstance().getReference().child(itemContent.getStorageName()).delete();
             }
             if (!TextUtils.isEmpty(itemContent.getVideoThumbStorage())) {
                 FirebaseStorage.getInstance().getReference().child(itemContent.getVideoThumbStorage()).delete();
             }
+            stopMediaPlayer();
         }
     }
 
@@ -922,8 +928,43 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         }
     }
 
+    private void startTimer() {
+        resetTimer();
+        mediaTimer = new Timer();
+        mediaTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Handler mainHandler = new Handler(context.getMainLooper());
+                Runnable myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (previewPlayedText != null)
+                            previewPlayedText.setText(String.valueOf(sdfTimer.format(new Date(mediaPlayer.getCurrentPosition()))));
+                        playedSeconds++;
+                    }
+                };
+                mainHandler.post(myRunnable);
+            }
+        }, 0, 500);
+    }
+
+    private void pauseTimer() {
+        if (mediaTimer != null)
+            mediaTimer.cancel();
+    }
+
+    private void resetTimer() {
+        if (mediaTimer != null)
+            mediaTimer.cancel();
+        playedSeconds = 0;
+        if (previewPlayedText != null)
+            previewPlayedText.setText(String.valueOf(sdfTimer.format(new Date(mediaPlayer.getCurrentPosition()))));
+    }
+
+
     class AudioContentHolder extends UserContentHolder {
         TextView txt_audio_comment;
+        TextView txt_audio_content_timer;
         RelativeTimeTextView txt_audio_date;
         ImageButton btn_audio_content;
         ImageButton btn_audio_menu;
@@ -931,6 +972,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         public AudioContentHolder(View itemView) {
             super(itemView);
             this.txt_audio_comment = (TextView) itemView.findViewById(R.id.txt_audio_comment);
+            this.txt_audio_content_timer = (TextView) itemView.findViewById(R.id.txt_audio_content_timer);
             this.txt_audio_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_audio_date);
             this.btn_audio_content = (ImageButton) itemView.findViewById(R.id.btn_audio_content);
             this.btn_audio_menu = (ImageButton) itemView.findViewById(R.id.btn_audio_menu);
@@ -959,6 +1001,8 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                         if (previewPlayedButton != null) {
                             previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
+                        if (previewPlayedText != null)
+                            previewPlayedText.setText("00:00");
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
                         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -966,6 +1010,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                             public void onPrepared(MediaPlayer mp) {
                                 btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
                                 mediaPlayer.start();
+                                startTimer();
                             }
                         });
                         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -973,6 +1018,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                             public void onCompletion(MediaPlayer mp) {
                                 currentPlaying = "firebasestorage";
                                 btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                                resetTimer();
                             }
                         });
                         mediaPlayer.prepareAsync();
@@ -980,9 +1026,11 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                     } else {
                         if (mediaPlayer.isPlaying()) {
                             mediaPlayer.pause();
+                            pauseTimer();
                             btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
                         } else {
                             mediaPlayer.start();
+                            startTimer();
                             btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
                         }
                     }
@@ -1022,11 +1070,12 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     public void stopMediaPlayer() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
+            resetTimer();
             if (previewPlayedButton != null) {
                 previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
             }
-            currentPlaying = "";
         }
+        currentPlaying = "";
     }
 
     public void releaseMediaPlayer() {
