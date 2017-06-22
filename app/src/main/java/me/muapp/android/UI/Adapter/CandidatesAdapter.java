@@ -1,5 +1,6 @@
 package me.muapp.android.UI.Adapter;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.daimajia.androidanimations.library.YoYo;
 import com.eralp.circleprogressview.CircleProgressView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -28,6 +30,8 @@ import me.muapp.android.UI.Activity.ViewProfileActivity;
 import me.muapp.android.UI.Fragment.CandidatesFragment;
 import me.muapp.android.UI.Fragment.Interface.OnCandidateInteractionListener;
 
+import static com.daimajia.androidanimations.library.Techniques.Pulse;
+import static com.daimajia.androidanimations.library.Techniques.Tada;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.CANDIDATE_PROGRESS;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.FROM_GATE;
 import static me.muapp.android.UI.Activity.ViewProfileActivity.USER_ID;
@@ -48,6 +52,14 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
     private static final int TYPE_CANDIDATE = 0;
     OnCandidateInteractionListener candidateInteractionListener;
     CandidatesFragment candidatesFragment;
+    RecyclerView recyclerView;
+    int animPos = 0;
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
 
     public void setCandidatesFragment(CandidatesFragment candidatesFragment) {
         this.candidatesFragment = candidatesFragment;
@@ -171,7 +183,6 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
         CircleProgressView candidate_progress;
         ImageButton btn_candidate_unlike;
         ImageButton btn_candidate_like;
-
         ImageButton btn_candidate_clear;
 
         public CandidateViewHolder(View itemView) {
@@ -231,6 +242,11 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
 
         @Override
         public void onClick(View v) {
+             /*   YoYo.with(Techniques.Tada)
+                        .duration(700)
+                        .repeat(5)
+                        .playOn();*/
+
             switch (v.getId()) {
                 case R.id.btn_candidate_clear:
                 case R.id.btn_candidate_unlike:
@@ -256,8 +272,16 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
                     break;
             }
             if (v.getId() != R.id.img_photo_candidate) {
-                candidates.remove(getAdapterPosition());
-                notifyItemRemoved(getAdapterPosition());
+                YoYo.with(v.getId() == R.id.btn_candidate_like ? Pulse : Tada)
+                        .duration(700)
+                        .onEnd(new YoYo.AnimatorCallback() {
+                            @Override
+                            public void call(Animator animator) {
+                                candidates.remove(getAdapterPosition());
+                                notifyItemRemoved(getAdapterPosition());
+                            }
+                        })
+                        .playOn(itemView);
             }
         }
     }

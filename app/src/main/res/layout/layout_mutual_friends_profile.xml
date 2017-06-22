@@ -32,6 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:textSize="16sp"
                 android:layout_marginLeft="8dp"
                 android:text="@string/format_common_connections"
                 android:textColor="@color/color_muapp_dark" />

@@ -46,7 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Content"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:textSize="16sp"
                     android:textColor="@color/color_muapp_dark" />
 
 
@@ -55,6 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:textSize="16sp"
                     android:text="Content"
                     android:textColor="@color/color_quote_text" />
             </LinearLayout>

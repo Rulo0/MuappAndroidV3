@@ -17,11 +17,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        maven {
-            url "https://github.com/QuickBlox/quickblox-android-sdk-releases/raw/master/"
-        }
         maven { url 'https://jitpack.io' }
-        maven { url 'https://github.com/500px/500px-android-blur/raw/master/releases/' }
     }
 
 }

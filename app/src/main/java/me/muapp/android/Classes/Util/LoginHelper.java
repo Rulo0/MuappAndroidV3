@@ -3,7 +3,6 @@ package me.muapp.android.Classes.Util;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import me.muapp.android.Classes.Util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -11,9 +10,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import me.muapp.android.Application.MuappApplication;
 
 import static com.facebook.GraphRequest.TAG;
 
@@ -39,17 +35,19 @@ public class LoginHelper {
 
 
     private void loginToFireBase() {
-        int userId = userHelper.getLoggedUser().getId();
-        final String email = String.format("usermuapp_%s@muapp.me", userId);
-        final String pass = String.format("passMuapp_%s", userId);
-        mAuth.createUserWithEmailAndPassword(email, pass)
-                .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
-                        signInFirebase(email, pass);
-                    }
-                });
+        Integer userId;
+        if (userHelper.getLoggedUser() != null && (userId = userHelper.getLoggedUser().getId()) != null) {
+            final String email = String.format("usermuapp_%s@muapp.me", userId);
+            final String pass = String.format("passMuapp_%s", userId);
+            mAuth.createUserWithEmailAndPassword(email, pass)
+                    .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+                            signInFirebase(email, pass);
+                        }
+                    });
+        }
     }
 
     private void signInFirebase(String email, String password) {

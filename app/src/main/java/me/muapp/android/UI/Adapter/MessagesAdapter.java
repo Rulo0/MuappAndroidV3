@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +42,7 @@ import me.muapp.android.Classes.Chat.Message;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.YoutubeViewActivity;
 
@@ -327,7 +327,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
             this.messageTimeStamp = message.getTimeStamp();
 
-
+            Log.wtf("Binding", message.toString());
+            Log.wtf("Binding", message.getTimeStamp() + " - " + lastSeenByOpponent);
             if (this.indicatorView != null) {
                 if (message.getTimeStamp() <= lastSeenByOpponent)
                     this.indicatorView.setImageResource(R.drawable.ic_chat_indicator_read);
