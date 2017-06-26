@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import me.muapp.android.Classes.Util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import me.muapp.android.Classes.Instagram.Data.InstagramPhoto;
 import me.muapp.android.Classes.Instagram.Data.InstagramPhotos;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserInfo;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.AddInstagramPhotosAdapter;
 import me.muapp.android.UI.Fragment.Interface.OnImageSelectedListener;
@@ -162,10 +162,13 @@ public class InstagramPhotosFragment extends Fragment implements ValueEventListe
         @Override
         protected void onPostExecute(InstagramPhotos instagramPhotos) {
             super.onPostExecute(instagramPhotos);
-
-            for (InstagramPhoto p : instagramPhotos.getData()) {
-                Log.wtf("onPostExecute", p.toString());
-                ada.addPhotho(p);
+            if (instagramPhotos.getData() != null) {
+                for (InstagramPhoto p : instagramPhotos.getData()) {
+                    Log.wtf("onPostExecute", p.toString());
+                    ada.addPhotho(p);
+                }
+            } else {
+                btn_connect_instagram.setVisibility(View.VISIBLE);
             }
 
         }

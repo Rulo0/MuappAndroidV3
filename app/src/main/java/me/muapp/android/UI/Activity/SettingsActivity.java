@@ -13,7 +13,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import me.muapp.android.Classes.Util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
@@ -43,6 +42,7 @@ import me.muapp.android.Classes.Internal.AgeRange;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserSettings;
 import me.muapp.android.Classes.Util.Constants;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Fragment.ProfileVerifiedDialogFragment;
@@ -146,8 +146,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void fillData() {
-        age_seekbar.setRangePinsByValue(loggedUser.getAgeRange().get1(), loggedUser.getAgeRange().get2());
 
+        age_seekbar.setRangePinsByValue(loggedUser.getAgeRange().get1(), loggedUser.getAgeRange().get2() > 55 ? 55 : loggedUser.getAgeRange().get2());
         int distanceValue = loggedUser.getDistance();
         if (distanceValue == 0) {
             distanceValue = 1;

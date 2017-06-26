@@ -8,13 +8,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import me.muapp.android.Classes.Util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -39,6 +40,7 @@ import me.muapp.android.Classes.Internal.MatchingResult;
 import me.muapp.android.Classes.Internal.MatchingUser;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Tutorials;
 import me.muapp.android.Classes.Util.UserHelper;
@@ -206,6 +208,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                /* if (!TextUtils.isEmpty(user.getDescription()))
                     uploadDescriptionToFirebase(user.getId(), user.getDescription());*/
                 Log.wtf("Matching", user.toString());
+                preloadMatchingImages(user.getAlbum());
                 MatchingUserProfileFragment fragment = MatchingUserProfileFragment.newInstance(user);
                 fragment.setOnMatchingInteractionListener(this);
                 fragment.setOnProfileScrollListener(this);
@@ -213,6 +216,18 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             }
             onAllUsersLoaded();
         }
+    }
+
+    private void preloadMatchingImages(final List<String> album) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (String s : album) {
+                    Glide.with(getContext()).load(s).diskCacheStrategy(DiskCacheStrategy.ALL).preload();
+                }
+            }
+        });
+
     }
 
     @Override

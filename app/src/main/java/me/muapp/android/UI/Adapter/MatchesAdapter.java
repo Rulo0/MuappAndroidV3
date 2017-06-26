@@ -6,7 +6,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +17,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Chat.ConversationItem;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.ChatActivity;
 
@@ -36,7 +37,17 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
     private final LayoutInflater mInflater;
     private Context mContext;
 
-    public MatchesAdapter(Context context) {
+    HashMap<String, String> attachmentMap;
+
+    public MatchesAdapter(final Context context) {
+        this.attachmentMap = new HashMap<String, String>() {{
+            put("contentAud", context.getString(R.string.lbl_add_voice_note));
+            put("contentGif", context.getString(R.string.lbl_add_giphy));
+            put("contentPic", context.getString(R.string.lbl_add_gallery));
+            put("contentSpt", context.getString(R.string.lbl_add_music));
+            put("contentStkr", context.getString(R.string.lbl_add_sticker));
+            put("contentYtv", context.getString(R.string.lbl_add_video));
+        }};
         this.conversations = new SortedList<>(ConversationItem.class, new SortedList.Callback<ConversationItem>() {
             @Override
             public void onInserted(int position, int count) {
@@ -151,9 +162,16 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             }
             Glide.with(mContext).load(conversation.getProfilePicture()).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(matchImage);
             matchLine1.setText(conversation.getFullName());
-            if (conversation.getConversation().getLastMessage() != null)
-                matchLine2.setText(conversation.getConversation().getLastMessage().getContent());
-            else {
+            if (conversation.getConversation().getLastMessage() != null) {
+                if (conversation.getConversation().getLastMessage().getAttachment() != null) {
+                    String attachmentKey = conversation.getConversation().getLastMessage().getAttachment().getCatContent();
+                    if (attachmentMap.containsKey(attachmentKey)) {
+                        matchLine2.setText(attachmentMap.get(attachmentKey));
+                    }
+                } else {
+                    matchLine2.setText(conversation.getConversation().getLastMessage().getContent());
+                }
+            } else {
                 if (conversation.getConversation().getCreationDate() > new Date().getTime())
                     conversation.getConversation().setCreationDate(new Date().getTime());
                 matchLine2.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));

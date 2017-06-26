@@ -21,7 +21,6 @@ import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
-import me.muapp.android.Classes.Util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -66,6 +65,7 @@ import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.MutualFriends;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
@@ -111,6 +111,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     TextView previewPlayedText;
     int playedSeconds = 0;
     SimpleDateFormat sdfTimer = new SimpleDateFormat("mm:ss");
+    boolean hasQualifications = false, hasFriends = false;
 
     public void setShowMenuButton(Boolean showMenuButton) {
         this.showMenuButton = showMenuButton;
@@ -131,13 +132,15 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
                     LinearLayoutManager llm = (LinearLayoutManager) parentRecycler.getLayoutManager();
-                    int pos = llm.findFirstVisibleItemPosition();
-                    if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
-                        if (onProfileScrollListener != null)
-                            onProfileScrollListener.onScrollToTop();
-                    } else {
-                        if (onProfileScrollListener != null)
-                            onProfileScrollListener.onScroll();
+                    if (hasFriends || hasQualifications || getItemCount() > 3) {
+                        int pos = llm.findFirstVisibleItemPosition();
+                        if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
+                            if (onProfileScrollListener != null)
+                                onProfileScrollListener.onScrollToTop();
+                        } else {
+                            if (onProfileScrollListener != null)
+                                onProfileScrollListener.onScroll();
+                        }
                     }
                 }
             };
@@ -156,6 +159,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         Handler handler = new Handler(Looper.getMainLooper());
         final Runnable r = new Runnable() {
             public void run() {
+                hasQualifications = true;
                 notifyItemChanged(2);
                 if (mustScroll)
                     parentRecycler.scrollToPosition(2);
@@ -169,6 +173,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         Handler handler = new Handler(Looper.getMainLooper());
         final Runnable r = new Runnable() {
             public void run() {
+                hasFriends = true;
                 Log.wtf("setMutualFriends", "mutualFriends " + mutualFriends.size());
                 notifyItemChanged(1);
             }

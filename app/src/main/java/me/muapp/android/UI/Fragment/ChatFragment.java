@@ -179,6 +179,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         super.onActivityCreated(savedInstanceState);
         if (User.Gender.getGender(user.getGender()) == User.Gender.Male)
             txt_placeholder_no_crush.setText(getString(R.string.lbl_no_crush_male));
+        Log.wtf("EventListener", "add");
         chatReference.addChildEventListener(this);
         chatReference.addValueEventListener(this);
     }
@@ -186,6 +187,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.wtf("EventListener", "remove");
         chatReference.removeEventListener((ValueEventListener) this);
         chatReference.removeEventListener((ChildEventListener) this);
         if (listenerHashMap.size() > 0) {
@@ -228,10 +230,12 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
                     conversationItem.setKey(conversation.getKey());
                     conversationItem.setConversation(conversation);
                     if (conversationItem.getConversation().getCrush()) {
+                        crushesAdapter.removeConversation(conversation.getKey());
                         crushesAdapter.addConversation(conversationItem);
                         recycler_crushes.scrollToPosition(0);
                         Utils.animViewFade(placeholder_no_crush, false);
                     } else {
+                        matchesAdapter.removeConversation(conversation.getKey());
                         matchesAdapter.addConversation(conversationItem);
                         Utils.animViewFade(placeholder_no_match, false);
                     }
@@ -262,11 +266,12 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
         Conversation conversation = dataSnapshot.getValue(Conversation.class);
-        conversation.setKey(dataSnapshot.getKey());
-        if (crushesAdapter.isConversationCrush(dataSnapshot.getKey()) && !conversation.getCrush())
-            crushesAdapter.removeConversation(conversation.getKey());
-
-        prepareConversation(conversation);
+        if (conversation != null) {
+            Log.wtf("onChildChanged", dataSnapshot.getKey());
+            conversation.setKey(dataSnapshot.getKey());
+            crushesAdapter.removeConversation(dataSnapshot.getKey());
+            prepareConversation(conversation);
+        }
     }
 
     @Override
@@ -275,13 +280,11 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         if (conversation != null) {
             conversation.setKey(dataSnapshot.getKey());
             if (conversation.getCrush() != null && conversation.getCrush()) {
-                Log.wtf("Removing", "Crush");
                 crushesAdapter.removeConversation(conversation.getKey());
                 if (crushesAdapter.getItemCount() == 0) {
                     Utils.animViewFade(placeholder_no_crush, true);
                 }
             } else {
-                Log.wtf("Removing", "Match");
                 matchesAdapter.removeConversation(conversation.getKey());
                 if (matchesAdapter.getItemCount() == 0) {
                     Utils.animViewFade(placeholder_no_match, true);
@@ -297,7 +300,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
-        Log.wtf("Fucking", "Data");
+
         progressUtil.showProgress(false);
         if (dataSnapshot.hasChildren()) {
 

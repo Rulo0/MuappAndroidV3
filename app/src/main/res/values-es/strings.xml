@@ -153,7 +153,7 @@
     <string name="lbl_add_music">Música</string>
     <string name="lbl_add_video">Video</string>
     <string name="lbl_add_voice_note">Nota de voz</string>
-    <string name="lbl_add_giphy">Gifs</string>
+    <string name="lbl_add_giphy">Gif</string>
     <string name="lbl_add_gallery">Galería</string>
     <string name="lbl_rate">Calificar</string>
     <string name="lbl_hold_to_record">Mantén presionado el microfono para grabar una nota de voz.</string>

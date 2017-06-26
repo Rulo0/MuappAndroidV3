@@ -17,7 +17,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +39,7 @@ import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.UserPhotos.UserPhotoTouchHelper;
 import me.muapp.android.UI.Adapter.UserPhotos.UserPictureAdapter;
@@ -61,6 +61,7 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     private final int REQUEST_CAMERA = 911;
     private String mCurrentPhotoPath;
     private final int SELECT_FILE = 912;
+    private int photoSelectedPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,7 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
         setContentView(R.layout.activity_profile_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         et_user_biography = (EditText) findViewById(R.id.et_user_biography);
-        Log.wtf("Biography",":" + loggedUser.getDescription());
+        Log.wtf("Biography", ":" + loggedUser.getDescription());
         et_user_biography.setText(loggedUser.getDescription());
         recycler_user_photos = (RecyclerView) findViewById(R.id.recycler_user_photos);
         if (loggedUser.getPending()) {
@@ -204,7 +205,8 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     }
 
 
-    private void cameraIntent() {
+    private void cameraIntent(int position) {
+        photoSelectedPosition = position;
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             photoFile = null;
@@ -239,7 +241,8 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     }
 
 
-    private void galleryIntent() {
+    private void galleryIntent(int position) {
+        photoSelectedPosition = position;
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -251,14 +254,15 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
     @Override
     public void onCameraSelected(ImageView container, int position) {
         if (checkAndRequestPermissions()) {
-            cameraIntent();
+            cameraIntent(position);
+
         }
     }
 
     @Override
     public void onGallerySelected(ImageView container, int position) {
         if (checkAndRequestPermissions()) {
-            galleryIntent();
+            galleryIntent(position);
         }
 
     }
@@ -305,6 +309,8 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
                     uploadPhotos(prms, true);
                     break;
             }
+        } else {
+            photoSelectedPosition = 0;
         }
     }
 
@@ -361,7 +367,11 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
             }
             AlbumParam imageParam = new AlbumParam();
             imageParam.setFileBytes(bytes);
-            albumParams.add(imageParam);
+            if (adapter.getItemCount() >= photoSelectedPosition) {
+                albumParams.set(photoSelectedPosition, imageParam);
+            } else {
+                albumParams.add(imageParam);
+            }
             uploadPhotos(albumParams, true);
         } catch (Exception x) {
 
