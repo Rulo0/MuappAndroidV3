@@ -6,10 +6,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
-import me.muapp.android.Classes.Util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,6 +20,7 @@ import android.view.animation.AnimationUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -224,4 +226,16 @@ public class Utils {
         return sb.toString();
     }
 
+    public static Integer getAudioLength(Context context, File audioFile) {
+        try {
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(context, Uri.fromFile(audioFile));
+            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            long timeInMillisec = Long.parseLong(time);
+            retriever.release();
+            return (int) (timeInMillisec / 1000);
+        } catch (Exception x) {
+            return null;
+        }
+    }
 }

@@ -2,12 +2,13 @@ package me.muapp.android.Application;
 
 import android.app.Application;
 import android.os.StrictMode;
-import me.muapp.android.Classes.Util.Log;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
 import com.zplesac.connectionbuddy.ConnectionBuddy;
 import com.zplesac.connectionbuddy.ConnectionBuddyConfiguration;
+
+import me.muapp.android.Classes.Util.Log;
 
 /**
  * Created by rulo on 21/03/17.
@@ -15,7 +16,7 @@ import com.zplesac.connectionbuddy.ConnectionBuddyConfiguration;
 
 public class MuappApplication extends Application {
     private static final String TAG = "MuappApplication";
-    public static String DATABASE_REFERENCE = "prodDB";
+    public static String DATABASE_REFERENCE = "devDB";
 
     @Override
     public void onCreate() {

@@ -876,11 +876,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         YouTubeThumbnailView youtube_thumbnail_sender;
         TextView txt_content_sender_youtube;
         RelativeTimeTextView txt_time_sender_youtube;
+        TextView youtube_title_sender;
         ImageView img_indicator_sender_youtube;
 
         public MyYoutubeContentHolder(View itemView) {
             super(itemView);
             this.youtube_thumbnail_sender = (YouTubeThumbnailView) itemView.findViewById(R.id.youtube_thumbnail_sender);
+            this.youtube_title_sender = (TextView) itemView.findViewById(R.id.youtube_title_sender);
             this.txt_content_sender_youtube = (TextView) itemView.findViewById(R.id.txt_content_sender_youtube);
             this.txt_time_sender_youtube = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_sender_youtube);
             this.img_indicator_sender_youtube = (ImageView) itemView.findViewById(R.id.img_indicator_sender_youtube);
@@ -891,6 +893,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         @Override
         public void bind(Message message) {
             super.bind(message);
+            if (!TextUtils.isEmpty(message.getAttachment().getVideoTitle())) {
+                youtube_title_sender.setText(message.getAttachment().getVideoTitle());
+                youtube_title_sender.setVisibility(View.VISIBLE);
+            } else {
+                youtube_title_sender.setVisibility(View.GONE);
+            }
             if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_sender_youtube.setText(message.getContent());
                 txt_content_sender_youtube.setVisibility(View.VISIBLE);
@@ -924,18 +932,28 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         YouTubeThumbnailView youtube_thumbnail_receiver;
         TextView txt_content_receiver_youtube;
         RelativeTimeTextView txt_time_receiver_youtube;
+        TextView youtube_title_receiver;
 
         public YourYoutubeContentHolder(View itemView) {
             super(itemView);
             this.youtube_thumbnail_receiver = (YouTubeThumbnailView) itemView.findViewById(R.id.youtube_thumbnail_receiver);
             this.txt_content_receiver_youtube = (TextView) itemView.findViewById(R.id.txt_content_receiver_youtube);
             this.txt_time_receiver_youtube = (RelativeTimeTextView) itemView.findViewById(R.id.txt_time_receiver_youtube);
+            this.youtube_title_receiver = (TextView) itemView.findViewById(R.id.youtube_title_receiver);
         }
 
 
         @Override
         public void bind(Message message) {
             super.bind(message);
+
+            if (!TextUtils.isEmpty(message.getAttachment().getVideoTitle())) {
+                youtube_title_receiver.setText(message.getAttachment().getVideoTitle());
+                youtube_title_receiver.setVisibility(View.VISIBLE);
+            } else {
+                youtube_title_receiver.setVisibility(View.GONE);
+            }
+
             if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_receiver_youtube.setText(message.getContent());
                 txt_content_receiver_youtube.setVisibility(View.VISIBLE);

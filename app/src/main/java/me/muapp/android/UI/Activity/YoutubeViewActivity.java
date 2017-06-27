@@ -1,6 +1,7 @@
 package me.muapp.android.UI.Activity;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -25,6 +26,8 @@ public class YoutubeViewActivity extends BaseActivity implements YouTubePlayer.O
         youtube_fragment_view = (YouTubePlayerFragment) getFragmentManager()
                 .findFragmentById(R.id.youtube_fragment_view);
         youtube_fragment_view.initialize(getYoutubeApiKey(), this);
+        if (!TextUtils.isEmpty(thisContent.getVideoTitle()))
+            getSupportActionBar().setTitle(thisContent.getVideoTitle());
     }
 
     @Override
@@ -40,7 +43,6 @@ public class YoutubeViewActivity extends BaseActivity implements YouTubePlayer.O
             youTubePlayer.loadVideo(thisContent.getVideoId());
         }
     }
-
 
 
     @Override

@@ -10,10 +10,11 @@ import android.os.Parcelable;
 public class UserContent implements Parcelable {
     String key;
     String catContent;
+    String videoTitle;
     String comment;
     String contentUrl;
     Long createdAt;
-    int likes;
+    Integer likes;
     String thumbUrl;
     String videoId;
     String storageName;
@@ -21,6 +22,7 @@ public class UserContent implements Parcelable {
     String quoteId;
     SpotifyData spotifyData;
     GiphyMeasureData giphyMeasureData;
+    Integer audioLenght;
 
     public UserContent() {
     }
@@ -39,6 +41,14 @@ public class UserContent implements Parcelable {
 
     public void setCatContent(String catContent) {
         this.catContent = catContent;
+    }
+
+    public String getVideoTitle() {
+        return videoTitle;
+    }
+
+    public void setVideoTitle(String videoTitle) {
+        this.videoTitle = videoTitle;
     }
 
     public String getComment() {
@@ -65,11 +75,11 @@ public class UserContent implements Parcelable {
         this.createdAt = createdAt;
     }
 
-    public int getLikes() {
+    public Integer getLikes() {
         return likes;
     }
 
-    public void setLikes(int likes) {
+    public void setLikes(Integer likes) {
         this.likes = likes;
     }
 
@@ -129,13 +139,22 @@ public class UserContent implements Parcelable {
         this.giphyMeasureData = giphyMeasureData;
     }
 
+    public Integer getAudioLenght() {
+        return audioLenght;
+    }
+
+    public void setAudioLenght(Integer audioLenght) {
+        this.audioLenght = audioLenght;
+    }
+
     protected UserContent(Parcel in) {
         key = in.readString();
         catContent = in.readString();
+        videoTitle = in.readString();
         comment = in.readString();
         contentUrl = in.readString();
         createdAt = in.readByte() == 0x00 ? null : in.readLong();
-        likes = in.readInt();
+        likes = in.readByte() == 0x00 ? null : in.readInt();
         thumbUrl = in.readString();
         videoId = in.readString();
         storageName = in.readString();
@@ -143,6 +162,7 @@ public class UserContent implements Parcelable {
         quoteId = in.readString();
         spotifyData = (SpotifyData) in.readValue(SpotifyData.class.getClassLoader());
         giphyMeasureData = (GiphyMeasureData) in.readValue(GiphyMeasureData.class.getClassLoader());
+        audioLenght = in.readByte() == 0x00 ? null : in.readInt();
     }
 
     @Override
@@ -154,6 +174,7 @@ public class UserContent implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(key);
         dest.writeString(catContent);
+        dest.writeString(videoTitle);
         dest.writeString(comment);
         dest.writeString(contentUrl);
         if (createdAt == null) {
@@ -162,7 +183,12 @@ public class UserContent implements Parcelable {
             dest.writeByte((byte) (0x01));
             dest.writeLong(createdAt);
         }
-        dest.writeInt(likes);
+        if (likes == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(likes);
+        }
         dest.writeString(thumbUrl);
         dest.writeString(videoId);
         dest.writeString(storageName);
@@ -170,6 +196,12 @@ public class UserContent implements Parcelable {
         dest.writeString(quoteId);
         dest.writeValue(spotifyData);
         dest.writeValue(giphyMeasureData);
+        if (audioLenght == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(audioLenght);
+        }
     }
 
     @SuppressWarnings("unused")
@@ -190,6 +222,7 @@ public class UserContent implements Parcelable {
         return "UserContent{" +
                 "key='" + key + '\'' +
                 ", catContent='" + catContent + '\'' +
+                ", videoTitle='" + videoTitle + '\'' +
                 ", comment='" + comment + '\'' +
                 ", contentUrl='" + contentUrl + '\'' +
                 ", createdAt=" + createdAt +
@@ -199,8 +232,9 @@ public class UserContent implements Parcelable {
                 ", storageName='" + storageName + '\'' +
                 ", videoThumbStorage='" + videoThumbStorage + '\'' +
                 ", quoteId='" + quoteId + '\'' +
-                ", spotifyData=" + (spotifyData != null ? spotifyData.toString() : spotifyData) +
-                ", giphyMeasureData=" + (giphyMeasureData != null ? giphyMeasureData.toString() : giphyMeasureData) +
+                ", spotifyData=" + spotifyData +
+                ", giphyMeasureData=" + giphyMeasureData +
+                ", audioLenght=" + audioLenght +
                 '}';
     }
 }

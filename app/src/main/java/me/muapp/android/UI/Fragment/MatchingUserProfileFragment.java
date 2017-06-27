@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +38,7 @@ import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.MutualFriends;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Tutorials;
 import me.muapp.android.Classes.Util.UserHelper;
@@ -192,8 +192,8 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (!imFemale)
-            btn_matching_report.setVisibility(View.GONE);
+        //if (!imFemale)
+        //  btn_matching_report.setVisibility(View.GONE);
         toolbar_matching_name.setText(matchingUser.getFullName());
         if (matchingUser.getFakeAccount() != null && matchingUser.getFakeAccount())
             toolbar_matching_name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_verified_profile, 0, 0, 0);

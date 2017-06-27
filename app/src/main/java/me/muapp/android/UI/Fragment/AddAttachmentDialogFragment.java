@@ -107,9 +107,9 @@ public class AddAttachmentDialogFragment extends BottomSheetDialogFragment {
         ArrayList<ItemAttachment> itemAttachments = new ArrayList<ItemAttachment>() {{
             add(new ItemAttachment(R.string.lbl_add_gallery, R.drawable.ic_add_photo, AttachmentType.TypePicture));
             add(new ItemAttachment(R.string.lbl_add_sticker, R.drawable.ic_add_sticker, AttachmentType.TypeSticker));
-       /*     add(new ItemAttachment(R.string.lbl_add_giphy, R.drawable.ic_add_giphy, AttachmentType.TypeGif));
+            //add(new ItemAttachment(R.string.lbl_add_giphy, R.drawable.ic_add_giphy, AttachmentType.TypeGif));
             add(new ItemAttachment(R.string.lbl_add_music, R.drawable.ic_add_spotify, AttachmentType.TypeMusic));
-            add(new ItemAttachment(R.string.lbl_add_video, R.drawable.ic_add_youtube, AttachmentType.TypeYoutube));*/
+            add(new ItemAttachment(R.string.lbl_add_video, R.drawable.ic_add_youtube, AttachmentType.TypeYoutube));
         }};
 
 

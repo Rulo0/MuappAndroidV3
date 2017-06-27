@@ -90,6 +90,7 @@ import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Tutorials;
+import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MessagesAdapter;
 import me.muapp.android.UI.Fragment.AddAttachmentDialogFragment;
@@ -1083,6 +1084,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
                 final UserContent thisContent = new UserContent();
                 thisContent.setCreatedAt(new Date().getTime());
                 thisContent.setLikes(0);
+                thisContent.setAudioLenght(Utils.getAudioLength(this, f));
                 thisContent.setCatContent("contentAud");
                 BufferedInputStream buf = new BufferedInputStream(new FileInputStream(f));
                 buf.read(bytes, 0, bytes.length);

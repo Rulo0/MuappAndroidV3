@@ -853,12 +853,14 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         RelativeTimeTextView txt_youtube_date;
         View contentView;
         String youtubeVideoId;
+        TextView youtube_title;
         YouTubeThumbnailView youtube_thumbnail;
         ImageButton btn_youtube_menu;
 
         public YoutubeContentHolder(View itemView) {
             super(itemView);
             this.contentView = itemView;
+            this.youtube_title = (TextView) itemView.findViewById(R.id.youtube_title);
             this.youtube_thumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.youtube_thumbnail);
             this.txt_youtube_comment = (TextView) itemView.findViewById(R.id.txt_youtube_comment);
             this.txt_youtube_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_youtube_date);
@@ -874,6 +876,12 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                 txt_youtube_comment.setVisibility(View.VISIBLE);
             } else {
                 txt_youtube_comment.setVisibility(View.GONE);
+            }
+            if (!TextUtils.isEmpty(c.getVideoTitle())) {
+                youtube_title.setText(c.getVideoTitle());
+                youtube_title.setVisibility(View.VISIBLE);
+            } else {
+                youtube_title.setVisibility(View.GONE);
             }
             txt_youtube_date.setReferenceTime(c.getCreatedAt());
             youtube_thumbnail.initialize(getYoutubeApiKey(), new YouTubeThumbnailView.OnInitializedListener() {

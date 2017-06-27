@@ -79,11 +79,11 @@ public class AddYoutubeDetailActivity extends BaseActivity implements YouTubePla
             publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Comment.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Youtube.toString());
         publishBundle.putString(Analytics.My_Profile_Add.MY_PROFILE_ADD_PROPERTY.Publish.toString(), Analytics.My_Profile_Add.MY_PROFILE_ADD_VALUES.Youtube.toString());
         mFirebaseAnalytics.logEvent(Analytics.My_Profile_Add.MY_PROFILE_ADD_EVENT.My_Profile_Add_Type.toString(), publishBundle);
-
         UserContent thisContent = new UserContent();
         thisContent.setComment(et_youtube_about.getText().toString());
         thisContent.setCreatedAt(new Date().getTime());
         thisContent.setLikes(0);
+        thisContent.setVideoTitle(currentVideo.getSnippet().getTitle());
         thisContent.setCatContent("contentYtv");
         thisContent.setThumbUrl(currentVideo.getSnippet().getThumbnails().getHigh().getUrl());
         thisContent.setVideoId(currentVideo.getId().getVideoId());

@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -52,6 +51,8 @@ import java.util.Map;
 import me.muapp.android.Application.MuappApplication;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.Log;
+import me.muapp.android.Classes.Util.Utils;
 import me.muapp.android.R;
 
 public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
@@ -336,6 +337,7 @@ public class AddVoiceNoteActivity extends BaseActivity implements MediaPlayer.On
                 thisContent.setComment(et_voicenote_comment.getText().toString());
                 thisContent.setCreatedAt(new Date().getTime());
                 thisContent.setLikes(0);
+                thisContent.setAudioLenght(Utils.getAudioLength(this, thisFile));
                 thisContent.setCatContent("contentAud");
                 BufferedInputStream buf = new BufferedInputStream(new FileInputStream(thisFile));
                 buf.read(bytes, 0, bytes.length);

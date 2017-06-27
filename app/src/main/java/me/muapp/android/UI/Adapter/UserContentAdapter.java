@@ -313,7 +313,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             holder.bind(userQualificationsAdapter);
         else {
             holder.bind(userContentList.get(position - 2));
-           }
+        }
     }
 
     @Override
@@ -435,7 +435,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
         @Override
         public void bind(User u) {
-             super.bind(u);
+            super.bind(u);
             title.setText("");
             profilePicturesAdapter = new ProfilePicturesAdapter(context, u.getAlbum());
             pager_profile_pictures.setAdapter(profilePicturesAdapter);
@@ -626,7 +626,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                     Log.wtf("AspectRatio2 fc", aspectRatio + " : " + screenWidth + " x " + (int) (screenWidth * aspectRatio) + " œ " + giphyMeasureData.toString());
                 }
             } catch (Exception x) {
-                 x.printStackTrace();
+                x.printStackTrace();
             }
         }
     }
@@ -725,6 +725,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     class YoutubeContentHolder extends UserContentHolder {
         TextView txt_youtube_comment;
+        TextView youtube_title;
         RelativeTimeTextView txt_youtube_date;
         View contentView;
         String youtubeVideoId;
@@ -734,6 +735,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         public YoutubeContentHolder(View itemView) {
             super(itemView);
             this.contentView = itemView;
+            this.youtube_title = (TextView) itemView.findViewById(R.id.youtube_title);
             this.youtube_thumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.youtube_thumbnail);
             this.txt_youtube_comment = (TextView) itemView.findViewById(R.id.txt_youtube_comment);
             this.txt_youtube_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_youtube_date);
@@ -749,6 +751,13 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 txt_youtube_comment.setVisibility(View.VISIBLE);
             } else {
                 txt_youtube_comment.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(c.getVideoTitle())) {
+                youtube_title.setText(c.getVideoTitle());
+                youtube_title.setVisibility(View.VISIBLE);
+            } else {
+                youtube_title.setVisibility(View.GONE);
             }
             txt_youtube_date.setReferenceTime(c.getCreatedAt());
             youtube_thumbnail.initialize(getYoutubeApiKey(), new YouTubeThumbnailView.OnInitializedListener() {

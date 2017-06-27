@@ -3,7 +3,6 @@ package me.muapp.android.Classes.API;
 import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 
 import com.google.gson.Gson;
 
@@ -39,6 +38,7 @@ import me.muapp.android.Classes.Internal.MutualFriends;
 import me.muapp.android.Classes.Internal.QualificationResult;
 import me.muapp.android.Classes.Internal.ReportResult;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
@@ -67,7 +67,7 @@ public class APIService {
             .build();
     Context mContext;
     SimpleDateFormat dateFormat;
-    private static final String BASE_URL = "https://app.muapp.me/"; //BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
+    private static final String BASE_URL = "http://dev.muapp.me/"; //BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
 
     public APIService(Context mContext) {
         this.mContext = mContext;
