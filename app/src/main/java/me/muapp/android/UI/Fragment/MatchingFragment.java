@@ -501,7 +501,6 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
                                     matchIntent.putExtra(MATCHING_CONVERSATION, conversationItem);
                                     matchIntent.putExtra(FROM_MATCH, true);
                                     startActivity(matchIntent);
-                                    replaceFragment(GetMatchingUsersFragment.newInstance(user));
                                 } else {
                                     Log.wtf("ConversationItem", "isNull");
                                 }

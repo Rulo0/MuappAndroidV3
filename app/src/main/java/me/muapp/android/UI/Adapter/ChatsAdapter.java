@@ -191,7 +191,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatsViewHol
             super(itemView);
             this.match_item_container = (RelativeLayout) itemView.findViewById(R.id.match_item_container);
             this.matchImage = (ImageView) itemView.findViewById(R.id.match_user_image);
-            this.matchLine1 = (TextView) itemView.findViewById(R.id.match_item_line_1);
+            this.matchLine1 = (TextView) itemView.findViewById(R.id.match_container_top);
             this.matchLine2 = (TextView) itemView.findViewById(R.id.match_item_line_2);
             this.matchIndicator = (ImageView) itemView.findViewById(R.id.match_notification);
         }

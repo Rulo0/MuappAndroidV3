@@ -189,6 +189,7 @@
     <string name="format_conversations_last_24">Conversaciones últ. 24 hrs: %s</string>
     <string name="lbl_now_be_patinent">Ahora sé paciente...</string>
     <string name="lbl_wait_for_muapp">Para que sigas la plática espera a que %s te haga Muapp.</string>
+    <string name="lbl_wait_for_muapp_no_expired">Espera a que %s te haga Muapp para que se convierta en tu Match.</string>
     <string name="lbl_add_sticker">Sticker</string>
     <string name="lbl_tutorial_crush_title">¡Nuevo!</string>
     <string name="lbl_tutorial_crush_content">Haz Crush antes de hacer Match.\n\n¿Fue un flechazo y no quieres arriesgar a no volver a verlo? \n\nDale a Crush y se abrirá un chat durante 24h para que decidas si te gusta.</string>

@@ -69,7 +69,6 @@ public class ProfileSettingsActivity extends BaseActivity implements OnProfileIm
         setContentView(R.layout.activity_profile_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         et_user_biography = (EditText) findViewById(R.id.et_user_biography);
-        Log.wtf("Biography", ":" + loggedUser.getDescription());
         et_user_biography.setText(loggedUser.getDescription());
         recycler_user_photos = (RecyclerView) findViewById(R.id.recycler_user_photos);
         if (loggedUser.getPending()) {

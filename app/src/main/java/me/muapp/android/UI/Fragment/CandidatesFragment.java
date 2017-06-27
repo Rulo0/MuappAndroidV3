@@ -8,12 +8,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import me.muapp.android.Classes.Util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -26,6 +28,7 @@ import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.Candidate;
 import me.muapp.android.Classes.Internal.CandidatesResult;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.ProgressUtil;
 import me.muapp.android.R;
@@ -165,6 +168,8 @@ public class CandidatesFragment extends Fragment implements OnFragmentInteractio
                 candidatesAdapter.removeCandidate(TYPE_LOADING);
                 progressUtil.showProgress(false);
                 for (Candidate c : result.getCandidates()) {
+                    if (c.getPhoto() != null && !TextUtils.isEmpty(c.getPhoto()))
+                        Glide.with(CandidatesFragment.this).load(c.getPhoto()).diskCacheStrategy(DiskCacheStrategy.ALL).preload();
                     Log.wtf("Candidate", c.toString());
                     candidatesAdapter.addCandidate(c);
                 }

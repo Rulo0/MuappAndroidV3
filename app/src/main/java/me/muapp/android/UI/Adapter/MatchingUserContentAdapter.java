@@ -132,7 +132,8 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
                     LinearLayoutManager llm = (LinearLayoutManager) parentRecycler.getLayoutManager();
-                    if (hasFriends || hasQualifications || getItemCount() > 3) {
+                    Log.wtf("scroll", hasFriends + " " + hasQualifications + " " + userContentList.size());
+                    if (hasFriends || hasQualifications || userContentList.size() > 1) {
                         int pos = llm.findFirstVisibleItemPosition();
                         if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
                             if (onProfileScrollListener != null)
@@ -154,12 +155,13 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         parentRecycler = recyclerView;
     }
 
-    public void setQualifications(List<Qualification> qualifications, final boolean mustScroll) {
+    public void setQualifications(final List<Qualification> qualifications, final boolean mustScroll) {
         userQualificationsAdapter = new UserQualificationsAdapter(context, qualifications);
         Handler handler = new Handler(Looper.getMainLooper());
         final Runnable r = new Runnable() {
             public void run() {
-                hasQualifications = true;
+                if (qualifications.size() > 0)
+                    hasQualifications = true;
                 notifyItemChanged(2);
                 if (mustScroll)
                     parentRecycler.scrollToPosition(2);
@@ -502,7 +504,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             difference = difference % hoursInMilli;
             long elapsedMinutes = difference / minutesInMilli;
             if (elapsedWeeks > 0) {
-                txt_matching_last_seen.setText(String.format("%s w", elapsedWeeks));
+                txt_matching_last_seen.setText(String.format(Locale.getDefault().getLanguage().equals("es") ? "%s s" : "%s w", elapsedWeeks));
             } else if (elapsedDays > 0) {
                 txt_matching_last_seen.setText(String.format("%s d", elapsedDays));
             } else if (elapsedHours > 0) {

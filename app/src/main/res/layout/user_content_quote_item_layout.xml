@@ -22,6 +22,7 @@
                 android:layout_height="24dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
+                android:padding="2dp"
                 app:srcCompat="@drawable/ic_quote_left" />
 
             <ImageView
@@ -30,6 +31,7 @@
                 android:layout_height="24dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:padding="2dp"
                 app:srcCompat="@drawable/ic_quote_right" />
 
             <LinearLayout
@@ -46,8 +48,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Content"
-                    android:textSize="16sp"
-                    android:textColor="@color/color_muapp_dark" />
+                    android:textColor="@color/color_muapp_dark"
+                    android:textSize="16sp" />
 
 
                 <TextView
@@ -55,9 +57,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textSize="16sp"
                     android:text="Content"
-                    android:textColor="@color/color_quote_text" />
+                    android:textColor="@color/color_quote_text"
+                    android:textSize="16sp" />
             </LinearLayout>
 
 

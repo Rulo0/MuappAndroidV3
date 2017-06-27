@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +26,7 @@ import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.FacebookAlbumsActivity;
 import me.muapp.android.UI.Activity.ProfileSettingsActivity;
@@ -217,7 +218,7 @@ public class UserPictureAdapter extends RecyclerView.Adapter<UserPictureAdapter.
 
         public void bind(final String photoUrl) {
             hasData = !TextUtils.isEmpty(photoUrl);
-            Glide.with(mContext).load(photoUrl).placeholder(hasData ? R.drawable.ic_logo_muapp_no_caption : R.drawable.background_gray_light).centerCrop().into(img_photo_item);
+            Glide.with(mContext).load(photoUrl).placeholder(hasData ? R.drawable.ic_placeholder : R.drawable.background_gray_light).centerCrop().diskCacheStrategy(DiskCacheStrategy.ALL).dontAnimate().into(img_photo_item);
             optionsMap.put(mContext.getString(R.string.action_take_photo), ACTION_TAKE_PHOTO);
             optionsMap.put(mContext.getString(R.string.action_select_photo), ACTION_SELECT_PHOTO);
             optionsMap.put(mContext.getString(R.string.action_select_from_facebook), ACTION_GET_PHOTO_FB);

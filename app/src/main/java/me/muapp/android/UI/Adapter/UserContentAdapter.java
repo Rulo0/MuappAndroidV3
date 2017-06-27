@@ -21,7 +21,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
-import me.muapp.android.Classes.Util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -68,6 +67,7 @@ import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.SpotifyData;
 import me.muapp.android.Classes.Internal.User;
 import me.muapp.android.Classes.Internal.UserContent;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
@@ -313,10 +313,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             holder.bind(userQualificationsAdapter);
         else {
             holder.bind(userContentList.get(position - 2));
-
-            Log.wtf("Binding", (position - 2) + " of " + (getItemCount() - 2));
-            Log.wtf("Binding", userContentList.get(position - 2).toString());
-        }
+           }
     }
 
     @Override
@@ -438,8 +435,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
         @Override
         public void bind(User u) {
-            Log.wtf("Binding header", u.toString());
-            super.bind(u);
+             super.bind(u);
             title.setText("");
             profilePicturesAdapter = new ProfilePicturesAdapter(context, u.getAlbum());
             pager_profile_pictures.setAdapter(profilePicturesAdapter);
@@ -630,8 +626,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                     Log.wtf("AspectRatio2 fc", aspectRatio + " : " + screenWidth + " x " + (int) (screenWidth * aspectRatio) + " œ " + giphyMeasureData.toString());
                 }
             } catch (Exception x) {
-                Log.wtf("Binding Error", x.getMessage());
-                x.printStackTrace();
+                 x.printStackTrace();
             }
         }
     }
@@ -674,7 +669,10 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 txt_detail_name.setText(currentData.getName());
                 txt_detail_artist.setText(currentData.getArtistName());
                 if (currentPlaying.equals(currentData.getPreviewUrl())) {
-                    btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                    if (mediaPlayer != null && mediaPlayer.isPlaying())
+                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                    else
+                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                 } else {
                     btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                 }
@@ -960,12 +958,13 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     public void stopMediaPlayer() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
+            currentPlaying = "";
             resetTimer();
             if (previewPlayedButton != null) {
                 previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
             }
         }
-        currentPlaying = "";
+
     }
 
     public void releaseMediaPlayer() {

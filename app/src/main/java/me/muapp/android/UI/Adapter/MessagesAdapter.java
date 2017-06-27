@@ -326,9 +326,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 message.setTimeStamp(new Date().getTime());
 
             this.messageTimeStamp = message.getTimeStamp();
-
-            Log.wtf("Binding", message.toString());
-            Log.wtf("Binding", message.getTimeStamp() + " - " + lastSeenByOpponent);
             if (this.indicatorView != null) {
                 if (message.getTimeStamp() <= lastSeenByOpponent)
                     this.indicatorView.setImageResource(R.drawable.ic_chat_indicator_read);

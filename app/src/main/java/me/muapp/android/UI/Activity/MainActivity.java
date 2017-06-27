@@ -25,6 +25,8 @@ import android.view.View;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
@@ -67,6 +69,7 @@ import me.muapp.android.Classes.API.Handlers.StickersHandler;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Chat.ConversationItem;
+import me.muapp.android.Classes.Chat.MuappSticker;
 import me.muapp.android.Classes.Chat.MuappStickers;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.LikeUserMatchUser;
@@ -300,6 +303,16 @@ public class MainActivity extends BaseActivity implements
             @Override
             public void onSuccess(int responseCode, MuappStickers muappStickers) {
                 preferenceHelper.putStickers(muappStickers);
+                for (final MuappSticker sticker : muappStickers.getMuappStickers()) {
+                    if (!TextUtils.isEmpty(sticker.getImage())) {
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Glide.with(MainActivity.this).load(sticker.getImage()).diskCacheStrategy(DiskCacheStrategy.ALL).preload();
+                            }
+                        });
+                    }
+                }
             }
 
             @Override

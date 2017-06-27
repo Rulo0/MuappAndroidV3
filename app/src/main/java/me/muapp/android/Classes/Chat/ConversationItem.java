@@ -14,8 +14,14 @@ public class ConversationItem implements Parcelable {
     String lastName;
     Conversation conversation;
     String pushToken;
+    Boolean hasInstagramToken;
+    Boolean online;
 
     public ConversationItem() {
+    }
+
+    public String getFullName() {
+        return this.name + " " + this.lastName;
     }
 
     public String getKey() {
@@ -66,8 +72,20 @@ public class ConversationItem implements Parcelable {
         this.pushToken = pushToken;
     }
 
-    public String getFullName() {
-        return this.name + " " + this.lastName;
+    public Boolean getHasInstagramToken() {
+        return hasInstagramToken;
+    }
+
+    public void setHasInstagramToken(Boolean hasInstagramToken) {
+        this.hasInstagramToken = hasInstagramToken;
+    }
+
+    public Boolean getOnline() {
+        return online;
+    }
+
+    public void setOnline(Boolean online) {
+        this.online = online;
     }
 
     protected ConversationItem(Parcel in) {
@@ -77,6 +95,10 @@ public class ConversationItem implements Parcelable {
         lastName = in.readString();
         conversation = (Conversation) in.readValue(Conversation.class.getClassLoader());
         pushToken = in.readString();
+        byte hasInstagramTokenVal = in.readByte();
+        hasInstagramToken = hasInstagramTokenVal == 0x02 ? null : hasInstagramTokenVal != 0x00;
+        byte onlineVal = in.readByte();
+        online = onlineVal == 0x02 ? null : onlineVal != 0x00;
     }
 
     @Override
@@ -92,6 +114,16 @@ public class ConversationItem implements Parcelable {
         dest.writeString(lastName);
         dest.writeValue(conversation);
         dest.writeString(pushToken);
+        if (hasInstagramToken == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (hasInstagramToken ? 0x01 : 0x00));
+        }
+        if (online == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (online ? 0x01 : 0x00));
+        }
     }
 
     @SuppressWarnings("unused")
@@ -116,6 +148,8 @@ public class ConversationItem implements Parcelable {
                 ", lastName='" + lastName + '\'' +
                 ", conversation=" + conversation +
                 ", pushToken='" + pushToken + '\'' +
+                ", hasInstagramToken=" + hasInstagramToken +
+                ", online=" + online +
                 '}';
     }
 }

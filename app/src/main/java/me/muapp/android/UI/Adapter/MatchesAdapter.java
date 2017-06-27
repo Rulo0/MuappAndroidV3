@@ -15,13 +15,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.github.curioustechizen.ago.RelativeTimeTextView;
 
 import java.util.Date;
 import java.util.HashMap;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Chat.ConversationItem;
-import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.ChatActivity;
 
@@ -140,6 +140,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
         ImageView matchIndicator;
         RelativeLayout match_item_container;
         ConversationItem thisConversation;
+        RelativeTimeTextView match_item_time;
 
         public MatchesViewHolder(View itemView) {
             super(itemView);
@@ -148,13 +149,13 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             this.matchLine1 = (TextView) itemView.findViewById(R.id.match_item_line_1);
             this.matchLine2 = (TextView) itemView.findViewById(R.id.match_item_line_2);
             this.matchIndicator = (ImageView) itemView.findViewById(R.id.match_notification);
+            this.match_item_time = (RelativeTimeTextView) itemView.findViewById(R.id.match_item_time);
         }
 
         public void bind(ConversationItem conversation) {
             thisConversation = conversation;
             match_item_container.setOnClickListener(this);
             matchLine2.setTextColor(ContextCompat.getColor(mContext, R.color.color_muapp_dark));
-            Log.w("Binding", conversation.toString());
             if (conversation.getConversation().getSeen() != null) {
                 matchIndicator.setVisibility(conversation.getConversation().getSeen() ? View.GONE : View.VISIBLE);
             } else {
@@ -162,6 +163,8 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             }
             Glide.with(mContext).load(conversation.getProfilePicture()).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ic_placeholder).bitmapTransform(new CropCircleTransformation(mContext)).into(matchImage);
             matchLine1.setText(conversation.getFullName());
+            long agoTime = conversation.getConversation().getLastMessage() != null ? conversation.getConversation().getLastMessage().getTimeStamp() : conversation.getConversation().getCreationDate();
+            match_item_time.setReferenceTime(agoTime > new Date().getTime() ? new Date().getTime() : agoTime);
             if (conversation.getConversation().getLastMessage() != null) {
                 if (conversation.getConversation().getLastMessage().getAttachment() != null) {
                     String attachmentKey = conversation.getConversation().getLastMessage().getAttachment().getCatContent();

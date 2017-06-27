@@ -16,6 +16,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.util.Calendar;
+
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.R;
@@ -84,7 +86,16 @@ public class CrushedExpiredLikeDialogFragment extends DialogFragment implements 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Glide.with(this).load(conversationItem.getProfilePicture()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(getContext())).into(img_photo_expired_like);
-        txt_content_expired_like.setText(String.format(getString(R.string.lbl_wait_for_muapp), conversationItem.getName()));
+        final Calendar expirationDate = Calendar.getInstance();
+        expirationDate.setTimeInMillis(conversationItem.getConversation().getCreationDate());
+        expirationDate.add(Calendar.DATE, 1);
+        long difference = expirationDate.getTime().getTime() - Calendar.getInstance().getTime().getTime();
+        if (difference <= 0) {
+            txt_content_expired_like.setText(String.format(getString(R.string.lbl_wait_for_muapp), conversationItem.getName()));
+        } else {
+            txt_content_expired_like.setText(String.format(getString(R.string.lbl_wait_for_muapp_no_expired), conversationItem.getName()));
+        }
+
         img_photo_expired_like.setOnClickListener(this);
     }
 

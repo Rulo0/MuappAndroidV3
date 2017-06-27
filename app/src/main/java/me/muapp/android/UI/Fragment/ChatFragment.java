@@ -47,7 +47,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     TextView txt_placeholder_no_crush;
     LinearLayout placeholder_no_match, placeholder_no_crush;
     View progress_chats, content_chats;
-    RecyclerView recycler_matches, recycler_crushes, recycler_chats;
+    RecyclerView recycler_matches, recycler_crushes;
     DatabaseReference chatReference;
     HashMap<String, ChatItemObject> listenerHashMap = new HashMap();
 

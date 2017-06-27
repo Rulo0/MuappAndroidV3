@@ -208,6 +208,7 @@
     <string name="format_conversations_last_24">Conversations in last 24 hours: %s</string>
     <string name="lbl_now_be_patinent">Now be patient...</string>
     <string name="lbl_wait_for_muapp">To follow the conversation wait for %s to do Muapp.</string>
+    <string name="lbl_wait_for_muapp_no_expired">Wait until %s muapps you back in order to become Matches.</string>
     <string name="lbl_add_sticker">Sticker</string>
     <string name="lbl_tutorial_crush_title">New!</string>
     <string name="lbl_tutorial_crush_content">Make a crush before make a match.\n\nYou\'ve had a crush and you do not want to risk never seeing him again?\n\nGive him a crush and a chat will open 24h, so you can decide if you really like him.</string>
