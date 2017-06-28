@@ -11,11 +11,12 @@
 
     <include layout="@layout/spotify_control_layout" />
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/bg_message_receiver_bottom"
+
         android:gravity="right"
         android:orientation="vertical"
         android:padding="8dp">

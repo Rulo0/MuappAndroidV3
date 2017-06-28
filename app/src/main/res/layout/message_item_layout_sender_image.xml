@@ -10,19 +10,20 @@
     android:gravity="right"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/img_sender_image"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:adjustViewBounds="true" />
-
-
-    </RelativeLayout>
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/img_sender_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:adjustViewBounds="true" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
     <LinearLayout
         android:layout_width="match_parent"

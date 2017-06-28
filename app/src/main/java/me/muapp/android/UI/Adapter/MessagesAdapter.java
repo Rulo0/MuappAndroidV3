@@ -655,10 +655,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 float aspectRatio;
                 if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
                     aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_sender);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).dontAnimate().into(img_gif_sender);
                 } else {
                     aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_sender);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).dontAnimate().into(img_gif_sender);
                 }
             } catch (Exception x) {
                 x.printStackTrace();
@@ -691,10 +691,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 float aspectRatio;
                 if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
                     aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_receiver);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).dontAnimate().into(img_gif_receiver);
                 } else {
                     aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_receiver);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).dontAnimate().into(img_gif_receiver);
                 }
             } catch (Exception x) {
                 x.printStackTrace();

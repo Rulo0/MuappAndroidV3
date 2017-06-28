@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +53,7 @@ public class AddAttachmentDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         final RecyclerView recyclerView = (RecyclerView) view;
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(new ChatItemAdapter());
     }
 
@@ -107,7 +107,7 @@ public class AddAttachmentDialogFragment extends BottomSheetDialogFragment {
         ArrayList<ItemAttachment> itemAttachments = new ArrayList<ItemAttachment>() {{
             add(new ItemAttachment(R.string.lbl_add_gallery, R.drawable.ic_add_photo, AttachmentType.TypePicture));
             add(new ItemAttachment(R.string.lbl_add_sticker, R.drawable.ic_add_sticker, AttachmentType.TypeSticker));
-            //add(new ItemAttachment(R.string.lbl_add_giphy, R.drawable.ic_add_giphy, AttachmentType.TypeGif));
+            add(new ItemAttachment(R.string.lbl_add_giphy, R.drawable.ic_add_giphy, AttachmentType.TypeGif));
             add(new ItemAttachment(R.string.lbl_add_music, R.drawable.ic_add_spotify, AttachmentType.TypeMusic));
             add(new ItemAttachment(R.string.lbl_add_video, R.drawable.ic_add_youtube, AttachmentType.TypeYoutube));
         }};

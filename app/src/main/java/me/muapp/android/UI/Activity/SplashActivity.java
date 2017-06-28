@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -22,6 +21,7 @@ import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.API.Handlers.UserInfoHandler;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.LoginHelper;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.Utils;
@@ -49,7 +49,6 @@ public class SplashActivity extends BaseActivity {
             new PreferenceHelper(this).putPendingMatch(pendingMatch);
         }
         mFirebaseAnalytics.logEvent(Analytics.Login.LOGIN_EVENTS.Login_Loading.toString(), null);
-
     }
 
     @Override
@@ -67,15 +66,6 @@ public class SplashActivity extends BaseActivity {
                 validateLogin();
             }
         }).start();
-
-
-     /*   splashHandler = new Handler();
-        splashHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                validateLogin();
-            }
-        }, 5000);*/
     }
 
     private void animateToActivity(final Class target) {

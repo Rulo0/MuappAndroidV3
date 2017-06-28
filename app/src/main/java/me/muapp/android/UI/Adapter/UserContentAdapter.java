@@ -684,6 +684,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         @Override
         public void onClick(View v) {
             super.onClick(v);
+            previewPlayedText = null;
             if (v.getId() == btn_play_detail.getId())
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
@@ -849,7 +850,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             mediaTimer.cancel();
         playedSeconds = 0;
         if (previewPlayedText != null)
-            previewPlayedText.setText(String.valueOf(sdfTimer.format(new Date(mediaPlayer.getCurrentPosition()))));
+            previewPlayedText.setText(sdfTimer.format(new Date(playedSeconds)));
     }
 
 
@@ -859,6 +860,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         RelativeTimeTextView txt_audio_date;
         ImageButton btn_audio_content;
         ImageButton btn_audio_menu;
+        TextView txt_audio_content_length;
 
         public AudioContentHolder(View itemView) {
             super(itemView);
@@ -867,6 +869,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             this.txt_audio_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_audio_date);
             this.btn_audio_content = (ImageButton) itemView.findViewById(R.id.btn_audio_content);
             this.btn_audio_menu = (ImageButton) itemView.findViewById(R.id.btn_audio_menu);
+            this.txt_audio_content_length = (TextView) itemView.findViewById(R.id.txt_audio_content_length);
             setBtnMenu(this.btn_audio_menu);
         }
 
@@ -879,6 +882,8 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             } else {
                 txt_audio_comment.setVisibility(View.GONE);
             }
+            if (c.getAudioLenght() != null)
+                txt_audio_content_length.setText(sdfTimer.format(new Date(c.getAudioLenght() * 1000)));
             txt_audio_date.setReferenceTime(c.getCreatedAt());
             btn_audio_content.setOnClickListener(this);
         }

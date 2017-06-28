@@ -663,7 +663,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         @Override
         public void bind(UserContent c) {
             super.bind(c);
-            Glide.with(context).load(c.getContentUrl()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).fitCenter().dontAnimate().into(img_picture_content);
+            Glide.with(context).load(c.getContentUrl()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).dontAnimate().into(img_picture_content);
             if (!TextUtils.isEmpty(c.getComment())) {
                 txt_image_comment.setText(c.getComment());
                 txt_image_comment.setVisibility(View.VISIBLE);
@@ -692,7 +692,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         @Override
         public void bind(UserContent c) {
             super.bind(c);
-            Glide.with(context).load(c.getThumbUrl()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(img_video_content);
+            Glide.with(context).load(c.getThumbUrl()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).dontAnimate().into(img_video_content);
             if (!TextUtils.isEmpty(c.getComment())) {
                 txt_video_comment.setText(c.getComment());
                 txt_video_comment.setVisibility(View.VISIBLE);
@@ -747,10 +747,10 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                 float aspectRatio;
                 if (giphyMeasureData.getHeight() >= giphyMeasureData.getWidth()) {
                     aspectRatio = (float) giphyMeasureData.getHeight() / (float) giphyMeasureData.getWidth();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).into(img_gif_content);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override((int) (screenWidth * aspectRatio), screenWidth).dontAnimate().into(img_gif_content);
                 } else {
                     aspectRatio = (float) giphyMeasureData.getWidth() / (float) giphyMeasureData.getHeight();
-                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).into(img_gif_content);
+                    Glide.with(context).load(c.getContentUrl()).asGif().placeholder(R.drawable.ic_placeholder).priority(Priority.IMMEDIATE).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.SOURCE).override(screenWidth, (int) (screenWidth * aspectRatio)).dontAnimate().into(img_gif_content);
                 }
             } catch (Exception x) {
 
@@ -809,6 +809,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         @Override
         public void onClick(View v) {
             super.onClick(v);
+            previewPlayedText = null;
             if (v.getId() == btn_play_detail.getId())
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
@@ -954,13 +955,13 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                     @Override
                     public void run() {
                         if (previewPlayedText != null)
-                            previewPlayedText.setText(String.valueOf(sdfTimer.format(new Date(mediaPlayer.getCurrentPosition()))));
-                        playedSeconds++;
+                            previewPlayedText.setText(sdfTimer.format(new Date(mediaPlayer.getCurrentPosition())));
+                        playedSeconds = mediaPlayer.getCurrentPosition() / 1000;
                     }
                 };
                 mainHandler.post(myRunnable);
             }
-        }, 0, 500);
+        }, 0, 100);
     }
 
     private void pauseTimer() {
@@ -973,7 +974,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             mediaTimer.cancel();
         playedSeconds = 0;
         if (previewPlayedText != null)
-            previewPlayedText.setText(String.valueOf(sdfTimer.format(new Date(mediaPlayer.getCurrentPosition()))));
+            previewPlayedText.setText(sdfTimer.format(new Date(playedSeconds)));
     }
 
 
@@ -983,6 +984,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         RelativeTimeTextView txt_audio_date;
         ImageButton btn_audio_content;
         ImageButton btn_audio_menu;
+        TextView txt_audio_content_length;
 
         public AudioContentHolder(View itemView) {
             super(itemView);
@@ -991,6 +993,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             this.txt_audio_date = (RelativeTimeTextView) itemView.findViewById(R.id.txt_audio_date);
             this.btn_audio_content = (ImageButton) itemView.findViewById(R.id.btn_audio_content);
             this.btn_audio_menu = (ImageButton) itemView.findViewById(R.id.btn_audio_menu);
+            this.txt_audio_content_length = (TextView) itemView.findViewById(R.id.txt_audio_content_length);
             setBtnMenu(this.btn_audio_menu);
         }
 
@@ -1003,6 +1006,8 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             } else {
                 txt_audio_comment.setVisibility(View.GONE);
             }
+            if (c.getAudioLenght() != null)
+                txt_audio_content_length.setText(sdfTimer.format(new Date(c.getAudioLenght() * 1000)));
             txt_audio_date.setReferenceTime(c.getCreatedAt());
             btn_audio_content.setOnClickListener(this);
         }
@@ -1018,6 +1023,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                         }
                         if (previewPlayedText != null)
                             previewPlayedText.setText("00:00");
+                        previewPlayedText = txt_audio_content_timer;
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
                         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {

@@ -64,6 +64,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-gcm'
     compile 'com.getkeepsafe.taptargetview:taptargetview:1.9.1'
+    compile 'io.gresse.hugo.vumeterlibrary:vumeterlibrary:1.0.15'
     testCompile 'junit:junit:4.12'
     compile ("com.firebase:firebase-jobdispatcher-with-gcm-dep:0.6.0") {
         exclude module: "play-services-gcm"

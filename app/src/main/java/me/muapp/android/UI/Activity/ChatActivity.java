@@ -586,8 +586,10 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
             m.setTimeStamp(new Date().getTime());
             m.setSenderId(loggedUser.getId());
             m.setContent(etMessage.getText().toString());
-            if (content != null)
+            if (content != null) {
+                content.setLikes(0);
                 m.setAttachment(content);
+            }
             etMessage.setText("");
             conversationReference.child(conversationReference.push().getKey()).setValue(m.toMap());
             yourConversation.child("conversation").child(yourConversation.push().getKey()).setValue(m.toMap());
