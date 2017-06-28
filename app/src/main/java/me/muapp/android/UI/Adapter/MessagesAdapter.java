@@ -800,6 +800,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         @Override
         public void onClick(View v) {
+            previewPlayedBar = null;
             if (v.getId() == btn_play_detail.getId())
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
@@ -892,6 +893,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         @Override
         public void onClick(View v) {
+            previewPlayedBar = null;
             if (v.getId() == btn_play_detail.getId())
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
