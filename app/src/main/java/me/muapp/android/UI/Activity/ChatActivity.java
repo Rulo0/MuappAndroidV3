@@ -1077,7 +1077,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
     private void sendVoiceNote(final File f) {
-        if (thisFile.exists()) {
+        if (thisFile.exists() && Utils.getAudioLength(this, f) >= 1) {
             try {
                 int size = (int) f.length();
                 byte[] bytes = new byte[size];
