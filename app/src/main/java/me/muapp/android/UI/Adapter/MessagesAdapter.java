@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -19,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.appyvet.rangebar.RangeBar;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -65,6 +67,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     String currentPlaying = "";
     ImageButton previewPlayedButton;
     TextView previewPlayedText;
+    RangeBar previewPlayedBar;
     Boolean fromOpponent = true;
     String myPhotoUrl;
     String yourPhotoUrl;
@@ -403,6 +406,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                     public void run() {
                         if (previewPlayedText != null)
                             previewPlayedText.setText(String.valueOf(sdfTimer.format(new Date(mediaPlayer.getCurrentPosition()))));
+                        if (previewPlayedBar != null)
+                            previewPlayedBar.setSeekPinByValue(mediaPlayer.getCurrentPosition());
                         playedSeconds++;
                     }
                 });
@@ -421,6 +426,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         playedSeconds = 0;
         if (previewPlayedText != null)
             previewPlayedText.setText(String.valueOf(sdfTimer.format(new Date(playedSeconds * 1000))));
+        if (previewPlayedBar != null)
+            previewPlayedBar.setSeekPinByValue(playedSeconds);
     }
 
     public class MyAudioContentHolder extends MessageContentHolder implements View.OnClickListener {
@@ -430,6 +437,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         ImageView img_indicator_sender_voicenote;
         UserContent itemContent;
         TextView txt_sender_voicenote_timer;
+        RangeBar seek_audio_sender;
 
         public MyAudioContentHolder(View itemView) {
             super(itemView);
@@ -438,6 +446,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             img_sender_audio_face = (ImageView) itemView.findViewById(R.id.img_sender_audio_face);
             btn_sender_audio_play_pause = (ImageButton) itemView.findViewById(R.id.btn_sender_audio_play_pause);
             img_indicator_sender_voicenote = (ImageView) itemView.findViewById(R.id.img_indicator_sender_voicenote);
+            seek_audio_sender = (RangeBar) itemView.findViewById(R.id.seek_audio_sender);
+            seek_audio_sender.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
+            seek_audio_sender.setSeekPinByValue(0);
             setIndicatorView(img_indicator_sender_voicenote);
         }
 
@@ -448,6 +464,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             txt_time_sender_voicenote.setReferenceTime(message.getTimeStamp());
             Glide.with(context).load(myPhotoUrl).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(context)).into(img_sender_audio_face);
             btn_sender_audio_play_pause.setOnClickListener(this);
+            seek_audio_sender.setClickable(false);
         }
 
         @Override
@@ -463,10 +480,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                     mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mp) {
+                            Log.wtf("MediaPlayer","is now prepared");
                             btn_sender_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause_white));
                             mediaPlayer.start();
                             if (previewPlayedText != null)
                                 previewPlayedText.setText("00:00");
+                            seek_audio_sender.setTickEnd(mediaPlayer.getDuration());
+                            previewPlayedBar = seek_audio_sender;
                             previewPlayedText = txt_sender_voicenote_timer;
                             startTimer();
                         }
@@ -504,6 +524,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         ImageButton btn_receiver_audio_play_pause;
         UserContent itemContent;
         TextView txt_receiver_voicenote_timer;
+        RangeBar seek_audio_receiver;
 
         public YourAudioContentHolder(View itemView) {
             super(itemView);
@@ -511,6 +532,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             txt_receiver_voicenote_timer = (TextView) itemView.findViewById(R.id.txt_receiver_voicenote_timer);
             img_receiver_audio_face = (ImageView) itemView.findViewById(R.id.img_receiver_audio_face);
             btn_receiver_audio_play_pause = (ImageButton) itemView.findViewById(R.id.btn_receiver_audio_play_pause);
+            seek_audio_receiver = (RangeBar) itemView.findViewById(R.id.seek_audio_receiver);
+            seek_audio_receiver.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
+            seek_audio_receiver.setSeekPinByValue(0);
         }
 
         @Override
@@ -520,6 +549,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             txt_time_receiver_voicenote.setReferenceTime(message.getTimeStamp());
             Glide.with(context).load(yourPhotoUrl).placeholder(R.drawable.ic_placeholder).diskCacheStrategy(DiskCacheStrategy.ALL).bitmapTransform(new CropCircleTransformation(context)).into(img_receiver_audio_face);
             btn_receiver_audio_play_pause.setOnClickListener(this);
+            seek_audio_receiver.setClickable(false);
         }
 
         @Override
@@ -538,6 +568,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                             btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
                             mediaPlayer.start();
                             previewPlayedText = txt_receiver_voicenote_timer;
+                            seek_audio_receiver.setTickEnd(mediaPlayer.getDuration());
+                            previewPlayedBar = seek_audio_receiver;
                             startTimer();
                         }
                     });
@@ -714,6 +746,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         @Override
         public void bind(Message message) {
             super.bind(message);
+            previewPlayedBar = null;
             if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_sender_spotify.setText(message.getContent());
                 txt_content_sender_spotify.setVisibility(View.VISIBLE);
@@ -790,6 +823,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         public YourSpotifyContentHolder(View itemView) {
             super(itemView);
+            previewPlayedBar = null;
             this.btn_play_detail = (ImageButton) itemView.findViewById(R.id.btn_play_detail);
             this.img_detail_album_blurred = (ImageView) itemView.findViewById(R.id.img_detail_album_blurred);
             this.img_detail_album = (ImageView) itemView.findViewById(R.id.img_detail_album);

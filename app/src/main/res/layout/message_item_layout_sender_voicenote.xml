@@ -43,16 +43,39 @@
                 android:scaleType="centerInside"
                 app:srcCompat="@drawable/ic_content_play_white" />
 
-            <TextView
-                android:id="@+id/txt_sender_voicenote_timer"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="140dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="00:00"
-                android:textColor="@android:color/white" />
+                android:orientation="vertical">
+
+                <com.appyvet.rangebar.RangeBar
+                    android:id="@+id/seek_audio_sender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:barWeight="4dp"
+                    app:connectingLineColor="@android:color/white"
+                    app:pinColor="@color/colorAccent"
+                    app:pinRadius="0dp"
+                    app:rangeBar="false"
+                    app:rangeBarColor="@android:color/white"
+                    app:selectorColor="@android:color/white"
+                    app:selectorSize="6dp"
+                    app:tickEnd="500"
+                    app:tickHeight="0dp"
+                    app:tickInterval="1"
+                    app:tickStart="0" />
+
+                <TextView
+                    android:id="@+id/txt_sender_voicenote_timer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="@android:color/white"
+                    android:textSize="12dp" />
+            </LinearLayout>
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="wrap_content"

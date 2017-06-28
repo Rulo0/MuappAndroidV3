@@ -25,14 +25,39 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/txt_receiver_voicenote_timer"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="140dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="8dp"
-                android:text="00:00"
-                android:textColor="@color/color_muapp_dark" />
+                android:orientation="vertical">
+
+                <com.appyvet.rangebar.RangeBar
+                    android:id="@+id/seek_audio_receiver"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:barWeight="4dp"
+                    app:connectingLineColor="@color/colorAccent"
+                    app:pinColor="@android:color/white"
+                    app:pinRadius="0dp"
+                    app:rangeBar="false"
+                    app:rangeBarColor="@color/colorAccent"
+                    app:selectorColor="@color/colorAccent"
+                    app:selectorSize="6dp"
+                    app:tickEnd="500"
+                    app:tickHeight="0dp"
+                    app:tickInterval="1"
+                    app:tickStart="0" />
+
+                <TextView
+                    android:id="@+id/txt_receiver_voicenote_timer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:text="00:00"
+                    android:textColor="@color/color_muapp_dark"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
 
             <ImageButton
                 android:id="@+id/btn_receiver_audio_play_pause"
