@@ -46,7 +46,7 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="8dp"
                 android:layout_toRightOf="@id/btn_audio_content"
-                android:text="99:99"
+                android:text="00:00"
                 android:textColor="@color/color_muapp_dark" />
         </RelativeLayout>
 

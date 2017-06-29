@@ -43,135 +43,163 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <RelativeLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/search_chat_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp">
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:focusableInTouchMode="true" />
 
-            <!--  <android.support.v7.widget.RecyclerView
-                  android:id="@+id/recycler_chats"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:layout_centerVertical="true" />-->
-
-
-            <LinearLayout
-                android:id="@+id/content_chats"
+            <SearchView
+                android:id="@+id/search_chats"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:orientation="vertical"
-                android:visibility="visible">
+                android:layout_height="wrap_content"
+                android:iconifiedByDefault="false"
+                android:queryHint="@string/lbl_search_hint" />
+        </android.support.v7.widget.CardView>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@color/color_muapp_light_grey"
-                    android:fontFamily="Roboto medium"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="8dp"
-                    android:text="@string/chat_crush_at"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:textColor="@color/colorAccent"
-                    android:visibility="visible" />
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/search_chat_container"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp">
-
-                    <LinearLayout
-                        android:id="@+id/placeholder_no_crush"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/txt_placeholder_no_crush"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/activity_horizontal_margin"
-                            android:text="@string/lbl_no_crush"
-                            android:textAlignment="center"
-                            android:textColor="@color/color_placeholder_messages"
-                            android:textSize="12dp" />
-                    </LinearLayout>
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recycler_crushes"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:nestedScrollingEnabled="true"
-                        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-                </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@color/color_muapp_light_grey"
-                    android:fontFamily="Roboto medium"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="8dp"
-                    android:text="@string/chat_match_at"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:textColor="@color/colorAccent"
-                    android:visibility="visible" />
+                <!--  <android.support.v7.widget.RecyclerView
+                      android:id="@+id/recycler_chats"
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:layout_centerVertical="true" />-->
 
-                <RelativeLayout
+
+                <LinearLayout
+                    android:id="@+id/content_chats"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical"
+                    android:visibility="visible">
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@color/color_muapp_light_grey"
+                        android:fontFamily="Roboto medium"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="8dp"
+                        android:text="@string/chat_crush_at"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                        android:textColor="@color/colorAccent"
+                        android:visibility="visible" />
 
-                    <LinearLayout
-                        android:id="@+id/placeholder_no_match"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_marginTop="35dp"
-                        android:orientation="vertical">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp">
 
-                        <ImageView
-                            android:layout_width="70dp"
-                            android:layout_height="70dp"
-                            android:layout_gravity="center"
-                            app:srcCompat="@drawable/ic_no_message" />
-
-                        <TextView
+                        <LinearLayout
+                            android:id="@+id/placeholder_no_crush"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="@string/lbl_no_match"
-                            android:textColor="@color/color_placeholder_messages"
-                            android:textSize="12dp" />
-                    </LinearLayout>
+                            android:layout_centerInParent="true"
+                            android:orientation="vertical">
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recycler_matches"
+                            <TextView
+                                android:id="@+id/txt_placeholder_no_crush"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/activity_horizontal_margin"
+                                android:text="@string/lbl_no_crush"
+                                android:textAlignment="center"
+                                android:textColor="@color/color_placeholder_messages"
+                                android:textSize="12dp" />
+                        </LinearLayout>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/recycler_crushes"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:nestedScrollingEnabled="true"
+                            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                    </RelativeLayout>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@color/color_muapp_light_grey"
+                        android:fontFamily="Roboto medium"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="8dp"
+                        android:text="@string/chat_match_at"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                        android:textColor="@color/colorAccent"
+                        android:visibility="visible" />
+
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:nestedScrollingEnabled="false"
-                        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-                </RelativeLayout>
-            </LinearLayout>
+                        android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progress_chats"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_margin="@dimen/activity_horizontal_margin"
-                android:visibility="gone" />
-        </RelativeLayout>
-    </android.support.v4.widget.NestedScrollView>
+
+                        <LinearLayout
+                            android:id="@+id/placeholder_no_match"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginTop="35dp"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="70dp"
+                                android:layout_height="70dp"
+                                android:layout_gravity="center"
+                                app:srcCompat="@drawable/ic_no_message" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:text="@string/lbl_no_match"
+                                android:textColor="@color/color_placeholder_messages"
+                                android:textSize="12dp" />
+                        </LinearLayout>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/recycler_matches"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:nestedScrollingEnabled="false"
+                            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/progress_chats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </android.support.v4.widget.NestedScrollView>
+    </RelativeLayout>
+
+
 </android.support.design.widget.CoordinatorLayout>

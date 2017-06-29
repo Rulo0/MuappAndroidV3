@@ -133,7 +133,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
                     super.onScrolled(recyclerView, dx, dy);
                     LinearLayoutManager llm = (LinearLayoutManager) parentRecycler.getLayoutManager();
                     Log.wtf("scroll", hasFriends + " " + hasQualifications + " " + userContentList.size());
-                    if (hasFriends || hasQualifications || userContentList.size() > 1) {
+                    if (hasFriends || hasQualifications || userContentList.size() >= 1) {
                         int pos = llm.findFirstVisibleItemPosition();
                         if (llm.findViewByPosition(pos).getTop() == 0 && pos == 0) {
                             if (onProfileScrollListener != null)

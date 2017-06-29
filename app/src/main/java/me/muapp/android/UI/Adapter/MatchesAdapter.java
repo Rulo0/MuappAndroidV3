@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,8 +20,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.Chat.ConversationItem;
@@ -32,14 +38,16 @@ import static me.muapp.android.UI.Activity.ChatActivity.CONVERSATION_EXTRA;
  * Created by rulo on 4/04/17.
  */
 
-public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesViewHolder> {
-    private SortedList<ConversationItem> conversations;
+public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesViewHolder> implements Filterable {
+    private List<ConversationItem> conversationItemList;
+    private SortedList<ConversationItem> itemSortedList;
     private final LayoutInflater mInflater;
     private Context mContext;
-
     HashMap<String, String> attachmentMap;
+    private ConversationFilter conversationFilter;
 
     public MatchesAdapter(final Context context) {
+        this.conversationItemList = new ArrayList<>();
         this.attachmentMap = new HashMap<String, String>() {{
             put("contentAud", context.getString(R.string.lbl_add_voice_note));
             put("contentGif", context.getString(R.string.lbl_add_giphy));
@@ -48,7 +56,7 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             put("contentStkr", context.getString(R.string.lbl_add_sticker));
             put("contentYtv", context.getString(R.string.lbl_add_video));
         }};
-        this.conversations = new SortedList<>(ConversationItem.class, new SortedList.Callback<ConversationItem>() {
+        this.itemSortedList = new SortedList<>(ConversationItem.class, new SortedList.Callback<ConversationItem>() {
             @Override
             public void onInserted(int position, int count) {
                 notifyItemRangeInserted(position, count);
@@ -91,9 +99,15 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
     }
 
     public void updateConversationUser(String key, String newUrl) {
-        for (int i = 0; i < conversations.size(); i++) {
-            if (conversations.get(i).getKey().equals(key) && !conversations.get(i).getProfilePicture().equals(newUrl)) {
-                conversations.get(i).setProfilePicture(newUrl);
+        for (ConversationItem item : conversationItemList) {
+            if (item.getKey().equals(key) && !item.getProfilePicture().equals(newUrl)) {
+                item.setProfilePicture(newUrl);
+                break;
+            }
+        }
+        for (int i = 0; i < itemSortedList.size(); i++) {
+            if (itemSortedList.get(i).getKey().equals(key) && !itemSortedList.get(i).getProfilePicture().equals(newUrl)) {
+                itemSortedList.get(i).setProfilePicture(newUrl);
                 notifyDataSetChanged();
                 break;
             }
@@ -101,17 +115,23 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
     }
 
     public void clearConversations() {
-        conversations.clear();
+        conversationItemList.clear();
+        itemSortedList.clear();
     }
 
     public void addConversation(ConversationItem c) {
-        conversations.add(c);
+        conversationItemList.add(c);
+        itemSortedList.add(c);
     }
 
     public void removeConversation(String conversationKey) {
-        for (int i = 0; i < conversations.size(); i++) {
-            if (conversations.get(i).getKey().equals(conversationKey)) {
-                conversations.removeItemAt(i);
+        for (ConversationItem item : conversationItemList) {
+            if (item.getKey().equals(conversationKey))
+                conversationItemList.remove(item);
+        }
+        for (int i = 0; i < itemSortedList.size(); i++) {
+            if (itemSortedList.get(i).getKey().equals(conversationKey)) {
+                itemSortedList.removeItemAt(i);
                 break;
             }
         }
@@ -125,12 +145,12 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
 
     @Override
     public void onBindViewHolder(MatchesViewHolder holder, int position) {
-        holder.bind(conversations.get(position));
+        holder.bind(itemSortedList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return conversations.size();
+        return itemSortedList.size();
     }
 
     public class MatchesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -188,5 +208,51 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
             chatIntent.putExtra(CONVERSATION_EXTRA, thisConversation);
             mContext.startActivity(chatIntent);
         }
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (conversationFilter == null)
+            conversationFilter = new MatchesAdapter.ConversationFilter(this, conversationItemList);
+        return conversationFilter;
+    }
+
+    public class ConversationFilter extends Filter {
+        private final MatchesAdapter adapter;
+        private final List<ConversationItem> originalList;
+        private final List<ConversationItem> filteredList;
+
+        public ConversationFilter(MatchesAdapter adapter, List<ConversationItem> originalList) {
+            super();
+            this.adapter = adapter;
+            this.originalList = new LinkedList<>(originalList);
+            this.filteredList = new ArrayList<>();
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            filteredList.clear();
+            final String filterPattern = constraint.toString().toLowerCase().trim();
+            final FilterResults results = new FilterResults();
+            if (TextUtils.isEmpty(constraint)) {
+                filteredList.addAll(originalList);
+            } else {
+                for (final ConversationItem conversation : originalList) {
+                    if (conversation.getFullName().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(conversation);
+                    }
+                }
+            }
+            results.values = filteredList;
+            results.count = filteredList.size();
+            return results;
+        }
+
+        @Override
+        public void publishResults(CharSequence constraint, FilterResults results) {
+            itemSortedList.clear();
+            itemSortedList.addAll((ArrayList<ConversationItem>) results.values);
+        }
+
     }
 }

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
@@ -36,12 +37,13 @@ import me.muapp.android.UI.Fragment.Interface.OnFragmentInteractionListener;
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
 
-public class ChatFragment extends Fragment implements OnFragmentInteractionListener, ChildEventListener, ValueEventListener {
+public class ChatFragment extends Fragment implements OnFragmentInteractionListener, ChildEventListener, ValueEventListener, SearchView.OnQueryTextListener {
     private static final String TAG = "ChatFragment";
     private static final String ARG_CURRENT_USER = "CURRENT_USER";
     ProgressUtil progressUtil;
     private User user;
     private OnFragmentInteractionListener mListener;
+    SearchView search_chats;
     MatchesAdapter matchesAdapter;
     CrushesAdapter crushesAdapter;
     TextView txt_placeholder_no_crush;
@@ -50,6 +52,18 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
     RecyclerView recycler_matches, recycler_crushes;
     DatabaseReference chatReference;
     HashMap<String, ChatItemObject> listenerHashMap = new HashMap();
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        crushesAdapter.getFilter().filter(query.toString());
+        matchesAdapter.getFilter().filter(query.toString());
+        return true;
+    }
 
     public class ChatItemObject {
         String itemKey;
@@ -160,6 +174,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         placeholder_no_match = (LinearLayout) v.findViewById(R.id.placeholder_no_match);
         placeholder_no_crush = (LinearLayout) v.findViewById(R.id.placeholder_no_crush);
         txt_placeholder_no_crush = (TextView) v.findViewById(R.id.txt_placeholder_no_crush);
+        search_chats = (SearchView) v.findViewById(R.id.search_chats);
         LinearLayoutManager linearLayoutManagerHorizontal = new LinearLayoutManager(getContext());
         linearLayoutManagerHorizontal.setOrientation(LinearLayoutManager.HORIZONTAL);
         recycler_crushes.setLayoutManager(linearLayoutManagerHorizontal);
@@ -182,6 +197,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
         Log.wtf("EventListener", "add");
         chatReference.addChildEventListener(this);
         chatReference.addValueEventListener(this);
+        search_chats.setOnQueryTextListener(this);
     }
 
     @Override
@@ -241,7 +257,6 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
                     }
                     progressUtil.showProgress(false);
                     listenerHashMap.put(conversation.getKey(), new ChatItemObject(conversationItem.getProfilePicture(), conversation.getKey(), conversation.getCrush(), userInfoReference));
-
                 }
             }
 

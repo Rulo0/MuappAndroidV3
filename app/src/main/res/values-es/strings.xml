@@ -214,4 +214,5 @@
     <string name="facebook_account_key_token">3818036a6661eaab9ffcac9f7417928e</string>
     <string name="facebook_app_id">185195208478071</string>
     <string name="fb_login_protocol_scheme">fb185195208478071</string>
+    <string name="lbl_search_hint">Buscar</string>
 </resources>

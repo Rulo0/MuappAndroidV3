@@ -910,6 +910,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {
+                                txt_audio_content_length.setText(sdfTimer.format(new Date(mediaPlayer.getDuration())));
                                 btn_audio_content.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
                                 mediaPlayer.start();
                                 startTimer();
