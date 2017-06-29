@@ -1,10 +1,12 @@
 package me.muapp.android.Classes.Util;
 
+import me.muapp.android.BuildConfig;
+
 /**
  * Created by rulo on 21/06/17.
  */
 public class Log {
-    static final boolean LOG = true;
+    static final boolean LOG = BuildConfig.DEBUG;
 
     public static void i(String tag, String string) {
         if (LOG) android.util.Log.i(tag, string);

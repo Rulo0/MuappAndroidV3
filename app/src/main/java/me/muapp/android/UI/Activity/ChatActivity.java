@@ -233,6 +233,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
         myStorageReference = FirebaseStorage.getInstance().getReference().child(String.valueOf(loggedUser.getId())).child("conversations").child(conversationItem.getKey());
         yourPresence = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("online");
         messagesAdapter = new MessagesAdapter(this);
+        messagesAdapter.setFragmentManager(getSupportFragmentManager());
         messagesAdapter.setParticipantsPhotos(loggedUser.getPhoto(), conversationItem.getProfilePicture());
         messagesAdapter.setLoggedUserId(loggedUser.getId());
         conversationReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE)

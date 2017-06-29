@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +49,7 @@ import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.YoutubeViewActivity;
+import me.muapp.android.UI.Fragment.PictureViewDialogFragment;
 
 import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
 
@@ -72,8 +75,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     String myPhotoUrl;
     String yourPhotoUrl;
     Long lastSeenByOpponent = 0L;
+    FragmentManager fragmentManager;
     SimpleDateFormat sdfTimer = new SimpleDateFormat("mm:ss");
     private Set<MessageContentHolder> mBoundViewHolders = new HashSet<>();
+
+    public void setFragmentManager(FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
+    }
 
     public void setLastSeenByOpponent(Long lastSeenByOpponent) {
         this.lastSeenByOpponent = lastSeenByOpponent;
@@ -139,6 +147,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.mediaPlayer = new MediaPlayer();
+        this.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         this.messageList = new SortedList<>(Message.class, new SortedList.Callback<Message>() {
             @Override
             public int compare(Message m1, Message m2) {
@@ -479,6 +488,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             } else {
                 seek_audio_sender.setSeekPinByValue(0);
             }
+            btn_sender_audio_play_pause.setOnClickListener(this);
         }
 
         @Override
@@ -486,10 +496,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             try {
                 if (!currentPlaying.equals(itemContent.getContentUrl())) {
                     if (previewPlayedButton != null) {
-                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play_white : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                     }
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
+                    Log.wtf("MediaPlayer", itemContent.getContentUrl());
                     fromOpponent = false;
                     mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
@@ -575,6 +586,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             } else {
                 seek_audio_receiver.setSeekPinByValue(0);
             }
+            btn_receiver_audio_play_pause.setOnClickListener(this);
         }
 
         @Override
@@ -582,7 +594,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             try {
                 if (!currentPlaying.equals(itemContent.getContentUrl())) {
                     if (previewPlayedButton != null) {
-                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play_white : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                     }
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(currentPlaying = itemContent.getContentUrl());
@@ -591,7 +603,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                         @Override
                         public void onPrepared(MediaPlayer mp) {
                             thisLengh = mediaPlayer.getDuration();
-                            btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
+                            btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause_white));
                             mediaPlayer.start();
                             if (previewPlayedText != null)
                                 previewPlayedText.setText("00:00");
@@ -604,7 +616,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                         @Override
                         public void onCompletion(MediaPlayer mp) {
                             currentPlaying = "firebasestorage";
-                            btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                            btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play_white));
                             resetTimer();
                         }
                     });
@@ -614,11 +626,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                     if (mediaPlayer.isPlaying()) {
                         mediaPlayer.pause();
                         pauseTimer();
-                        btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play));
+                        btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_play_white));
                     } else {
                         mediaPlayer.start();
                         startTimer();
-                        btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause));
+                        btn_receiver_audio_play_pause.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_content_pause_white));
                     }
                 }
             } catch (Exception x) {
@@ -702,7 +714,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         }
     }
 
-    public class MyImageContentHolder extends MessageContentHolder {
+    public class MyImageContentHolder extends MessageContentHolder implements View.OnClickListener {
         RelativeTimeTextView txt_time_sender_image;
         ImageView img_sender_image;
         ImageView img_indicator_sender_image;
@@ -720,6 +732,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             super.bind(message);
             txt_time_sender_image.setReferenceTime(message.getTimeStamp());
             Glide.with(context).load(message.getAttachment().getContentUrl()).placeholder(R.drawable.ic_placeholder).error(R.drawable.ic_placeholder_error).diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().into(img_sender_image);
+            img_sender_image.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            PictureViewDialogFragment.newInstance(attachment.getContentUrl()).show(fragmentManager, "picture");
         }
     }
 
@@ -805,7 +823,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
                         if (previewPlayedButton != null) {
-                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play_white : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
@@ -898,7 +916,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 try {
                     if (!currentPlaying.equals(currentData.getPreviewUrl())) {
                         if (previewPlayedButton != null) {
-                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, fromOpponent ? R.drawable.ic_content_play_white : R.drawable.ic_content_play_white) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
                         }
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());

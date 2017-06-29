@@ -34,7 +34,7 @@ public class RatingFriendDialogFragment extends DialogFragment {
     RatingBar rating_user;
     ImageButton btn_dismiss_dialog;
     MatchingUser matchingUser;
-    static final String ARG_MATCHING_USER = "ARG_CONVERSATION_CRUSH";
+    static final String ARG_MATCHING_USER = "ARG_PICTURE_URL";
     OnUserRatedListener onUserRatedListener;
 
     public RatingFriendDialogFragment() {

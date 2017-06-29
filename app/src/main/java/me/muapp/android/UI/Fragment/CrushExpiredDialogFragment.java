@@ -34,7 +34,7 @@ public class CrushExpiredDialogFragment extends DialogFragment implements View.O
     ImageView img_photo_expired;
     TextView txt_content_expired;
     ImageButton imb_expired_no_muapp, imb_expired_muapp;
-    static final String ARG_CONVERSATION_CRUSH = "ARG_CONVERSATION_CRUSH";
+    static final String ARG_CONVERSATION_CRUSH = "ARG_PICTURE_URL";
     OnTimeExpiredListener onTimeExpiredListener;
 
     public CrushExpiredDialogFragment() {

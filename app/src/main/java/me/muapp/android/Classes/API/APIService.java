@@ -67,7 +67,7 @@ public class APIService {
             .build();
     Context mContext;
     SimpleDateFormat dateFormat;
-    private static final String BASE_URL = "https://app.muapp.me/"; //BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
+    private static final String BASE_URL = "http://dev.muapp.me/"; //BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
 
     public APIService(Context mContext) {
         this.mContext = mContext;

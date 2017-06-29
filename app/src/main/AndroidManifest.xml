@@ -15,7 +15,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-feature android:name="android.hardware.camera"/>
+
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:name=".Application.MuappApplication"
@@ -29,7 +30,6 @@
         <service
             android:name=".Services.FetchAddressIntentService"
             android:exported="false" />
-
         <service
             android:name=".Classes.FirebaseMessaging.MuappMessagingService"
             android:stopWithTask="false">
@@ -37,7 +37,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <service android:name=".Classes.FirebaseMessaging.MuappInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -91,8 +90,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".UI.Activity.ManGateActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".UI.Activity.MainActivity"
             android:screenOrientation="portrait"
