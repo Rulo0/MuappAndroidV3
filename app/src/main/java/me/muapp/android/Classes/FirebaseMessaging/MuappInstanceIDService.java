@@ -1,12 +1,15 @@
 package me.muapp.android.Classes.FirebaseMessaging;
 
-import me.muapp.android.Classes.Util.Log;
-
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
+import org.json.JSONObject;
+
+import me.muapp.android.Classes.API.APIService;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
+import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
@@ -16,37 +19,28 @@ import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
  */
 
 public class MuappInstanceIDService extends FirebaseInstanceIdService {
-
     private static final String TAG = "MyFirebaseIIDService";
-
-    /**
-     * Called if InstanceID token is updated. This may occur if the security of
-     * the previous token had been compromised. Note that this is called when the InstanceID token
-     * is initially generated so this is where you would retrieve the token.
-     */
-    // [START refresh_token]
     @Override
     public void onTokenRefresh() {
-
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.wtf(TAG, "Refreshed token: " + refreshedToken);
         sendRegistrationToServer(refreshedToken);
     }
 
-
-    /**
-     * Persist token to third-party servers.
-     * <p>
-     * Modify this method to associate the user's FCM InstanceID token with any server-side account
-     * maintained by your application.
-     *
-     * @param token The new token.
-     */
     private void sendRegistrationToServer(String token) {
-        UserHelper helper = new UserHelper(getBaseContext());
+        UserHelper helper = new UserHelper(this);
         User thisUser = helper.getLoggedUser();
         if (thisUser != null) {
+            new PreferenceHelper(this).putGCMToken(token);
+            thisUser.setPushToken(token);
             FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(thisUser.getId())).child("pushToken").setValue(token);
+            thisUser.setPushToken(token);
+            JSONObject tokenUser = new JSONObject();
+            try {
+                tokenUser.put("push_token", token);
+                new APIService(this).patchUser(tokenUser, null);
+            } catch (Exception x) {
+            }
         }
     }
 }

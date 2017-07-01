@@ -215,4 +215,8 @@
     <string name="facebook_app_id">185195208478071</string>
     <string name="fb_login_protocol_scheme">fb185195208478071</string>
     <string name="lbl_search_hint">Buscar</string>
+    <string name="candidate_half_percentage">¡Estás gustando mucho! No esperes más, invita a tus amigos y entra directamente</string>
+    <string name="candidate_full_percentage">¡Enhorabuena! Estás dentro de Muapp. ¡Empieza ya!</string>
+    <string name="candidate_use_code">¡Han utilizado tu código! Ya estás un 20% más cerca de empezar a disfrutar Muapp</string>
+    <string name="candidate_vote">¡Wow! Ya han empezado a votarte… Invita a tus amigos y entra más rápido.</string>
 </resources>

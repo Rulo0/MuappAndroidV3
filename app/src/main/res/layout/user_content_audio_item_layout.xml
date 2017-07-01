@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:vumeter="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp">
@@ -11,6 +12,18 @@
         android:layout_marginBottom="4dp"
         android:layout_marginTop="4dp"
         android:orientation="vertical">
+
+        <io.gresse.hugo.vumeterlibrary.VuMeterView
+            android:id="@+id/audio_view"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            vumeter:vumeter_backgroundColor="@color/colorAccent"
+            vumeter:vumeter_blockNumber="12"
+            vumeter:vumeter_speed="15"
+            vumeter:vumeter_startOff="true"
+            vumeter:vumeter_stopSize="5dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"

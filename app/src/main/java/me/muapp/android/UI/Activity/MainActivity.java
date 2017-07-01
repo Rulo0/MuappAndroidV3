@@ -235,35 +235,40 @@ public class MainActivity extends BaseActivity implements
             bottomNavigation.setOnTabSelectedListener(this);
             // navigation = (BottomNavigationView) findViewById(R.id.navigation);
             fab_add_content = (FloatingActionButton) findViewById(R.id.fab_add_content);
-            if (checkPlayServices()) {
-                final String token = FirebaseInstanceId.getInstance().getToken();
-                FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("pushToken").setValue(token);
-                if (!TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token) || !loggedUser.getPushToken().equals(token)) {
-                    FirebaseMessaging.getInstance().subscribeToTopic("android");
-                    JSONObject tokenUser = new JSONObject();
-                    try {
-                        tokenUser.put("push_token", token);
-                        new APIService(this).patchUser(tokenUser, new UserInfoHandler() {
-                            @Override
-                            public void onSuccess(int responseCode, String userResponse) {
-                            }
 
-                            @Override
-                            public void onSuccess(int responseCode, User user) {
-                                new PreferenceHelper(MainActivity.this).putGCMToken(token);
-                                saveUser(user);
-                            }
+            try {
+                if (checkPlayServices()) {
+                    final String token = FirebaseInstanceId.getInstance().getToken();
+                    FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("pushToken").setValue(token);
+                    if (TextUtils.isEmpty(token) || !TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token) || !loggedUser.getPushToken().equals(token)) {
+                        FirebaseMessaging.getInstance().subscribeToTopic("android");
+                        JSONObject tokenUser = new JSONObject();
+                        try {
+                            tokenUser.put("push_token", token);
+                            new APIService(this).patchUser(tokenUser, new UserInfoHandler() {
+                                @Override
+                                public void onSuccess(int responseCode, String userResponse) {
+                                }
 
-                            @Override
-                            public void onFailure(boolean isSuccessful, String responseString) {
+                                @Override
+                                public void onSuccess(int responseCode, User user) {
+                                    new PreferenceHelper(MainActivity.this).putGCMToken(token);
+                                    saveUser(user);
+                                }
 
-                            }
-                        });
-                    } catch (Exception x) {
-                        x.printStackTrace();
+                                @Override
+                                public void onFailure(boolean isSuccessful, String responseString) {
+
+                                }
+                            });
+                        } catch (Exception x) {
+                            x.printStackTrace();
+                        }
                     }
                 }
+            } catch (Exception x) {
             }
+
             if (preferenceHelper.getFirstLogin() && !loggedUser.getFakeAccount())
                 phoneValidation();
             // navigation.setOnNavigationItemSelectedListener(this);
@@ -664,9 +669,9 @@ public class MainActivity extends BaseActivity implements
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5 * 60 * 1000);
-        mLocationRequest.setFastestInterval(5 * 60 * 500);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval((1000 * 60) * 60);
+        mLocationRequest.setFastestInterval((1000 * 60) * 45);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);

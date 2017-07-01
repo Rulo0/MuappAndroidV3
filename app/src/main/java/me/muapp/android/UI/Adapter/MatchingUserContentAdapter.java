@@ -57,6 +57,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.gresse.hugo.vumeterlibrary.VuMeterView;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.muapp.android.Classes.Internal.GiphyMeasureData;
 import me.muapp.android.Classes.Internal.MatchingUser;
@@ -83,7 +84,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     final int TYPE_HEADER = -1;
     final int TYPE_QUALIFICATIONS = -2;
     final int TYPE_MUTUAL_FRIENDS = -3;
-
+    VuMeterView currentAudioView;
     SortedList<UserContent> userContentList;
     HashMap<String, Integer> viewTypeMap = new HashMap<String, Integer>() {{
         put("contentAud", 1);
@@ -811,41 +812,45 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             super.onClick(v);
             previewPlayedText = null;
             if (v.getId() == btn_play_detail.getId())
-                try {
-                    if (!currentPlaying.equals(currentData.getPreviewUrl())) {
-                        if (previewPlayedButton != null) {
-                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
-                        }
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
-                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                            @Override
-                            public void onPrepared(MediaPlayer mp) {
-                                btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
-                                mediaPlayer.start();
-                            }
-                        });
-                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                currentPlaying = "";
-                                btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
-                            }
-                        });
-                        mediaPlayer.prepareAsync();
-                        previewPlayedButton = (ImageButton) v;
-                    } else {
-                        if (mediaPlayer.isPlaying()) {
-                            mediaPlayer.pause();
-                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
-                        } else {
-                            mediaPlayer.start();
-                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
-                        }
-                    }
-                } catch (Exception x) {
-                    x.printStackTrace();
+                if (currentAudioView != null) {
+                    currentAudioView.stop(true);
+                    currentAudioView = null;
                 }
+            try {
+                if (!currentPlaying.equals(currentData.getPreviewUrl())) {
+                    if (previewPlayedButton != null) {
+                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    }
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            currentPlaying = "";
+                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                        }
+                    });
+                    mediaPlayer.prepareAsync();
+                    previewPlayedButton = (ImageButton) v;
+                } else {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    } else {
+                        mediaPlayer.start();
+                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                    }
+                }
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
         }
     }
 
@@ -946,6 +951,8 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
 
     private void startTimer() {
         resetTimer();
+        if (currentAudioView != null)
+            currentAudioView.resume(true);
         mediaTimer = new Timer();
         mediaTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -967,11 +974,15 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
     private void pauseTimer() {
         if (mediaTimer != null)
             mediaTimer.cancel();
+        if (currentAudioView != null)
+            currentAudioView.pause();
     }
 
     private void resetTimer() {
         if (mediaTimer != null)
             mediaTimer.cancel();
+        if (currentAudioView != null)
+            currentAudioView.stop(true);
         playedSeconds = 0;
         if (previewPlayedText != null)
             previewPlayedText.setText(sdfTimer.format(new Date(playedSeconds)));
@@ -984,6 +995,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
         RelativeTimeTextView txt_audio_date;
         ImageButton btn_audio_content;
         ImageButton btn_audio_menu;
+        VuMeterView audio_view;
         TextView txt_audio_content_length;
 
         public AudioContentHolder(View itemView) {
@@ -994,6 +1006,7 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             this.btn_audio_content = (ImageButton) itemView.findViewById(R.id.btn_audio_content);
             this.btn_audio_menu = (ImageButton) itemView.findViewById(R.id.btn_audio_menu);
             this.txt_audio_content_length = (TextView) itemView.findViewById(R.id.txt_audio_content_length);
+            this.audio_view = (VuMeterView) itemView.findViewById(R.id.audio_view);
             setBtnMenu(this.btn_audio_menu);
         }
 
@@ -1017,6 +1030,9 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             super.onClick(v);
             if (v.getId() == btn_audio_content.getId())
                 try {
+                    if (currentAudioView != null)
+                        currentAudioView.stop(true);
+                    currentAudioView = audio_view;
                     if (!currentPlaying.equals(itemContent.getContentUrl())) {
                         if (previewPlayedButton != null) {
                             previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
@@ -1097,6 +1113,8 @@ public class MatchingUserContentAdapter extends RecyclerView.Adapter<MatchingUse
             }
         }
         currentPlaying = "";
+        if (currentAudioView != null)
+            currentAudioView.stop(true);
     }
 
     public void releaseMediaPlayer() {

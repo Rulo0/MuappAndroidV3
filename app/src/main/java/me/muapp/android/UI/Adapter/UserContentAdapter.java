@@ -58,6 +58,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.gresse.hugo.vumeterlibrary.VuMeterView;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.muapp.android.Application.MuappApplication;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
@@ -81,6 +82,7 @@ import static me.muapp.android.Classes.Youtube.Config.getYoutubeApiKey;
  */
 public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.UserContentHolder> {
     SortedList<UserContent> userContentList;
+    VuMeterView currentAudioView;
     HashMap<String, Integer> viewTypeMap = new HashMap<String, Integer>() {{
         put("contentAud", 1);
         put("contentCmt", 2);
@@ -686,41 +688,45 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             super.onClick(v);
             previewPlayedText = null;
             if (v.getId() == btn_play_detail.getId())
-                try {
-                    if (!currentPlaying.equals(currentData.getPreviewUrl())) {
-                        if (previewPlayedButton != null) {
-                            previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
-                        }
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
-                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                            @Override
-                            public void onPrepared(MediaPlayer mp) {
-                                btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
-                                mediaPlayer.start();
-                            }
-                        });
-                        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                currentPlaying = "";
-                                btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
-                            }
-                        });
-                        mediaPlayer.prepareAsync();
-                        previewPlayedButton = (ImageButton) v;
-                    } else {
-                        if (mediaPlayer.isPlaying()) {
-                            mediaPlayer.pause();
-                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
-                        } else {
-                            mediaPlayer.start();
-                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
-                        }
-                    }
-                } catch (Exception x) {
-                    x.printStackTrace();
+                if (currentAudioView != null) {
+                    currentAudioView.stop(true);
+                    currentAudioView = null;
                 }
+            try {
+                if (!currentPlaying.equals(currentData.getPreviewUrl())) {
+                    if (previewPlayedButton != null) {
+                        previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    }
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(currentPlaying = currentData.getPreviewUrl());
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            currentPlaying = "";
+                            btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                        }
+                    });
+                    mediaPlayer.prepareAsync();
+                    previewPlayedButton = (ImageButton) v;
+                } else {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
+                    } else {
+                        mediaPlayer.start();
+                        btn_play_detail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause_circle));
+                    }
+                }
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
         }
     }
 
@@ -822,6 +828,8 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
 
     private void startTimer() {
         resetTimer();
+        if (currentAudioView != null)
+            currentAudioView.resume(true);
         mediaTimer = new Timer();
         mediaTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -843,9 +851,13 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
     private void pauseTimer() {
         if (mediaTimer != null)
             mediaTimer.cancel();
+        if (currentAudioView != null)
+            currentAudioView.pause();
     }
 
     private void resetTimer() {
+        if (currentAudioView != null)
+            currentAudioView.stop(true);
         if (mediaTimer != null)
             mediaTimer.cancel();
         playedSeconds = 0;
@@ -861,6 +873,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
         ImageButton btn_audio_content;
         ImageButton btn_audio_menu;
         TextView txt_audio_content_length;
+        VuMeterView audio_view;
 
         public AudioContentHolder(View itemView) {
             super(itemView);
@@ -870,6 +883,7 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             this.btn_audio_content = (ImageButton) itemView.findViewById(R.id.btn_audio_content);
             this.btn_audio_menu = (ImageButton) itemView.findViewById(R.id.btn_audio_menu);
             this.txt_audio_content_length = (TextView) itemView.findViewById(R.id.txt_audio_content_length);
+            this.audio_view = (VuMeterView) itemView.findViewById(R.id.audio_view);
             setBtnMenu(this.btn_audio_menu);
         }
 
@@ -893,6 +907,9 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             super.onClick(v);
             if (v.getId() == btn_audio_content.getId())
                 try {
+                    if (currentAudioView != null)
+                        currentAudioView.stop(true);
+                    currentAudioView = audio_view;
                     Bundle params = new Bundle();
                     params.putString(Analytics.VoiceNote.VOICENOTE_PROPERTY.Screen.toString(), Analytics.VoiceNote.VOICENOTE_SCREEN.My_Profile.toString());
                     FirebaseAnalytics.getInstance(context).logEvent(Analytics.VoiceNote.VOICENOTE_EVENT.Voice_Note_Listening.toString(), params);
@@ -979,6 +996,8 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
                 previewPlayedButton.setImageDrawable(currentPlaying.contains("firebasestorage") ? ContextCompat.getDrawable(context, R.drawable.ic_content_play) : ContextCompat.getDrawable(context, R.drawable.ic_play_circle));
             }
         }
+        if (currentAudioView != null)
+            currentAudioView.stop(false);
 
     }
 

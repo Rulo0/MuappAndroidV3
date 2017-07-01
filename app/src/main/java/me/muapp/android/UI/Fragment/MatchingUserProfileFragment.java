@@ -115,6 +115,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
         } catch (Exception x) {
             startActivity(new Intent(getContext(), SplashActivity.class));
             getActivity().finish();
+            return;
         }
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -281,7 +282,10 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
 
 
     public void stopPlayer() {
-        adapter.stopMediaPlayer();
+        try {
+            adapter.stopMediaPlayer();
+        } catch (Exception x) {
+        }
     }
 
 

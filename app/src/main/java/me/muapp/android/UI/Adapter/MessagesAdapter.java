@@ -791,11 +791,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         @Override
         public void bind(Message message) {
             super.bind(message);
-            if (!TextUtils.isEmpty(message.getContent())) {
+          /*  if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_sender_spotify.setText(message.getContent());
                 txt_content_sender_spotify.setVisibility(View.VISIBLE);
-            } else
-                txt_content_sender_spotify.setVisibility(View.GONE);
+            } else*/
+            txt_content_sender_spotify.setVisibility(View.GONE);
             txt_time_sender_spotify.setReferenceTime(message.getTimeStamp());
             UserContent c = message.getAttachment();
             if ((currentData = c.getSpotifyData()) != null) {
@@ -884,11 +884,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         @Override
         public void bind(Message message) {
             super.bind(message);
-            if (!TextUtils.isEmpty(message.getContent())) {
+         /*   if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_receiver_spotify.setText(message.getContent());
                 txt_content_receiver_spotify.setVisibility(View.VISIBLE);
-            } else
-                txt_content_receiver_spotify.setVisibility(View.GONE);
+            } else*/
+            txt_content_receiver_spotify.setVisibility(View.GONE);
             txt_time_receiver_spotify.setReferenceTime(message.getTimeStamp());
             UserContent c = message.getAttachment();
             if ((currentData = c.getSpotifyData()) != null) {
@@ -972,16 +972,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         @Override
         public void bind(Message message) {
             super.bind(message);
-            if (!TextUtils.isEmpty(message.getAttachment().getVideoTitle())) {
+          if (!TextUtils.isEmpty(message.getAttachment().getVideoTitle())) {
                 youtube_title_sender.setText(message.getAttachment().getVideoTitle());
                 youtube_title_sender.setVisibility(View.VISIBLE);
             } else {
-                youtube_title_sender.setVisibility(View.GONE);
-            }
-            if (!TextUtils.isEmpty(message.getContent())) {
+            youtube_title_sender.setVisibility(View.GONE);}
+
+           /* if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_sender_youtube.setText(message.getContent());
                 txt_content_sender_youtube.setVisibility(View.VISIBLE);
-            } else
+            } else*/
                 txt_content_sender_youtube.setVisibility(View.GONE);
             final UserContent c = message.getAttachment();
             youtube_thumbnail_sender.initialize(getYoutubeApiKey(), new YouTubeThumbnailView.OnInitializedListener() {
@@ -1033,11 +1033,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 youtube_title_receiver.setVisibility(View.GONE);
             }
 
-            if (!TextUtils.isEmpty(message.getContent())) {
+
+          /*  if (!TextUtils.isEmpty(message.getContent())) {
                 txt_content_receiver_youtube.setText(message.getContent());
                 txt_content_receiver_youtube.setVisibility(View.VISIBLE);
-            } else
+            } else {*/
                 txt_content_receiver_youtube.setVisibility(View.GONE);
+
             final UserContent c = message.getAttachment();
             youtube_thumbnail_receiver.initialize(getYoutubeApiKey(), new YouTubeThumbnailView.OnInitializedListener() {
                 @Override
