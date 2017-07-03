@@ -28,6 +28,7 @@ public class MuappInstanceIDService extends FirebaseInstanceIdService {
     }
 
     private void sendRegistrationToServer(String token) {
+
         UserHelper helper = new UserHelper(this);
         User thisUser = helper.getLoggedUser();
         if (thisUser != null) {
