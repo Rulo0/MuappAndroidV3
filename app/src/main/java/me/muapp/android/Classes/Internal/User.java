@@ -133,6 +133,9 @@ public class User implements Parcelable {
     @SerializedName("inv_percentage")
     @Expose
     private Integer invPercentage;
+    @SerializedName("percentage")
+    @Expose
+    private Integer percentage;
     @SerializedName("fake_account")
     @Expose
     private Boolean fakeAccount;
@@ -214,6 +217,7 @@ public class User implements Parcelable {
             instance.codeUser = ((String) in.readValue((String.class.getClassLoader())));
             instance.hasUseInvitation = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
             instance.invPercentage = ((Integer) in.readValue((Integer.class.getClassLoader())));
+            instance.percentage = ((Integer) in.readValue((Integer.class.getClassLoader())));
             instance.fakeAccount = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
             instance.average = ((String) in.readValue((String.class.getClassLoader())));
             instance.qualificationsCount = ((Integer) in.readValue((Integer.class.getClassLoader())));
@@ -406,6 +410,22 @@ public class User implements Parcelable {
         this.invPercentage = invPercentage;
     }
 
+    public Integer getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(Integer percentage) {
+        this.percentage = percentage;
+    }
+
+    public Boolean getQualificationed() {
+        return isQualificationed;
+    }
+
+    public void setQualificationed(Boolean qualificationed) {
+        isQualificationed = qualificationed;
+    }
+
     public Boolean getFakeAccount() {
         return fakeAccount;
     }
@@ -576,6 +596,7 @@ public class User implements Parcelable {
         dest.writeValue(codeUser);
         dest.writeValue(hasUseInvitation);
         dest.writeValue(invPercentage);
+        dest.writeValue(percentage);
         dest.writeValue(fakeAccount);
         dest.writeValue(average);
         dest.writeValue(qualificationsCount);
@@ -610,13 +631,13 @@ public class User implements Parcelable {
         return "User{" +
                 "birthday='" + birthday + '\'' +
                 ", gender=" + gender +
-                ", education=" + education +
-                ", work=" + work +
-                ", hometown=" + hometown +
+                ", education='" + education + '\'' +
+                ", work='" + work + '\'' +
+                ", hometown='" + hometown + '\'' +
                 ", location=" + location +
                 ", audioId=" + audioId +
                 ", firstName='" + firstName + '\'' +
-                ", photo_menu='" + photo + '\'' +
+                ", photo='" + photo + '\'' +
                 ", id=" + id +
                 ", lastName='" + lastName + '\'' +
                 ", description='" + description + '\'' +
@@ -625,6 +646,7 @@ public class User implements Parcelable {
                 ", codeUser='" + codeUser + '\'' +
                 ", hasUseInvitation=" + hasUseInvitation +
                 ", invPercentage=" + invPercentage +
+                ", percentage=" + percentage +
                 ", fakeAccount=" + fakeAccount +
                 ", average='" + average + '\'' +
                 ", qualificationsCount=" + qualificationsCount +

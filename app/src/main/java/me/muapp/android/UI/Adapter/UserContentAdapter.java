@@ -165,7 +165,6 @@ public class UserContentAdapter extends RecyclerView.Adapter<UserContentAdapter.
             @Override
             public void onInserted(int position, int count) {
                 notifyItemRangeInserted(position, count);
-                Log.wtf("LeCallback", position + " uhh la la");
                 if (position == 1) {
                     if (preferenceHelper.getHasAddedContent()) {
                         mRecycler.getLayoutManager().scrollToPosition(3);

@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +38,7 @@ import me.muapp.android.Classes.API.Params.AlbumParam;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.CodeRedeemResponse;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.Classes.Util.Utils;
@@ -143,7 +143,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-        setProgressPercent(user.getInvPercentage().intValue());
+        setProgressPercent(user.getPercentage().intValue());
     }
 
     private void setProgressPercent(final int value) {

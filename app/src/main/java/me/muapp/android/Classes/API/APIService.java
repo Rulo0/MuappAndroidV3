@@ -104,7 +104,7 @@ public class APIService {
                                 if (handler != null)
                                     handler.onSuccess(response.code(), u);
                             } else {
-                               }
+                            }
                         }
                     } catch (Exception x) {
                         if (handler != null)
@@ -164,7 +164,7 @@ public class APIService {
                             if (handler != null)
                                 handler.onSuccess(response.code(), u);
                         } else {
-                            }
+                        }
                     }
                 } catch (Exception x) {
                     x.printStackTrace();
@@ -195,7 +195,7 @@ public class APIService {
                 .url(url)
                 .post(body)
                 .build();
-         final String demoMatch = "{\"dialog_key\":" + myConversationKey + ",\"message\":\"Tu selección ha sido registrada con éxito.\"}";
+        final String demoMatch = "{\"dialog_key\":" + myConversationKey + ",\"message\":\"Tu selección ha sido registrada con éxito.\"}";
         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -243,7 +243,7 @@ public class APIService {
                 .url(url)
                 .post(body)
                 .build();
-       client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (handler != null)
@@ -254,7 +254,7 @@ public class APIService {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseString = response.body().string();
-                 try {
+                try {
                     if (handler != null)
                         handler.onSuccess(response.code(), new Gson().fromJson(responseString, ReportResult.class));
                 } catch (Exception x) {
@@ -273,7 +273,7 @@ public class APIService {
                 .url(url)
                 .post(emptyBody)
                 .build();
-         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (handler != null)
@@ -292,10 +292,10 @@ public class APIService {
                         Gson gson = new Gson();
                         User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                         if (u != null) {
-                             if (handler != null)
+                            if (handler != null)
                                 handler.onSuccess(response.code(), u);
                         } else {
-                         }
+                        }
                     }
                 } catch (Exception x) {
                     x.printStackTrace();
@@ -319,7 +319,7 @@ public class APIService {
                 .url(url)
                 .patch(body)
                 .build();
-      client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (handler != null)
@@ -342,7 +342,7 @@ public class APIService {
                             if (handler != null)
                                 handler.onSuccess(response.code(), u);
                         } else {
-                             }
+                        }
                     }
 
                 } catch (Exception x) {
@@ -391,7 +391,7 @@ public class APIService {
                             if (handler != null)
                                 handler.onSuccess(response.code(), u);
                         } else {
-                         }
+                        }
                     }
                 } catch (Exception x) {
                     x.printStackTrace();
@@ -416,7 +416,7 @@ public class APIService {
                 .url(url)
                 .post(body)
                 .build();
-         client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (handler != null)
@@ -427,7 +427,7 @@ public class APIService {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseString = response.body().string();
-                 try {
+                try {
                     if (handler != null)
                         handler.onSuccess(response.code(), new Gson().fromJson(responseString, QualificationResult.class));
                 } catch (Exception x) {
@@ -497,7 +497,7 @@ public class APIService {
                             Gson gson = new Gson();
                             User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                             if (u != null) {
-                                 if (handler != null)
+                                if (handler != null)
                                     handler.onSuccess(response.code(), u);
                             } else {
                                 handler.onSuccess(response.code(), getNullUser);
@@ -563,10 +563,10 @@ public class APIService {
                                         Gson gson = new Gson();
                                         User u = gson.fromJson(serializeUser(serverResponse.getJSONObject("user")), User.class);
                                         if (u != null) {
-                                             if (handler != null)
+                                            if (handler != null)
                                                 handler.onSuccess(response.code(), u);
                                         } else {
-                                           }
+                                        }
                                     }
 
                                 } catch (Exception x) {
@@ -658,12 +658,19 @@ public class APIService {
                     public void onResponse(Call call, Response response) throws IOException {
                         String responseString = response.body().string();
                         Log.wtf("getUserQualifications", responseString.toString());
-                        UserQualifications qualifications = new Gson().fromJson(responseString, UserQualifications.class);
-                        if (qualifications != null) {
+                        try {
+                            UserQualifications qualifications = new Gson().fromJson(responseString, UserQualifications.class);
+                            if (qualifications != null) {
+                                if (handler != null) {
+                                    handler.onSuccess(response.code(), qualifications);
+                                }
+                            }
+                        } catch (Exception x) {
                             if (handler != null) {
-                                handler.onSuccess(response.code(), qualifications);
+                                handler.onFailure(true, responseString);
                             }
                         }
+
                     }
                 });
             } else {
@@ -998,7 +1005,9 @@ public class APIService {
                 .addHeader("cache-control", "no-cache")
                 .build();
 
-
+        for (String hdr : r.headers().names()) {
+            Log.wtf("Header", hdr + " - " + r.headers().get(hdr));
+        }
         return r;
     }
 }

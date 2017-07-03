@@ -40,6 +40,7 @@ public class PreferenceHelper {
     private final String TUTORIAL_ADD_CONTENT = "tutorial_add_content";
     private final String REQUEST_CODE = "request_code";
     private final String HAS_ADDED_CONTENT = "has_added_content";
+    private final String SEEN_DIALOGS = "seen_dialogs";
     private static final String STICKERS_PLACEHOLDER = "{\n" +
             "  \"stickers\": [\n" +
             "    {\n" +
@@ -471,6 +472,23 @@ public class PreferenceHelper {
 
     public boolean getCandidatesTutorial() {
         return preferences.getBoolean(TUTORIAL_CANDIDATES, true);
+    }
+
+    public void putDialogAsSeen(String dialogKey) {
+        if (!getSeenDialogs().contains(dialogKey)) {
+            SharedPreferences.Editor edit = preferences.edit();
+            edit.putString(SEEN_DIALOGS, getSeenDialogs() + "," + dialogKey);
+            edit.apply();
+        }
+    }
+
+    private String getSeenDialogs() {
+        Log.wtf("getSeenDialogs", preferences.getString(SEEN_DIALOGS, "none"));
+        return preferences.getString(SEEN_DIALOGS, "");
+    }
+
+    public boolean isDialogSeen(String dialogKey) {
+        return getSeenDialogs().contains(dialogKey);
     }
 
 }

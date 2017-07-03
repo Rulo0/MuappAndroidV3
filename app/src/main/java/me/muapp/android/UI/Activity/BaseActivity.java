@@ -92,7 +92,7 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityChang
             mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Invitation_Code.name(), u.getCodeUser());
             mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Last_Connection.name(), formatText.format(new Date()));
             mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Last_Name.name(), u.getLastName());
-            // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Location.name(), String.valueOf(u.getAge()));
+            // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.DialogLocation.name(), String.valueOf(u.getAge()));
             // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Matches.name(), String.valueOf(u.getAge()));
             //mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Muapps.name(), String.valueOf(u.getAge()));
             // mFirebaseAnalytics.setUserProperty(Analytics.UserProperties.Properties.Notifications.name(), String.valueOf(u.getAge()));

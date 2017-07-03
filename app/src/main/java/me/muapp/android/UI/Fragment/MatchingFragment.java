@@ -74,7 +74,7 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
     View content_matching_profiles;
     private Fragment currentFragment;
     PreferenceHelper preferenceHelper;
-    boolean isShowingTutorial = false;
+    public static boolean isShowingTutorial = false;
     TapTargetView crushTutorial;
 
     public MatchingFragment() {
@@ -538,6 +538,8 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
             if (currentFragment instanceof MatchingUserProfileFragment) {
                 ((MatchingUserProfileFragment) currentFragment).scrollProfileToTop();
                 Log.wtf("onHiddenChanged", "PreferemcesChanged " + new PreferenceHelper(getContext()).getSeachPreferencesChanged());
+                if (new PreferenceHelper(getContext()).getSeachPreferencesChanged())
+                    matchingUsersPage = 1;
                 if (new PreferenceHelper(getContext()).getSeachPreferencesChanged()) {
                     matchingFragmentList.clear();
                     replaceFragment(GetMatchingUsersFragment.newInstance(user));

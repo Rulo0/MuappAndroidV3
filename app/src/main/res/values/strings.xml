@@ -231,7 +231,6 @@
     <string name="lbl_write_something">Write something...</string>
     <string name="lbl_no_crush_male">A crush lasts 24h, wait for 1 girl to make you crush!</string>
     <string name="lbl_search_hint">Search</string>
-    <string name="title_activity_picture_view">PictureViewActivity</string>
     <string name="candidate_half_percentage">You are having a lot of likes! Don\'t wait, invite your friends and enter directly.</string>
     <string name="candidate_full_percentage">Congratulations! You\'ve made it! Get started...</string>
     <string name="candidate_use_code">Your friend has used your code. You\'re a 20% closer of starting Muapp\'s experience.</string>

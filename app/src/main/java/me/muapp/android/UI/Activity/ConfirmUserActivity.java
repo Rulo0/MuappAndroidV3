@@ -145,7 +145,7 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
     private void getLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-           /* Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+           /* DialogLocation lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             double lat = lastLocation.getLatitude(), lon = lastLocation.getLongitude();
             Log.v(TAG, lat + " - " + lon);*/
             createLocationRequest();
@@ -199,7 +199,7 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
                         break;
 
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        // Location settings are not satisfied, but this can be fixed
+                        // DialogLocation settings are not satisfied, but this can be fixed
                         // by showing the user a dialog.
                         try {
                             // Show the dialog by calling startResolutionForResult(),
@@ -212,7 +212,7 @@ public class ConfirmUserActivity extends BaseActivity implements View.OnClickLis
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        // Location settings are not satisfied. However, we have no way
+                        // DialogLocation settings are not satisfied. However, we have no way
                         // to fix the settings so we won't show the dialog.
                         break;
                 }

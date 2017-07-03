@@ -8,6 +8,7 @@ import android.os.Parcelable;
  */
 
 public class MuappDialog implements Parcelable {
+    String key;
     Boolean active;
     String contentImageUrl;
     String contentText;
@@ -18,56 +19,16 @@ public class MuappDialog implements Parcelable {
     String showInSection;
     String title;
     String extraButtonTitle;
-String dialogExternalUrl;
+    String dialogExternalUrl;
+    String os;
+    String gender;
+    DialogLocation location;
 
     public MuappDialog() {
     }
 
-    public Boolean getActive() {
-        return active;
-    }
-
-    public String getContentImageUrl() {
-        return contentImageUrl;
-    }
-
-    public String getContentText() {
-        return contentText;
-    }
-
-    public String getDialogInternalSection() {
-        return dialogInternalSection;
-    }
-
-    public String getHeaderIconUrl() {
-        return headerIconUrl;
-    }
-
-    public Boolean getShowAlways() {
-        return showAlways;
-    }
-
-    public Boolean getShowCancelButton() {
-        return showCancelButton;
-    }
-
-    public String getShowInSection() {
-        return showInSection;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getExtraButtonTitle() {
-        return extraButtonTitle;
-    }
-
-    public String getDialogExternalUrl() {
-        return dialogExternalUrl;
-    }
-
     protected MuappDialog(Parcel in) {
+        key = in.readString();
         byte activeVal = in.readByte();
         active = activeVal == 0x02 ? null : activeVal != 0x00;
         contentImageUrl = in.readString();
@@ -82,6 +43,9 @@ String dialogExternalUrl;
         title = in.readString();
         extraButtonTitle = in.readString();
         dialogExternalUrl = in.readString();
+        os = in.readString();
+        gender = in.readString();
+        location = (DialogLocation) in.readValue(DialogLocation.class.getClassLoader());
     }
 
     @Override
@@ -91,6 +55,7 @@ String dialogExternalUrl;
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(key);
         if (active == null) {
             dest.writeByte((byte) (0x02));
         } else {
@@ -114,6 +79,9 @@ String dialogExternalUrl;
         dest.writeString(title);
         dest.writeString(extraButtonTitle);
         dest.writeString(dialogExternalUrl);
+        dest.writeString(os);
+        dest.writeString(gender);
+        dest.writeValue(location);
     }
 
     @SuppressWarnings("unused")
@@ -129,10 +97,131 @@ String dialogExternalUrl;
         }
     };
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public String getContentImageUrl() {
+        return contentImageUrl;
+    }
+
+    public void setContentImageUrl(String contentImageUrl) {
+        this.contentImageUrl = contentImageUrl;
+    }
+
+    public String getContentText() {
+        return contentText;
+    }
+
+    public void setContentText(String contentText) {
+        this.contentText = contentText;
+    }
+
+    public String getDialogInternalSection() {
+        return dialogInternalSection;
+    }
+
+    public void setDialogInternalSection(String dialogInternalSection) {
+        this.dialogInternalSection = dialogInternalSection;
+    }
+
+    public String getHeaderIconUrl() {
+        return headerIconUrl;
+    }
+
+    public void setHeaderIconUrl(String headerIconUrl) {
+        this.headerIconUrl = headerIconUrl;
+    }
+
+    public Boolean getShowAlways() {
+        return showAlways;
+    }
+
+    public void setShowAlways(Boolean showAlways) {
+        this.showAlways = showAlways;
+    }
+
+    public Boolean getShowCancelButton() {
+        return showCancelButton;
+    }
+
+    public void setShowCancelButton(Boolean showCancelButton) {
+        this.showCancelButton = showCancelButton;
+    }
+
+    public String getShowInSection() {
+        return showInSection;
+    }
+
+    public void setShowInSection(String showInSection) {
+        this.showInSection = showInSection;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getExtraButtonTitle() {
+        return extraButtonTitle;
+    }
+
+    public void setExtraButtonTitle(String extraButtonTitle) {
+        this.extraButtonTitle = extraButtonTitle;
+    }
+
+    public String getDialogExternalUrl() {
+        return dialogExternalUrl;
+    }
+
+    public void setDialogExternalUrl(String dialogExternalUrl) {
+        this.dialogExternalUrl = dialogExternalUrl;
+    }
+
+    public String getOs() {
+        return os;
+    }
+
+    public void setOs(String os) {
+        this.os = os;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public DialogLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(DialogLocation location) {
+        this.location = location;
+    }
+
     @Override
     public String toString() {
         return "MuappDialog{" +
-                "active=" + active +
+                "key='" + key + '\'' +
+                ", active=" + active +
                 ", contentImageUrl='" + contentImageUrl + '\'' +
                 ", contentText='" + contentText + '\'' +
                 ", dialogInternalSection='" + dialogInternalSection + '\'' +
@@ -143,6 +232,10 @@ String dialogExternalUrl;
                 ", title='" + title + '\'' +
                 ", extraButtonTitle='" + extraButtonTitle + '\'' +
                 ", dialogExternalUrl='" + dialogExternalUrl + '\'' +
+                ", os='" + os + '\'' +
+                ", gender='" + gender + '\'' +
+                ", location=" + (location != null ? location.toString() : "") +
                 '}';
     }
+
 }

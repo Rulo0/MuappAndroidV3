@@ -126,8 +126,10 @@ public class MatchesAdapter extends RecyclerView.Adapter<MatchesAdapter.MatchesV
 
     public void removeConversation(String conversationKey) {
         for (ConversationItem item : conversationItemList) {
-            if (item.getKey().equals(conversationKey))
+            if (item.getKey().equals(conversationKey)) {
                 conversationItemList.remove(item);
+                break;
+            }
         }
         for (int i = 0; i < itemSortedList.size(); i++) {
             if (itemSortedList.get(i).getKey().equals(conversationKey)) {

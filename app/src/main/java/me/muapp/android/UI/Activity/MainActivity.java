@@ -328,18 +328,29 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void getLastDialog() {
+        final String myGenderString = User.Gender.getGender(loggedUser.getGender()) == User.Gender.Male ? "M" : "F";
         FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("muappDialogs").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot c : dataSnapshot.getChildren()) {
                     MuappDialog dlg = c.getValue(MuappDialog.class);
                     if (dlg != null && dlg.getActive()) {
-                        Log.wtf("dialog", c.getChildrenCount() + " childs");
-                        Log.wtf("dialog", c.getRef().toString());
+                        dlg.setKey(c.getKey());
                         Log.wtf("dialog", dlg.toString());
-                        MuappPopupDialogFragment.newInstance(dlg).show(getSupportFragmentManager(), c.getKey());
+                        if (dlg.getGender() == null || dlg.getGender().equals(myGenderString)) {
+                            Log.wtf("dialog", "gender ok");
+                            if (dlg.getOs() == null || dlg.getOs().equals("android")) {
+                                Log.wtf("dialog", "os ok");
+                                if (dlg.getShowAlways() == true || !preferenceHelper.isDialogSeen(dlg.getKey())) {
+                                    Log.wtf("dialog", "show always ok");
+                                    MuappPopupDialogFragment.newInstance(dlg).show(getSupportFragmentManager(), dlg.getKey());
+                                }
+                            }
+                        }
+
+                        break;
                     }
-                    break;
+
                 }
             }
 
@@ -692,7 +703,7 @@ public class MainActivity extends BaseActivity implements
                         break;
 
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        // Location settings are not satisfied, but this can be fixed
+                        // DialogLocation settings are not satisfied, but this can be fixed
                         // by showing the user a dialog.
                         try {
                             // Show the dialog by calling startResolutionForResult(),
@@ -705,7 +716,7 @@ public class MainActivity extends BaseActivity implements
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        // Location settings are not satisfied. However, we have no way
+                        // DialogLocation settings are not satisfied. However, we have no way
                         // to fix the settings so we won't show the dialog.
                         break;
                 }
@@ -725,7 +736,7 @@ public class MainActivity extends BaseActivity implements
     private void getLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-           /* Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+           /* DialogLocation lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             double lat = lastLocation.getLatitude(), lon = lastLocation.getLongitude();
             Log.v(TAG, lat + " - " + lon);*/
             createLocationRequest();

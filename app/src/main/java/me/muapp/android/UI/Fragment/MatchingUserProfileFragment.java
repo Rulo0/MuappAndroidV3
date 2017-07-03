@@ -206,7 +206,7 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
                     rateFriend();
                 }
             });
-            if (new PreferenceHelper(getContext()).getTutorialRate() && !isHidden()) {
+            if (new PreferenceHelper(getContext()).getTutorialRate() && !isHidden() && !new PreferenceHelper(getContext()).getTutorialCrush()) {
                 tutorialQualification = new Tutorials(getActivity()).showTutorialForView(btn_matching_rate, false, getString(R.string.lbl_tutorial_rate_title), getString(R.string.lbl_tutorial_rate_content), 23, new TapTargetView.Listener() {
                     @Override
                     public void onTargetClick(TapTargetView view) {
@@ -216,7 +216,8 @@ public class MatchingUserProfileFragment extends Fragment implements ChildEventL
                     }
                 });
             } else {
-                rateFriend();
+                if (!new PreferenceHelper(getContext()).getTutorialCrush())
+                    rateFriend();
             }
         } else {
             btn_matching_rate.setVisibility(View.GONE);

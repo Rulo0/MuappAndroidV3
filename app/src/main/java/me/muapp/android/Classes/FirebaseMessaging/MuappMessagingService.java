@@ -5,11 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import me.muapp.android.Classes.Util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,11 +22,11 @@ import java.util.Random;
 import me.muapp.android.Classes.Chat.Conversation;
 import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Internal.User;
+import me.muapp.android.Classes.Util.Log;
 import me.muapp.android.Classes.Util.PreferenceHelper;
 import me.muapp.android.Classes.Util.UserHelper;
 import me.muapp.android.R;
 import me.muapp.android.UI.Activity.ChatActivity;
-import me.muapp.android.UI.Activity.MainActivity;
 
 import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 import static me.muapp.android.UI.Activity.ChatActivity.CONVERSATION_EXTRA;
@@ -48,7 +46,15 @@ public class MuappMessagingService extends FirebaseMessagingService {
 
 
     @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        Log.wtf(TAG, "taskRemoved");
+    }
+
+    @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        Log.wtf(TAG, "MessageReceived");
+
         loggedUser = new UserHelper(this).getLoggedUser();
         preferenceHelper = new PreferenceHelper(this);
         // Check if message contains a data payload.
@@ -140,7 +146,7 @@ public class MuappMessagingService extends FirebaseMessagingService {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
+                            Log.wtf(TAG, "Match Error");
                         }
                     });
                 }
@@ -177,6 +183,7 @@ public class MuappMessagingService extends FirebaseMessagingService {
                                     PendingIntent pendingIntent = PendingIntent.getActivity(MuappMessagingService.this, 897, intent,
                                             PendingIntent.FLAG_ONE_SHOT);
                                     sendNotification(String.format(getString(R.string.notif_sent_message), conversationItem.getName()), pendingIntent);
+                                    Log.wtf(TAG, "sendNotification");
                                 } else {
                                     Log.wtf(TAG, "ConversationItem isNull");
                                 }
@@ -187,7 +194,7 @@ public class MuappMessagingService extends FirebaseMessagingService {
 
                             }
                         });
-                    }else{
+                    } else {
                         Log.wtf(TAG, "Conversation isNull");
                     }
                 }
@@ -201,15 +208,15 @@ public class MuappMessagingService extends FirebaseMessagingService {
     }
 
     private void sendNotification(String messageBody, PendingIntent pendingIntent) {
-        Log.wtf(TAG,messageBody);
+        Log.wtf(TAG, messageBody);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(messageBody)
                 .setAutoCancel(true)
+                .setColor(ContextCompat.getColor(this, R.color.colorAccent))
                 .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS)
-                .setContentIntent(pendingIntent)
-                ;
+                .setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(new Random().nextInt(100), notificationBuilder.build());
     }
