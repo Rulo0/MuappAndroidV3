@@ -72,6 +72,7 @@ import me.muapp.android.Classes.Chat.ConversationItem;
 import me.muapp.android.Classes.Chat.MuappSticker;
 import me.muapp.android.Classes.Chat.MuappStickers;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
+import me.muapp.android.Classes.Internal.DialogLocation;
 import me.muapp.android.Classes.Internal.LikeUserMatchUser;
 import me.muapp.android.Classes.Internal.MuappDialog;
 import me.muapp.android.Classes.Internal.SelectedNavigationElement;
@@ -327,29 +328,52 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
+    private boolean imInRange(DialogLocation dl) {
+        if (dl != null) {
+            try {
+                int distance = (int) (preferenceHelper.getLocation().distanceTo(dl.getLocation()) / 1000);
+                Log.wtf("dialog", "distance " + distance);
+                if (distance <= dl.getRadius()) {
+                    return true;
+                }
+            } catch (Exception x) {
+
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     private void getLastDialog() {
         final String myGenderString = User.Gender.getGender(loggedUser.getGender()) == User.Gender.Male ? "M" : "F";
-        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("muappDialogs").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("muappDialogs_").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot c : dataSnapshot.getChildren()) {
-                    MuappDialog dlg = c.getValue(MuappDialog.class);
-                    if (dlg != null && dlg.getActive()) {
-                        dlg.setKey(c.getKey());
-                        Log.wtf("dialog", dlg.toString());
-                        if (dlg.getGender() == null || dlg.getGender().equals(myGenderString)) {
-                            Log.wtf("dialog", "gender ok");
-                            if (dlg.getOs() == null || dlg.getOs().equals("android")) {
-                                Log.wtf("dialog", "os ok");
-                                if (dlg.getShowAlways() == true || !preferenceHelper.isDialogSeen(dlg.getKey())) {
-                                    Log.wtf("dialog", "show always ok");
-                                    MuappPopupDialogFragment.newInstance(dlg).show(getSupportFragmentManager(), dlg.getKey());
+                try {
+                    for (DataSnapshot c : dataSnapshot.getChildren()) {
+                        MuappDialog dlg = c.getValue(MuappDialog.class);
+                        if (dlg != null && dlg.getActive()) {
+                            dlg.setKey(c.getKey());
+                            Log.wtf("dialog", dlg.toString());
+                            if (dlg.getGender() == null || dlg.getGender().equals(myGenderString)) {
+                                Log.wtf("dialog", "gender ok");
+                                if (dlg.getOs() == null || dlg.getOs().equals("android")) {
+                                    Log.wtf("dialog", "os ok");
+                                    if (dlg.getShowAlways() == true || !preferenceHelper.isDialogSeen(dlg.getKey())) {
+                                        Log.wtf("dialog", "show always ok");
+                                        if (imInRange(dlg.getLocation())) {
+                                            Log.wtf("dialog", "distance ok");
+                                            MuappPopupDialogFragment.newInstance(dlg).show(getSupportFragmentManager(), dlg.getKey());
+                                        }
+                                    }
                                 }
                             }
+                            break;
                         }
 
-                        break;
                     }
+                } catch (Exception x) {
 
                 }
             }

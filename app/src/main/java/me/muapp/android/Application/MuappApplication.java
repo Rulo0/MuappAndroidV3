@@ -16,7 +16,7 @@ import me.muapp.android.Classes.Util.Log;
 
 public class MuappApplication extends Application {
     private static final String TAG = "MuappApplication";
-    public static String DATABASE_REFERENCE = "devDB";
+    public static String DATABASE_REFERENCE = "prodDB";
 
     @Override
     public void onCreate() {
