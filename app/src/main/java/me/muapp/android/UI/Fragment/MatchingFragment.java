@@ -152,11 +152,14 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if (((MainActivity) getContext()).getCurrentLocation() != null) {
-                    getMatchingUsers();
-                    preferenceHelper.putSearchPreferencesChangedDisabled();
-                } else
-                    handler.postDelayed(this, waitTime);
+                try {
+                    if (((MainActivity) getContext()).getCurrentLocation() != null) {
+                        getMatchingUsers();
+                        preferenceHelper.putSearchPreferencesChangedDisabled();
+                    } else
+                        handler.postDelayed(this, waitTime);
+                } catch (Exception x) {
+                }
             }
         };
         handler.postDelayed(runnable, waitTime);

@@ -56,7 +56,7 @@
     <string name="lbl_invalid_code_description">The code %s is invalid. Try again with a different code or verify that you have written it correctly.</string>
     <string name="lbl_use_my_code">Use my code</string>
     <string name="lbl_use_code_register">and get %d%% progress in your entrance.</string>
-    <string name="lbl_use_my_code_settings" formatted="false">Use my code %s in Muapp and earn 40%% in the input process. Start meeting people like you! http://app.muapp.me/download</string>
+    <string name="lbl_use_my_code_settings" formatted="false">Use my code %s in Muapp and earn 40%% in the input process. Start meeting people like you! https://p689v.app.goo.gl/8KTE</string>
     <string name="lbl_share">Share</string>
     <string name="lbl_share_dialog_title">Share your personal code</string>
     <string name="lbl_share_dialog_content" formatted="false">Invite %d more people and get %d%% more with each code.</string>
@@ -166,7 +166,7 @@
     <string name="lbl_report_reason_other">Other</string>
     <string name="lbl_invite">Invite your friends</string>
     <string name="lbl_share_app">Share app</string>
-    <string name="lbl_share_app_body">I recommend you try Muapp! New app to meet people where girls play with advantage... http://www.muapp.me/download</string>
+    <string name="lbl_share_app_body">I recommend you try Muapp! New app to meet people where girls play with advantage... https://p689v.app.goo.gl/8KTE</string>
     <string name="lbl_add_about_me">About me</string>
     <string name="lbl_add_voice_note">Voice note</string>
     <string name="lbl_add_gallery">Gallery</string>

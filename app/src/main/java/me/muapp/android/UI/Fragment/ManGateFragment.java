@@ -281,7 +281,7 @@ public class ManGateFragment extends Fragment implements View.OnClickListener {
             public void onClick(DialogInterface dialog, int which) {
                 Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
-                String message = String.format(getString(R.string.lbl_use_my_code) + " '" + user.getCodeUser() + "' " + getString(R.string.lbl_use_code_register) + "  https://app.muapp.me/download", 20);
+                String message = String.format(getString(R.string.lbl_use_my_code) + " '" + user.getCodeUser() + "' " + getString(R.string.lbl_use_code_register) + "  https://p689v.app.goo.gl/8KTE", 20);
                 sharingIntent.putExtra(Intent.EXTRA_TEXT, message);
                 startActivity(Intent.createChooser(sharingIntent, getString(R.string.lbl_share)));
             }

@@ -117,7 +117,7 @@
     <string name="lbl_settings">Preferencias</string>
     <string name="lbl_share">Compartir</string>
     <string name="lbl_share_app">Comparte la aplicación</string>
-    <string name="lbl_share_app_body" formatted="false">Te recomiendo que pruebes Muapp! Nueva aplicación para conocer personas donde las mujeres juegan con ventaja ... http://www.muapp.me/download</string>
+    <string name="lbl_share_app_body" formatted="false">Te recomiendo que pruebes Muapp! Nueva aplicación para conocer personas donde las mujeres juegan con ventaja... https://p689v.app.goo.gl/8KTE</string>
     <string name="lbl_share_dialog_content" formatted="false">Invita %d personas más y obten %d%% más con cada código.</string>
     <string name="lbl_share_dialog_content_settings">Comparte tu código con tus amigos y ayúdeles a obtener el 40% más de los votos que necesitan</string>
     <string name="lbl_share_dialog_title">Compartir código personal</string>
@@ -132,7 +132,7 @@
     <string name="lbl_terms">Términos de uso</string>
     <string name="lbl_use_code_register">y obten %d%% de progreso en tu entrada.</string>
     <string name="lbl_use_my_code">Utiliza mi código</string>
-    <string name="lbl_use_my_code_settings">Utiliza mi código %s en Muapp y gana 40%% en el proceso de entrada. Comienza a conocer gente como tú! http://app.muapp.me/download</string>
+    <string name="lbl_use_my_code_settings">Utiliza mi código %s en Muapp y gana 40%% en el proceso de entrada. Comienza a conocer gente como tú! https://p689v.app.goo.gl/8KTE</string>
     <string name="lbl_verify_my_profile">Verificar mi perfil</string>
     <string name="lbl_what_did_he_do">¿Que ha hecho?</string>
     <string name="lbl_write_comment">Escribe un comentario</string>

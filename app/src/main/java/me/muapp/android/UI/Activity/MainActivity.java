@@ -240,6 +240,7 @@ public class MainActivity extends BaseActivity implements
             try {
                 if (checkPlayServices()) {
                     final String token = FirebaseInstanceId.getInstance().getToken();
+                    Log.wtf("push_token", token);
                     FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("pushToken").setValue(token);
                     if (TextUtils.isEmpty(token) || !TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token) || !loggedUser.getPushToken().equals(token)) {
                         FirebaseMessaging.getInstance().subscribeToTopic("android");

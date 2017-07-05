@@ -78,12 +78,16 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
             this.listener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.getValue(String.class).equals(userProfilePicture))
-                        if (!isCrush) {
-                            matchesAdapter.updateConversationUser(itemKey, dataSnapshot.getValue(String.class));
-                        } else {
-                            crushesAdapter.updateConversationUser(itemKey, dataSnapshot.getValue(String.class));
-                        }
+                    try {
+                        if (!dataSnapshot.getValue(String.class).equals(userProfilePicture))
+                            if (!isCrush) {
+                                matchesAdapter.updateConversationUser(itemKey, dataSnapshot.getValue(String.class));
+                            } else {
+                                crushesAdapter.updateConversationUser(itemKey, dataSnapshot.getValue(String.class));
+                            }
+                    } catch (Exception x) {
+                        x.printStackTrace();
+                    }
                 }
 
                 @Override
