@@ -77,6 +77,7 @@ import java.util.concurrent.TimeUnit;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import me.muapp.android.Classes.API.APIService;
+import me.muapp.android.Classes.API.Handlers.BlockHandler;
 import me.muapp.android.Classes.API.Handlers.LikeUserHandler;
 import me.muapp.android.Classes.Chat.ChatReferences;
 import me.muapp.android.Classes.Chat.Conversation;
@@ -128,6 +129,7 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     private static final int REQUEST_GALLERY_PERMISSIONS = 470;
     private static final int REQUEST_MIC_PERMISSIONS = 471;
     private static final float SLIDE_TO_CANCEL_ALPHA_MULTIPLIER = 2.5f;
+    Boolean isOpponentConversationExist = false;
     Boolean isShowingDialog = false;
     Boolean isShowingTutorial = false;
     private File thisFile;
@@ -488,7 +490,23 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     }
 
     private void updateYourConversationLastSeen() {
-        yourConversation.child("lastSeenByOpponent").setValue(ServerValue.TIMESTAMP);
+        try {
+            yourConversation.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue(ConversationItem.class) != null) {
+                        yourConversation.child("lastSeenByOpponent").setValue(ServerValue.TIMESTAMP);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        } catch (Exception x) {
+
+        }
     }
 
     private void updateMyConversationSeen() {
@@ -1136,12 +1154,26 @@ public class ChatActivity extends BaseActivity implements ChildEventListener, Ad
     @Override
     public void onExpiredNoMuapp() {
         Log.wtf("Expired", "NoMuapp");
-        new APIService(this).blockUser(conversationItem.getConversation().getOpponentId());
-        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(loggedUser.getId())).child(conversationItem.getKey()).removeValue();
-        FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("conversations").child(String.valueOf(conversationItem.getConversation().getOpponentId())).child(conversationItem.getConversation().getOpponentConversationId()).removeValue();
-        myStorageReference.delete();
-        //  FirebaseStorage.getInstance().getReference().child(String.valueOf(conversationItem.getConversation().getOpponentId())).child("conversations").child(conversationItem.getConversation().getOpponentConversationId());
-        finish();
+        showProgressDialog();
+        new APIService(this).blockUser(conversationItem.getConversation().getOpponentId(), conversationItem.getKey(), conversationItem.getConversation().getOpponentConversationId(), new BlockHandler() {
+            @Override
+            public void onSuccess(String jsonObject) {
+                myStorageReference.delete();
+                hideProgressDialog();
+                finish();
+            }
+
+            @Override
+            public void onResponseError(Exception x) {
+                hideProgressDialog();
+            }
+
+            @Override
+            public void onFailure(boolean isSuccessful, String responseString) {
+                hideProgressDialog();
+            }
+        });
+
     }
 
     @Override

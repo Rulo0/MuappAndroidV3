@@ -184,6 +184,7 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
         ImageButton btn_candidate_unlike;
         ImageButton btn_candidate_like;
         ImageButton btn_candidate_clear;
+        boolean userInteraction;
 
         public CandidateViewHolder(View itemView) {
             super(itemView);
@@ -197,13 +198,16 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
             this.candidate_progress = (CircleProgressView) itemView.findViewById(R.id.candidate_progress);
             this.btn_candidate_clear = (ImageButton) itemView.findViewById(R.id.btn_candidate_clear);
             this.btn_candidate_unlike = (ImageButton) itemView.findViewById(R.id.btn_candidate_unlike);
-            btn_candidate_like = (ImageButton) itemView.findViewById(R.id.btn_candidate_like);
+            this.btn_candidate_like = (ImageButton) itemView.findViewById(R.id.btn_candidate_like);
         }
 
         @Override
         public void bind(final Candidate candidate) {
             super.bind(candidate);
             try {
+                userInteraction = false;
+                btn_candidate_unlike.setEnabled(true);
+                btn_candidate_unlike.setEnabled(true);
                 candidate_progress.setProgress(candidate.getPercentage().floatValue());
                 txt_candidate_progress.setText(candidate.getPercentage() + "%");
                 getLocationString(candidate.getLatitude(), candidate.getLongitude());
@@ -242,38 +246,42 @@ public class CandidatesAdapter extends RecyclerView.Adapter<CandidatesAdapter.Ba
 
         @Override
         public void onClick(View v) {
-             /*   YoYo.with(Techniques.Tada)
-                        .duration(700)
-                        .repeat(5)
-                        .playOn();*/
-
             switch (v.getId()) {
                 case R.id.btn_candidate_clear:
                 case R.id.btn_candidate_unlike:
-                    if (candidateInteractionListener != null)
+                    if (candidateInteractionListener != null && !userInteraction)
                         candidateInteractionListener.onUnlike(currentCandidate);
                     break;
                 case R.id.btn_candidate_like:
-                    if (candidateInteractionListener != null)
+                    if (candidateInteractionListener != null && !userInteraction)
                         candidateInteractionListener.onLike(currentCandidate);
                     break;
                 case R.id.img_photo_candidate:
-                    FirebaseAnalytics.getInstance(mContext).logEvent(Analytics.Gate_Woman.GATE_WOMAN_EVENT.Gate_Woman_Enlarge_Candidate.toString(), null);
-                    try {
-                        Intent profileIntent = new Intent(mContext, ViewProfileActivity.class);
-                        profileIntent.putExtra(USER_ID, currentCandidate.getId());
-                        profileIntent.putExtra(USER_NAME, currentCandidate.getFullName());
-                        profileIntent.putExtra(FROM_GATE, true);
-                        profileIntent.putExtra(CANDIDATE_PROGRESS, currentCandidate.getPercentage());
-                        candidatesFragment.startActivityForResult(profileIntent, CANDIDATE_PROFILE_CODE);
-                    } catch (Exception x) {
-                        x.printStackTrace();
+                    if (!userInteraction) {
+                        FirebaseAnalytics.getInstance(mContext).logEvent(Analytics.Gate_Woman.GATE_WOMAN_EVENT.Gate_Woman_Enlarge_Candidate.toString(), null);
+                        try {
+                            Intent profileIntent = new Intent(mContext, ViewProfileActivity.class);
+                            profileIntent.putExtra(USER_ID, currentCandidate.getId());
+                            profileIntent.putExtra(USER_NAME, currentCandidate.getFullName());
+                            profileIntent.putExtra(FROM_GATE, true);
+                            profileIntent.putExtra(CANDIDATE_PROGRESS, currentCandidate.getPercentage());
+                            candidatesFragment.startActivityForResult(profileIntent, CANDIDATE_PROFILE_CODE);
+                        } catch (Exception x) {
+                            x.printStackTrace();
+                        }
                     }
                     break;
             }
+
             if (v.getId() != R.id.img_photo_candidate) {
                 YoYo.with(v.getId() == R.id.btn_candidate_like ? Pulse : Tada)
                         .duration(700)
+                        .onStart(new YoYo.AnimatorCallback() {
+                            @Override
+                            public void call(Animator animator) {
+                                userInteraction = true;
+                            }
+                        })
                         .onEnd(new YoYo.AnimatorCallback() {
                             @Override
                             public void call(Animator animator) {

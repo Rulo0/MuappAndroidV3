@@ -249,6 +249,7 @@ public class ChatFragment extends Fragment implements OnFragmentInteractionListe
                 if (conversationItem != null) {
                     conversationItem.setKey(conversation.getKey());
                     conversationItem.setConversation(conversation);
+                    Log.wtf("Conversation", conversationItem.getKey() + conversationItem.getFullName());
                     if (conversationItem.getConversation().getCrush()) {
                         crushesAdapter.removeConversation(conversation.getKey());
                         crushesAdapter.addConversation(conversationItem);

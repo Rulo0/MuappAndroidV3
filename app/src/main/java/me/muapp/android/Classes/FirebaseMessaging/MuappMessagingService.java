@@ -61,6 +61,7 @@ public class MuappMessagingService extends FirebaseMessagingService {
         Log.wtf(TAG, "MessageReceived");
         Log.wtf(TAG, "Data: " + remoteMessage.getData().toString());
         Log.wtf(TAG, "From: " + remoteMessage.getFrom());
+        Log.wtf(TAG, "getBodyLocalizationArgs: " + remoteMessage.getNotification().getBodyLocalizationArgs().toString());
         if (remoteMessage.getData().size() > 0) {
             if (remoteMessage.getData().containsKey(CRUSH_KEY)) {
                 processCrush(remoteMessage);

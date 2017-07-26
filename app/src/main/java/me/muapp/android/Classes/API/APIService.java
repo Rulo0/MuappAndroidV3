@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import me.muapp.android.Classes.API.Handlers.BlockHandler;
 import me.muapp.android.Classes.API.Handlers.CandidatesHandler;
 import me.muapp.android.Classes.API.Handlers.CodeRedeemHandler;
 import me.muapp.android.Classes.API.Handlers.LikeUserHandler;
@@ -67,10 +68,12 @@ public class APIService {
             .build();
     Context mContext;
     SimpleDateFormat dateFormat;
+    PreferenceHelper preferenceHelper;
     private static final String BASE_URL = "https://app.muapp.me/"; //BuildConfig.DEBUG ? "http://dev.muapp.me/" : "https://app.muapp.me/";
 
     public APIService(Context mContext) {
         this.mContext = mContext;
+        this.preferenceHelper = new PreferenceHelper(mContext);
         dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ");
     }
 
@@ -174,59 +177,67 @@ public class APIService {
     }
 
     public void likeUser(int userId, String qbDialogId, final LikeUserHandler handler, String myConversationKey, String opponentConversationKey) {
-        String url = BASE_URL + String.format("users/%s/like", userId);
-        OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json");
-        JSONObject sendObject = new JSONObject();
-        try {
-            JSONObject qbParams = new JSONObject();
+        if (preferenceHelper.getLastLikedUser() != userId) {
+            preferenceHelper.putLastLikedUser(userId);
+            String url = BASE_URL + String.format("users/%s/like", userId);
+            OkHttpClient client = new OkHttpClient();
+            MediaType mediaType = MediaType.parse("application/json");
+            JSONObject sendObject = new JSONObject();
+            try {
+                JSONObject qbParams = new JSONObject();
          /*   qbParams.put("dialog_id", qbDialogId != null ? qbDialogId : "");
             sendObject.put("quickblox", qbParams);*/
-            if (!TextUtils.isEmpty(myConversationKey) && !TextUtils.isEmpty(opponentConversationKey)) {
-                JSONObject firebaseParams = new JSONObject();
-                firebaseParams.put("current_user_conversation_id", myConversationKey);
-                firebaseParams.put("opponent_conversation_id", opponentConversationKey);
-                sendObject.put("firebase", firebaseParams);
-            }
-        } catch (Exception x) {
-        }
-        RequestBody body = RequestBody.create(mediaType, sendObject.toString());
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
-        final String demoMatch = "{\"dialog_key\":" + myConversationKey + ",\"message\":\"Tu selección ha sido registrada con éxito.\"}";
-        client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                if (handler != null) {
-                    handler.onFailure(false, e.getMessage());
+                if (!TextUtils.isEmpty(myConversationKey) && !TextUtils.isEmpty(opponentConversationKey)) {
+                    JSONObject firebaseParams = new JSONObject();
+                    firebaseParams.put("current_user_conversation_id", myConversationKey);
+                    firebaseParams.put("opponent_conversation_id", opponentConversationKey);
+                    sendObject.put("firebase", firebaseParams);
                 }
+            } catch (Exception x) {
             }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseString = response.body().string();
-                    try {
-                        LikeUserResult result = new Gson().fromJson(responseString, LikeUserResult.class);
-                        if (result != null)
-                            if (handler != null) {
-                                handler.onSuccess(response.code(), result);
-                            } else {
-                                if (handler != null)
-                                    handler.onFailure(true, responseString);
-                            }
-                    } catch (Exception x) {
-                        if (handler != null)
-                            handler.onFailure(true, x.getMessage());
+            RequestBody body = RequestBody.create(mediaType, sendObject.toString());
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+            //final String demoMatch = "{\"dialog_key\":" + myConversationKey + ",\"message\":\"Tu selección ha sido registrada con éxito.\"}";
+            client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    if (handler != null) {
+                        handler.onFailure(false, e.getMessage());
                     }
-                } else {
-                    if (handler != null)
-                        handler.onFailure(true, response.message().toString());
                 }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String responseString = response.body().string();
+                        try {
+                            LikeUserResult result = new Gson().fromJson(responseString, LikeUserResult.class);
+                            if (result != null)
+                                if (handler != null) {
+                                    handler.onSuccess(response.code(), result);
+                                } else {
+                                    if (handler != null)
+                                        handler.onFailure(true, responseString);
+                                }
+                        } catch (Exception x) {
+                            if (handler != null)
+                                handler.onFailure(true, x.getMessage());
+                        }
+                    } else {
+                        if (handler != null)
+                            handler.onFailure(true, response.message().toString());
+                    }
+                }
+            });
+        } else {
+            if (handler != null) {
+                Log.wtf("likeUser", "Same user");
+                handler.onFailure(false, "Same user");
             }
-        });
+        }
     }
 
     public void reportUser(int userId, int reportReason, final UserReportHandler handler) {
@@ -767,16 +778,29 @@ public class APIService {
         }
     }
 
-    public void blockUser(int userId) {
+    public void blockUser(int userId, String current_user_conversation_id, String opponent_conversation_id, final BlockHandler handler) {
         try {
             String url = BASE_URL + String.format("users/%s/block", userId);
             PreferenceHelper helper = new PreferenceHelper(mContext);
             if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+                JSONObject sendObject = new JSONObject();
+                try {
+                    JSONObject location = new JSONObject();
+                    location.put("current_user_conversation_id", current_user_conversation_id);
+                    location.put("opponent_conversation_id", opponent_conversation_id);
+                    sendObject.put("firebase", location);
+                } catch (Exception x) {
+                    Log.wtf("blockUser", x.getMessage());
+                    if (handler != null)
+                        handler.onFailure(false, x.getMessage());
+                }
+                RequestBody body = RequestBody.create(MediaType.parse("application/json"), sendObject.toString());
                 Request request = new Request.Builder()
                         .url(url)
-                        .post(RequestBody.create(null, new byte[0]))
+                        .post(body)
                         .build();
                 Log.i("blockUser", url);
+                Log.i("blockUser", sendObject.toString());
                 client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -786,15 +810,20 @@ public class APIService {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String responseString = response.body().string();
-                        Log.wtf("blockUser", responseString.toString());
+                        Log.wtf("blockUser", responseString);
+                        if (handler != null)
+                            handler.onSuccess(responseString);
                     }
                 });
             } else {
-
+                if (handler != null)
+                    handler.onResponseError(new IOException());
             }
         } catch (Exception x) {
             Log.wtf("blockUser", x.getMessage());
             x.printStackTrace();
+            if (handler != null)
+                handler.onResponseError(x);
         }
     }
 
@@ -896,32 +925,36 @@ public class APIService {
     }
 
     public void likeCandidate(int candidateId) {
-        String url = BASE_URL + String.format("users/%s/candidate_like", candidateId);
-        PreferenceHelper helper = new PreferenceHelper(mContext);
-        if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(RequestBody.create(null, new byte[0]))
-                    .build();
-            Log.wtf("likeCandidate", url);
-            try {
-                client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Log.wtf("likeCandidate", "Error " + e.getMessage());
-                    }
+        if (preferenceHelper.getLastLikedUser() != candidateId) {
+            preferenceHelper.putLastLikedUser(candidateId);
+            String url = BASE_URL + String.format("users/%s/candidate_like", candidateId);
+            PreferenceHelper helper = new PreferenceHelper(mContext);
+            if (helper.getFacebookToken() != null && helper.getFacebookTokenExpiration() > 0) {
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(RequestBody.create(null, new byte[0]))
+                        .build();
+                Log.wtf("likeCandidate", url);
+                try {
+                    client.newCall(addAuthHeaders(request)).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.wtf("likeCandidate", "Error " + e.getMessage());
+                        }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        Log.wtf("likeCandidate", response.body().string());
-                    }
-                });
-            } catch (Exception x) {
-                Log.wtf("likeCandidate", "Error " + x.getMessage());
-                x.printStackTrace();
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            Log.wtf("likeCandidate", response.body().string());
+                        }
+                    });
+                } catch (Exception x) {
+                    Log.wtf("likeCandidate", "Error " + x.getMessage());
+                    x.printStackTrace();
+                }
             }
+        } else {
+            Log.wtf("likeCandidate", "Same user");
         }
-
     }
 
     public void getStickers(final StickersHandler handler) {

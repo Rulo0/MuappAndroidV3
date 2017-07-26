@@ -32,6 +32,7 @@ public class PreferenceHelper {
     private final String ACTIVE_CHAT = "activeChat";
     private final String STICKERS = "stickers";
     private final String TUTORIAL_CRUSH = "tutorialCrush";
+    private final String LAST_LIKED_USER = "lastLikedUser";
     private final String TUTORIAL_RATE = "tutorialRate";
     private final String TUTORIAL_CRUSH_CONVERSATION = "tutorialCrushConversation";
     private final String TUTORIAL_MATCH_CONVERSATION = "tutorialMatchConversation";
@@ -246,6 +247,15 @@ public class PreferenceHelper {
         edit.apply();
     }
 
+    public int getLastLikedUser() {
+        return preferences.getInt(LAST_LIKED_USER, 0);
+    }
+
+    public void putLastLikedUser(int userId) {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putInt(LAST_LIKED_USER, userId);
+        edit.apply();
+    }
 
     public boolean getTutorialCrush() {
         return preferences.getBoolean(TUTORIAL_CRUSH, true);

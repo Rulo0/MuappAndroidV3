@@ -49,6 +49,8 @@ public class SplashActivity extends BaseActivity {
             new PreferenceHelper(this).putPendingMatch(pendingMatch);
         }
         mFirebaseAnalytics.logEvent(Analytics.Login.LOGIN_EVENTS.Login_Loading.toString(), null);
+
+
     }
 
     @Override

@@ -242,6 +242,7 @@ public class MainActivity extends BaseActivity implements
                     final String token = FirebaseInstanceId.getInstance().getToken();
                     Log.wtf("push_token", token);
                     FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("pushToken").setValue(token);
+                    FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("users").child(String.valueOf(loggedUser.getId())).child("fuUUID").setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     if (TextUtils.isEmpty(token) || !TextUtils.equals(new PreferenceHelper(this).getGCMToken(), token) || !loggedUser.getPushToken().equals(token)) {
                         FirebaseMessaging.getInstance().subscribeToTopic("android");
                         JSONObject tokenUser = new JSONObject();

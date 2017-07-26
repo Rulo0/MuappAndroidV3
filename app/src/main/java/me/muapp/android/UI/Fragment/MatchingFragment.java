@@ -208,14 +208,14 @@ public class MatchingFragment extends Fragment implements OnFragmentInteractionL
         if (result.getMatchingUsers().size() > 0) {
             matchingFragmentList.clear();
             for (final MatchingUser user : result.getMatchingUsers()) {
-               /* if (!TextUtils.isEmpty(user.getDescription()))
-                    uploadDescriptionToFirebase(user.getId(), user.getDescription());*/
-                Log.wtf("Matching", user.toString());
-                preloadMatchingImages(user.getAlbum());
-                MatchingUserProfileFragment fragment = MatchingUserProfileFragment.newInstance(user);
-                fragment.setOnMatchingInteractionListener(this);
-                fragment.setOnProfileScrollListener(this);
-                matchingFragmentList.add(fragment);
+                if (user.getPhoto() != null && user.getAlbum().size() > 0) {
+                    Log.wtf("Matching", user.toString());
+                    preloadMatchingImages(user.getAlbum());
+                    MatchingUserProfileFragment fragment = MatchingUserProfileFragment.newInstance(user);
+                    fragment.setOnMatchingInteractionListener(this);
+                    fragment.setOnProfileScrollListener(this);
+                    matchingFragmentList.add(fragment);
+                }
             }
             onAllUsersLoaded();
         }
