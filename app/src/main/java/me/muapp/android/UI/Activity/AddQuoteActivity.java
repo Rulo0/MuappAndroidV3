@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import me.muapp.android.Application.MuappApplication;
 import me.muapp.android.Classes.FirebaseAnalytics.Analytics;
 import me.muapp.android.Classes.Internal.MuappQuote;
 import me.muapp.android.Classes.Internal.UserContent;
 import me.muapp.android.R;
 import me.muapp.android.UI.Adapter.MuappQuotesAdapter;
+
+import static me.muapp.android.Application.MuappApplication.DATABASE_REFERENCE;
 
 public class AddQuoteActivity extends BaseActivity {
     ViewPager pager_quotes;
@@ -49,7 +50,7 @@ public class AddQuoteActivity extends BaseActivity {
         quotesAdapter = new MuappQuotesAdapter(this);
         pager_quotes.setAdapter(quotesAdapter);
         quoteList = new ArrayList<>();
-        DatabaseReference contentReference = FirebaseDatabase.getInstance().getReference("content").child(String.valueOf(loggedUser.getId()));
+        DatabaseReference contentReference = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
         contentReference.orderByChild("catContent").equalTo("contentQte").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -59,7 +60,7 @@ public class AddQuoteActivity extends BaseActivity {
                         usedQuotes.add(c.getQuoteId());
                     }
                 }
-                FirebaseDatabase.getInstance().getReference("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
+                FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("quotes").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         try {
@@ -150,7 +151,7 @@ public class AddQuoteActivity extends BaseActivity {
             thisContent.setLikes(0);
             thisContent.setCatContent("contentQte");
             thisContent.setQuoteId(quoteList.get(pager_quotes.getCurrentItem()).getKey());
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(MuappApplication.DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DATABASE_REFERENCE).child("content").child(String.valueOf(loggedUser.getId()));
             String key = ref.push().getKey();
             ref.child(key).setValue(thisContent).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
